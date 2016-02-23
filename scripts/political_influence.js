@@ -8,11 +8,13 @@ function initialize() {
     if (totalContributions = 0, renderLinks = [], cands = [], pacs = [], contr = [], "house" == office) {
         var a = {}, b = {};
         b.value = total_hDems, b.children = h_dems;//dems--democrat
-        var c = {};
-        c.value = total_hReps, c.children = h_reps;//reps--republican
-        var d = {};
-        d.value = total_hOthers, d.children = h_others;//others--independent
-        a.children = [c, b, d], a.PTY = "root";//PTY--party
+        //var c = {};
+        //c.value = total_hReps, c.children = h_reps;//reps--republican
+        //var d = {};
+        //d.value = total_hOthers, d.children = h_others;//others--independent
+        //a.children = [c, b, d];
+        a.children = [b];
+        a.PTY = "root";//PTY--party
         nodes = bubble.nodes(a);
         var totalCandAmount = 0;
         nodes.forEach(function (node) {
@@ -29,19 +31,6 @@ function initialize() {
         pacs = pacsHouse;
         c_house.forEach(function (a) { //c_house--Contributions_House.csv
             contr.push(a);
-        })
-    } else if ("senate" == office) {
-        var a = {}, b = {};
-        b.value = total_sDems, b.children = s_dems;
-        var c = {};
-        c.value = total_sReps, c.children = s_reps;
-        var d = {};
-        d.value = total_sOthers, d.children = s_others, a.children = [c, b, d], a.PTY = "root", nodes = bubble.nodes(a);
-        var e = 0;
-        nodes.forEach(function (a) {
-            2 == a.depth && (nodesById[a.CAND_ID] = a, a.relatedLinks = [], a.Amount = Number(a.Amount), a.currentAmount = a.Amount, cands.push(a), e += a.Amount)
-        }), log("totalCandAmount=" + e), pacs = pacsSenate, c_senate.forEach(function (a) {
-            contr.push(a)
         })
     }
     buildChords();
@@ -70,28 +59,40 @@ function highlightLinks(a, b) {
     })
 }
 function fetchData() {
-    dataCalls = [], addStream("data/Candidates_House.csv", onFetchCandidatesHouse), addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate), addStream("data/Contributions_House.csv", onFetchContributionsHouse), addStream("data/Contributions_Senate.csv", onFetchContributionsSenate), addStream("data/Pacs_House.csv", onFetchPacsHouse), addStream("data/Pacs_Senate.csv", onFetchPacsSenate), startFetch()
+    dataCalls = [];
+    addStream("data/Candidates_House.csv", onFetchCandidatesHouse);
+    //addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate);
+    addStream("data/Contributions_House.csv", onFetchContributionsHouse);
+    //addStream("data/Contributions_Senate.csv", onFetchContributionsSenate);
+    addStream("data/Pacs_House.csv", onFetchPacsHouse);
+    //addStream("data/Pacs_Senate.csv", onFetchPacsSenate);
+    startFetch();
 }
-function onFetchCandidatesSenate(a) {
-    for (var b = 0; b < a.length; b++) {
-        var c = a[b];
-        c.value = Number(c.Amount), cns[c.CAND_ID] = c, senate.push(c), "REP" == c.PTY ? (s_reps.push(c), total_sReps += c.value) : "DEM" == c.PTY ? (s_dems.push(c), total_sDems += c.value) : (s_others.push(c), total_sOthers += c.value)
-    }
-    log("onFetchCandidatesSenate()"), endFetch()
-}
+//function onFetchCandidatesSenate(a) {
+//    for (var b = 0; b < a.length; b++) {
+//        var c = a[b];
+//        c.value = Number(c.Amount), cns[c.CAND_ID] = c, senate.push(c), "REP" == c.PTY ? (s_reps.push(c), total_sReps += c.value) : "DEM" == c.PTY ? (s_dems.push(c), total_sDems += c.value) : (s_others.push(c), total_sOthers += c.value)
+//    }
+//    log("onFetchCandidatesSenate()"), endFetch()
+//}
 function onFetchCandidatesHouse(a) {
     for (var b = 0; b < a.length; b++) {
         var c = a[b];
-        c.value = Number(c.Amount), cns[c.CAND_ID] = c, house.push(c), "REP" == c.PTY ? (h_reps.push(c), total_hReps += c.value) : "DEM" == c.PTY ? (h_dems.push(c), total_hDems += c.value) : (h_others.push(c), total_hOthers += c.value)
+        c.value = Number(c.Amount);
+        cns[c.CAND_ID] = c;
+        house.push(c);
+        //"REP" == c.PTY ? (h_reps.push(c), total_hReps += c.value) : "DEM" == c.PTY ? (h_dems.push(c), total_hDems += c.value) : (h_others.push(c), total_hOthers += c.value)
+        h_dems.push(c);
+        total_hDems += c.value
     }
     log("onFetchCandidatesHouse()"), endFetch()
 }
-function onFetchContributionsSenate(a) {
-    var b = 0;
-    a.forEach(function (a) {
-        a.Key = "S" + b++, contributions.push(a), c_senate.push(a)
-    }), log("onFetchContributionsSenate()"), endFetch()
-}
+//function onFetchContributionsSenate(a) {
+//    var b = 0;
+//    a.forEach(function (a) {
+//        a.Key = "S" + b++, contributions.push(a), c_senate.push(a)
+//    }), log("onFetchContributionsSenate()"), endFetch()
+//}
 function onFetchContributionsHouse(a) {
     var b = 0;
     a.forEach(function (a) {
@@ -100,14 +101,15 @@ function onFetchContributionsHouse(a) {
 }
 function onFetchPacsHouse(a) {
     pacsHouse = a;
-    for (var b = 0; b < pacsHouse.length; b++)pacsById["house_" + pacsHouse[b].CMTE_ID] = pacsHouse[b];
+    for (var b = 0; b < pacsHouse.length; b++)
+        pacsById["house_" + pacsHouse[b].CMTE_ID] = pacsHouse[b];
     log("onFetchPacsHouse()"), endFetch()
 }
-function onFetchPacsSenate(a) {
-    pacsSenate = a;
-    for (var b = 0; b < pacsSenate.length; b++)pacsById["senate_" + pacsSenate[b].CMTE_ID] = pacsSenate[b];
-    log("onFetchPacsSenate()"), endFetch()
-}
+//function onFetchPacsSenate(a) {
+//    pacsSenate = a;
+//    for (var b = 0; b < pacsSenate.length; b++)pacsById["senate_" + pacsSenate[b].CMTE_ID] = pacsSenate[b];
+//    log("onFetchPacsSenate()"), endFetch()
+//}
 function addStream(a, b) {
     var c = {};
     c.file = a, c["function"] = b, dataCalls.push(c)
@@ -172,7 +174,8 @@ function updateLinks(a) {
     c.append("g").attr("class", "arc").append("path").attr("id", function (a) {
         return "a_" + a.Key
     }).style("fill", function (a) {
-        return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        return demColor;
     }).style("fill-opacity", .2).attr("d", function (a, b) {
         var c = {}, d = chordsById[a.CMTE_ID];
         c.startAngle = d.currentAngle, d.currentAngle = d.currentAngle + Number(a.TRANSACTION_AMT) / d.value * (d.endAngle - d.startAngle), c.endAngle = d.currentAngle, c.value = Number(a.TRANSACTION_AMT);
@@ -189,15 +192,18 @@ function updateLinks(a) {
         var d = diagonal(a.links[0], c);
         return d += "L" + String(diagonal(a.links[1], c)).substr(1), d += "A" + linkRadius + "," + linkRadius + " 0 0,0 " + a.links[0].source.x + "," + a.links[0].source.y
     }).style("stroke", function (a) {
-        return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        return demColor;
     }).style("stroke-opacity", .07).style("fill-opacity", .1).style("fill", function (a) {
-        return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        return demColor;
     }).on("mouseover", function (a) {
         node_onMouseOver(a, "CONTRIBUTION")
     }).on("mouseout", function (a) {
         node_onMouseOut(a, "CONTRIBUTION")
     }), c.append("g").attr("class", "node").append("circle").style("fill", function (a) {
-        return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        return demColor;
     }).style("fill-opacity", .2).style("stroke-opacity", 1).attr("r", function (a) {
         var b = nodesById[a.CAND_ID];
         b.currentAmount = b.currentAmount - Number(a.TRANSACTION_AMT);
@@ -218,11 +224,13 @@ function updateNodes() {
     }).style("fill-opacity", function (a) {
         return a.depth < 2 ? 0 : .05
     }).style("stroke", function (a) {
-        return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        return demColor;
     }).style("stroke-opacity", function (a) {
         return a.depth < 2 ? 0 : .2
     }).style("fill", function (a) {
-        return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
+        return demColor;
     });
     var c = b.append("g").attr("id", function (a) {
         return "c_" + a.CAND_ID
@@ -286,8 +294,8 @@ var maxWidth = Math.max(600, Math.min(window.innerWidth, window.innerHeight)),
     linkRadius = .95 * innerRadius,
     nodesTranslate = outerRadius - innerRadius + (innerRadius - bubbleRadius),
     chordsTranslate = outerRadius,
-    houseButton = d3.select(document.getElementById("houseButton")),
-    senateButton = d3.select(document.getElementById("senateButton"));
+    houseButton = d3.select(document.getElementById("houseButton"));
+    //senateButton = d3.select(document.getElementById("senateButton"));
 
 d3.select(document.getElementById("mainDiv"))
     .style("width", 2 * outerRadius + "px")
@@ -334,7 +342,7 @@ header = d3.select(document.getElementById("head"));
 header1 = d3.select(document.getElementById("header1"));
 header2 = d3.select(document.getElementById("header2"));
 total = d3.select(document.getElementById("totalDiv"));
-repColor = "#F80018";
+//repColor = "#F80018";
 demColor = "#0543bc";
 otherColor = "#FFa400";
 fills = d3.scale.ordinal().range(["#00AC6B", "#20815D", "#007046", "#35D699", "#60D6A9"]);
@@ -347,22 +355,22 @@ pacsHouse = [];//20 committees
 pacsSentate = [];
 contr = [];
 h_dems = [];
-h_reps = [];
+//h_reps = [];
 h_others = [];
 house = [];
 
 s_dems = [];
-s_reps = [];
+//s_reps = [];
 s_others = [];
-senate = [];
+//senate = [];
 total_hDems = 0;
 total_sDems = 0;
-total_hReps = 0;
-total_sReps = 0;
+//total_hReps = 0;
+//total_sReps = 0;
 total_hOthers = 0;
 total_sOthers = 0;
 contributions = [];
-c_senate = [];
+//c_senate = [];
 c_house = [];
 pacs = [];
 pacsById = {};
@@ -397,21 +405,21 @@ highlightLink = function (a, b) {
     var g = d3.select(document.getElementById("t_" + a.CMTE_ID));
     g.transition(1 == b ? 0 : 550).style("fill", 1 == b ? "#000" : "#777").style("font-size", 1 == b ? Math.round(.035 * innerRadius) + "px" : "0px")
 };
-senateButton.on("click", function (a) {
-    senateButton.attr("class", "selected");
-    houseButton.attr("class", null);
-    office = "senate";
-    linksSvg.selectAll("g.links").remove();
-    clearInterval(intervalId);
-    main();
-});
-houseButton.on("click", function (a) {
-    senateButton.attr("class", null);
-    houseButton.attr("class", "selected");
-    office = "house";
-    clearInterval(intervalId);
-    main();
-});
+//senateButton.on("click", function (a) {
+//    senateButton.attr("class", "selected");
+//    houseButton.attr("class", null);
+//    office = "senate";
+//    linksSvg.selectAll("g.links").remove();
+//    clearInterval(intervalId);
+//    main();
+//});
+//houseButton.on("click", function (a) {
+//    //senateButton.attr("class", null);
+//    houseButton.attr("class", "selected");
+//    office = "house";
+//    clearInterval(intervalId);
+//    main();
+//});
 var dataCalls = [], numCalls = 0;
 fetchData();
 var intervalId, counter = 2, renderLinks = [];

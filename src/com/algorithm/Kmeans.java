@@ -23,7 +23,8 @@ public class Kmeans {
         System.out.println("user number = " + userSeriesIdMap.keySet().size());
     }
 
-    private static void Kmeans(Map<String, int[]> userSeriesIdMap, int centerNum, int degree) {
+    public static String Kmeans(Map<String, int[]> userSeriesIdMap, int centerNum, int degree) {
+        String clusterInfo = "";
         List<List<Double>> centerList;
         List<List<Double>> newCenterList = null;
         int round = 1;
@@ -49,9 +50,10 @@ public class Kmeans {
                 }
                 cluster.get(minDisNum).add(userSeriesId.getKey());
             }
-            showCluster(userSeriesIdMap, cluster);
+            clusterInfo = showCluster(userSeriesIdMap, cluster);
             newCenterList = calCenter(userSeriesIdMap, cluster, degree);
         } while (!centerList.equals(newCenterList));
+        return clusterInfo;
     }
 
     private static double calEDistance(List<Double> center, int[] point) {
@@ -117,7 +119,7 @@ public class Kmeans {
     private static Double[] ints2Doubles(int[] value) {
         int len = value.length;
         Double[] result = new Double[len];
-        for(int i=0;i<len;i++){
+        for (int i = 0; i < len; i++) {
             result[i] = 1.0 * value[i];
         }
         return result;
@@ -141,14 +143,18 @@ public class Kmeans {
         return maxDisPointPair;
     }
 
-    private static void showCluster(Map<String, int[]> userSeriesIdMap, List<List<String>> cluster) {
+    private static String showCluster(Map<String, int[]> userSeriesIdMap, List<List<String>> cluster) {
+        StringBuffer clusterInfo = new StringBuffer();
+        clusterInfo.append("clusterId,userNum\n");
         for (int i = 0; i < cluster.size(); i++) {
             System.out.print("Cluster " + i + ": ");
+            clusterInfo.append(i + "," + cluster.get(i).size()+"\n");
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 System.out.print("(" + cluster.get(i).get(j) + "-" + int2String(userSeriesIdMap.get(cluster.get(i).get(j))) + ") ");
             }
             System.out.println();
         }
+        return clusterInfo.toString();
     }
 
     private static String int2String(int[] ints) {
