@@ -6,7 +6,6 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,16 +16,52 @@ import java.util.Map;
 public class QueryFromNeo4j {
 
     private static String baseURL = "/home/llei/IdeaProjects/autohome/auto_home.db";
+
     public static void main(String args[]) {
         String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
-//        queryUserBySeriesId(seriesIds);
-//        String series = querySeriesById(seriesIds);
-        String userClusters = queryUserClusters(seriesIds, 5);
-        System.out.print(userClusters);
+        Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
+        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 5);
+        String clusterInfo = getClusterInfo(cluster);
+        String collectDetailInfo = getCollectDetailInfo(cluster, seriesIds, userSeriesIdMap);
+        System.out.print(collectDetailInfo);
     }
 
-    private static String queryUserClusters(String[] seriesIds, int clusterNum) {
-        return Kmeans.Kmeans(QueryFromNeo4j.queryUserBySeriesId(seriesIds), clusterNum, seriesIds.length);
+
+    private static String getCollectDetailInfo(List<List<String>> cluster, String[] seriesIds, Map<String, int[]> userSeriesIdMap) {
+        StringBuffer detail = new StringBuffer();
+        detail.append("seriesId,collectAmt,clusterId\n");
+        for (int i = 0; i < cluster.size(); i++) {
+            int clusterSize = cluster.get(i).size();
+            int[] collectAmt = new int[seriesIds.length];
+            for (int j = 0; j < clusterSize; j++) {
+                String userId = cluster.get(i).get(j);
+                int[] userVec = userSeriesIdMap.get(userId);
+                for (int k = 0; k < userVec.length; k++) {
+                    if (userVec[k] == 1) {
+                        collectAmt[k]++;
+                    }
+                }
+            }
+            for (int k = 0; k < seriesIds.length; k++) {
+                if(collectAmt[k]>0) {
+                    detail.append(seriesIds[k] + "," + collectAmt[k] + "," + i + "\n");
+                }
+            }
+        }
+        return detail.toString();
+    }
+
+    private static String getClusterInfo(List<List<String>> cluster) {
+        StringBuffer clusterInfo = new StringBuffer();
+        clusterInfo.append("clusterId,userNum\n");
+        for (int i = 0; i < cluster.size(); i++) {
+            clusterInfo.append(i + "," + cluster.get(i).size() + "\n");
+        }
+        return clusterInfo.toString();
+    }
+
+    private static List<List<String>> queryUserClusters(Map<String, int[]> userSeriesIdMap, String[] seriesIds, int clusterNum) {
+        return Kmeans.Kmeans(userSeriesIdMap, clusterNum, seriesIds.length);
     }
 
     private static String querySeriesById(String[] seriesIds) {
@@ -40,7 +75,7 @@ public class QueryFromNeo4j {
                 Map<String, Object> row = result.next();
                 for (Map.Entry<String, Object> column : row.entrySet()) {
                     String record = (String) column.getValue();
-                    seriesInfo.append(record+"\n");
+                    seriesInfo.append(record + "\n");
                 }
             }
         }
@@ -63,7 +98,6 @@ public class QueryFromNeo4j {
 
     public static Map<String, int[]> queryUserBySeriesId(String[] seriesIds) {
         Map<String, int[]> userSeriesIdMap = new HashMap<>();
-
         Map<String, Integer> seriesIds2Num = new HashMap<>();
         for (int i = 0; i < seriesIds.length; i++) {
             seriesIds2Num.put(seriesIds[i], i);
@@ -82,8 +116,7 @@ public class QueryFromNeo4j {
                         int[] featureArr = new int[seriesIds.length];
                         featureArr[seriesIds2Num.get(seriesId)] = 1;
                         userSeriesIdMap.put(userId, featureArr);
-                    }
-                    else{
+                    } else {
                         userSeriesIdMap.get(userId)[seriesIds2Num.get(seriesId)] = 1;
                     }
                 }

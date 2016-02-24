@@ -23,15 +23,15 @@ public class Kmeans {
         System.out.println("user number = " + userSeriesIdMap.keySet().size());
     }
 
-    public static String Kmeans(Map<String, int[]> userSeriesIdMap, int centerNum, int degree) {
-        String clusterInfo = "";
+    public static List<List<String>> Kmeans(Map<String, int[]> userSeriesIdMap, int centerNum, int degree) {
         List<List<Double>> centerList;
         List<List<Double>> newCenterList = null;
+        List<List<String>> cluster;
         int round = 1;
         do {
             System.out.println("Round " + round++);
             centerList = newCenterList == null ? selectInitPoints(userSeriesIdMap, centerNum, degree) : newCenterList;
-            List<List<String>> cluster = new ArrayList<>();
+            cluster = new ArrayList<>();
             //assign center to cluster
             for (int i = 0; i < centerList.size(); i++) {
                 List<String> inner = new ArrayList<>();
@@ -50,10 +50,10 @@ public class Kmeans {
                 }
                 cluster.get(minDisNum).add(userSeriesId.getKey());
             }
-            clusterInfo = showCluster(userSeriesIdMap, cluster);
+            showCluster(userSeriesIdMap, cluster);
             newCenterList = calCenter(userSeriesIdMap, cluster, degree);
         } while (!centerList.equals(newCenterList));
-        return clusterInfo;
+        return cluster;
     }
 
     private static double calEDistance(List<Double> center, int[] point) {
@@ -143,18 +143,16 @@ public class Kmeans {
         return maxDisPointPair;
     }
 
-    private static String showCluster(Map<String, int[]> userSeriesIdMap, List<List<String>> cluster) {
-        StringBuffer clusterInfo = new StringBuffer();
-        clusterInfo.append("clusterId,userNum\n");
+    private static void showCluster(Map<String, int[]> userSeriesIdMap, List<List<String>> cluster) {
+//        clusterInfo.append("clusterId,userNum\n");
         for (int i = 0; i < cluster.size(); i++) {
             System.out.print("Cluster " + i + ": ");
-            clusterInfo.append(i + "," + cluster.get(i).size()+"\n");
+//            clusterInfo.append(i + "," + cluster.get(i).size()+"\n");
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 System.out.print("(" + cluster.get(i).get(j) + "-" + int2String(userSeriesIdMap.get(cluster.get(i).get(j))) + ") ");
             }
             System.out.println();
         }
-        return clusterInfo.toString();
     }
 
     private static String int2String(int[] ints) {
