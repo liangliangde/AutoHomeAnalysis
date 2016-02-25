@@ -29,7 +29,7 @@ public class QueryFromNeo4j {
     }
 
 
-    private static String getCollectDetailInfo(List<List<String>> cluster, String[] seriesIds, Map<String, int[]> userSeriesIdMap) {
+    public static String getCollectDetailInfo(List<List<String>> cluster, String[] seriesIds, Map<String, int[]> userSeriesIdMap) {
         StringBuffer detail = new StringBuffer();
         detail.append("seriesId,collectAmt,clusterId\n");
         for (int i = 0; i < cluster.size(); i++) {
@@ -53,7 +53,7 @@ public class QueryFromNeo4j {
         return detail.toString();
     }
 
-    private static String getClusterInfo(List<List<String>> cluster) {
+    public static String getClusterInfo(List<List<String>> cluster) {
         StringBuffer clusterInfo = new StringBuffer();
         clusterInfo.append("clusterId,Amount\n");
         for (int i = 0; i < cluster.size(); i++) {
@@ -62,11 +62,11 @@ public class QueryFromNeo4j {
         return clusterInfo.toString();
     }
 
-    private static List<List<String>> queryUserClusters(Map<String, int[]> userSeriesIdMap, String[] seriesIds, int clusterNum) {
+    public static List<List<String>> queryUserClusters(Map<String, int[]> userSeriesIdMap, String[] seriesIds, int clusterNum) {
         return Kmeans.Kmeans(userSeriesIdMap, clusterNum, seriesIds.length);
     }
 
-    private static String querySeriesById(String[] seriesIds) {
+    public static String querySeriesById(String[] seriesIds) {
         StringBuffer seriesInfo = new StringBuffer();
         seriesInfo.append("seriesId,Amount,seriesName\n");
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);

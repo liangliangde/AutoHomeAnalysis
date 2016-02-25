@@ -73,10 +73,11 @@
     <![endif]-->
 
     <div id="slider">
-        <div id="slider-range-min" style="width: 200px;"></div>
         <label for="amount" style="font-size: 20px">Current K value: </label>
         <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; font-size: 20px;">
     </div>
+    <div id="slider-range-min" style="width: 200px;" align="center"></div>
+    <button onclick="sendSeries2Server()">ok</button>
 
     <div id="mainDiv">
         <div id="svgDiv"></div>
@@ -102,8 +103,9 @@
     </div>
 </div>
 
-<script type="text/javascript" src="scripts/political_influence.js"></script>
+<script type="text/javascript" src="scripts/MainGraph.js"></script>
 <script type="text/javascript" src="scripts/KValueSlider.js"></script>
+<script type="text/javascript" src="scripts/ConnectServer.js"></script>
 
 </body>
 </html>
