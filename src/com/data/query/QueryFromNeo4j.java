@@ -20,10 +20,11 @@ public class QueryFromNeo4j {
     public static void main(String args[]) {
         String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
         Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
-        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 5);
+        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 10);
+        String seriesInfo = querySeriesById(seriesIds);
         String clusterInfo = getClusterInfo(cluster);
         String collectDetailInfo = getCollectDetailInfo(cluster, seriesIds, userSeriesIdMap);
-        System.out.print(collectDetailInfo);
+        System.out.print(clusterInfo);
     }
 
 
@@ -53,7 +54,7 @@ public class QueryFromNeo4j {
 
     private static String getClusterInfo(List<List<String>> cluster) {
         StringBuffer clusterInfo = new StringBuffer();
-        clusterInfo.append("clusterId,userNum\n");
+        clusterInfo.append("clusterId,Amount\n");
         for (int i = 0; i < cluster.size(); i++) {
             clusterInfo.append(i + "," + cluster.get(i).size() + "\n");
         }
@@ -66,10 +67,10 @@ public class QueryFromNeo4j {
 
     private static String querySeriesById(String[] seriesIds) {
         StringBuffer seriesInfo = new StringBuffer();
-        seriesInfo.append("seriesId,collectedUsers,seriesName\n");
+        seriesInfo.append("seriesId,Amount,seriesName\n");
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
         try (Transaction ignored = db.beginTx();
-             Result result = db.execute("MATCH (s:Series)<-[r:Like]-(u:User) with s,count(u) as users  ORDER BY users WHERE s.seriesId in "
+             Result result = db.execute("MATCH (s:Series)<-[r:Like]-(u:User) with s,count(u) as users  ORDER BY users DESC WHERE s.seriesId in "
                      + array2String(seriesIds) + " RETURN s.seriesId + ',' + users + ',' + s.seriesName")) {
             while (result.hasNext()) {
                 Map<String, Object> row = result.next();

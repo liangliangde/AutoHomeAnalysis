@@ -5,53 +5,77 @@
 function log(a) {
 }
 function initialize() {
-    if (totalContributions = 0, renderLinks = [], cands = [], pacs = [], contr = [], "house" == office) {
-        var a = {}, b = {};
-        b.value = total_hDems, b.children = h_dems;//dems--democrat
-        //var c = {};
-        //c.value = total_hReps, c.children = h_reps;//reps--republican
-        //var d = {};
-        //d.value = total_hOthers, d.children = h_others;//others--independent
-        //a.children = [c, b, d];
-        a.children = [b];
-        a.PTY = "root";//PTY--party
-        nodes = bubble.nodes(a);
-        var totalCandAmount = 0;
-        nodes.forEach(function (node) {
-            if (2 == node.depth) {
-                nodesById[node.CAND_ID] = node;
-                node.relatedLinks = [];
-                node.Amount = Number(node.Amount);
-                node.currentAmount = node.Amount;
-                cands.push(node);
-                totalCandAmount += node.Amount;
-            }
-        });
-        log("totalCandAmount=" + totalCandAmount);
-        pacs = pacsHouse;
-        c_house.forEach(function (a) { //c_house--Contributions_House.csv
-            contr.push(a);
-        })
-    }
+    //if (totalcollects = 0, renderLinks = [], clusters = [], serieses = [], coll = []) {
+    var a = {}, b = {};
+    b.value = total_hDems, b.children = h_dems;//dems--democrat
+    //var c = {};
+    //c.value = total_hReps, c.children = h_reps;//reps--republican
+    //var d = {};
+    //d.value = total_hOthers, d.children = h_others;//others--independent
+    //a.children = [c, b, d];
+    a.children = [b];
+    a.PTY = "root";//PTY--party
+    nodes = bubble.nodes(a);
+    //var totalCandAmount = 0;
+    nodes.forEach(function (node) {
+        if (2 == node.depth) {
+            nodesById[node.clusterId] = node;
+            node.relatedLinks = [];
+            node.Amount = Number(node.Amount);
+            //node.currentAmount = node.Amount;
+            clusters.push(node);
+            //totalCandAmount += node.Amount;
+        }
+    });
+    //log("totalCandAmount=" + totalCandAmount);
+    //pacs = pacsHouse;
+    collects.forEach(function (a) { //c_house--Contributions_House.csv
+        coll.push(a);
+    })
+    //}
     buildChords();
     var f = 0;
-    contr.forEach(function (a) {
-        nodesById[a.CAND_ID].relatedLinks.push(a);
-        chordsById[a.CMTE_ID].relatedLinks.push(a);
-        f += Number(a.TRANSACTION_AMT);
+    coll.forEach(function (a) {
+        nodesById[a.clusterId].relatedLinks.push(a);
+        chordsById[a.seriesId].relatedLinks.push(a);
+        f += Number(a.collectAmt);
     });
-    log("totalContributions=" + f);
+    log("totalcollects=" + f);
     log("initialize()");
 }
 function node_onMouseOver(a, b) {
     var c = d3.event.pageX + 15;
-    if (c + 250 > window.innerWidth && (c = d3.event.pageX - 280), "CAND" == b) {
+    if (c + 250 > window.innerWidth && (c = d3.event.pageX - 280), "CLUSTER" == b) {
         if (a.depth < 2)return;
-        toolTip.transition().duration(200).style("opacity", ".9"), header1.text("Congress"), header.text(a.CAND_NAME), header2.text("Total Recieved: " + formatCurrency(Number(a.Amount))), toolTip.style("left", c + "px").style("top", d3.event.pageY - 150 + "px").style("height", "100px"), highlightLinks(a, !0)
-    } else"CONTRIBUTION" == b ? (toolTip.transition().duration(200).style("opacity", ".9"), header1.text(pacsById[office + "_" + a.CMTE_ID].CMTE_NM), header.text(a.CAND_NAME), header2.text(formatCurrency(Number(a.TRANSACTION_AMT)) + " on " + a.Month + "/" + a.Day + "/" + a.Year), toolTip.style("left", c + "px").style("top", d3.event.pageY - 150 + "px").style("height", "100px"), highlightLink(a, !0)) : "PAC" == b && (toolTip.transition().duration(200).style("opacity", ".9"), header1.text("Political Action Committee"), header.text(pacsById[office + "_" + a.label].CMTE_NM), header2.text("Total Contributions: " + formatCurrency(pacsById[office + "_" + a.label].Amount)), toolTip.style("left", d3.event.pageX + 15 + "px").style("top", d3.event.pageY - 75 + "px").style("height", "110px"), highlightLinks(chordsById[a.label], !0))
+        toolTip.transition().duration(200).style("opacity", ".9");
+        //header1.text("Congress");
+        header1.text("");
+        header.text("Cluster " + a.clusterId);
+        header2.text("Total Users: " + Number(a.Amount));
+        toolTip.style("left", c + "px").style("top", d3.event.pageY - 150 + "px").style("height", "100px");
+        highlightLinks(a, !0);
+    } else {
+        if ("COLLECT" == b) {
+            toolTip.transition().duration(200).style("opacity", ".9");
+            header1.text(seriesesById[a.seriesId].seriesName);
+            header.text("Cluster:" + a.clusterId)
+            header2.text("Collect Users: " + Number(a.collectAmt));
+            toolTip.style("left", c + "px").style("top", d3.event.pageY - 150 + "px").style("height", "100px");
+            highlightLink(a, !0);
+        }
+        if ("SERIES" == b) {
+            toolTip.transition().duration(200).style("opacity", ".9");
+            //header1.text("Political Action Committee");
+            header1.text("");
+            header.text(seriesesById[a.label].seriesName);
+            header2.text("Total Collections: " + seriesesById[a.label].Amount);
+            toolTip.style("left", d3.event.pageX + 15 + "px").style("top", d3.event.pageY - 75 + "px").style("height", "110px");
+            highlightLinks(chordsById[a.label], !0)
+        }
+    }
 }
 function node_onMouseOut(a, b) {
-    "CAND" == b ? highlightLinks(a, !1) : "CONTRIBUTION" == b ? highlightLink(a, !1) : "PAC" == b && highlightLinks(chordsById[a.label], !1), toolTip.transition().duration(500).style("opacity", "0")
+    "CLUSTER" == b ? highlightLinks(a, !1) : "COLLECT" == b ? highlightLink(a, !1) : "SERIES" == b && highlightLinks(chordsById[a.label], !1), toolTip.transition().duration(500).style("opacity", "0")
 }
 function highlightLinks(a, b) {
     a.relatedLinks.forEach(function (a) {
@@ -60,32 +84,32 @@ function highlightLinks(a, b) {
 }
 function fetchData() {
     dataCalls = [];
-    addStream("data/Candidates_House.csv", onFetchCandidatesHouse);
+    addStream("data/Cluster.csv", onFetchCluster);
     //addStream("data/Candidates_Senate.csv", onFetchCandidatesSenate);
-    addStream("data/Contributions_House.csv", onFetchContributionsHouse);
+    addStream("data/CollectAmt.csv", onFetchCollects);
     //addStream("data/Contributions_Senate.csv", onFetchContributionsSenate);
-    addStream("data/Pacs_House.csv", onFetchPacsHouse);
+    addStream("data/Series.csv", onFetchSeries);
     //addStream("data/Pacs_Senate.csv", onFetchPacsSenate);
     startFetch();
 }
 //function onFetchCandidatesSenate(a) {
 //    for (var b = 0; b < a.length; b++) {
 //        var c = a[b];
-//        c.value = Number(c.Amount), cns[c.CAND_ID] = c, senate.push(c), "REP" == c.PTY ? (s_reps.push(c), total_sReps += c.value) : "DEM" == c.PTY ? (s_dems.push(c), total_sDems += c.value) : (s_others.push(c), total_sOthers += c.value)
+//        c.value = Number(c.Amount), cns[c.clusterId] = c, senate.push(c), "REP" == c.PTY ? (s_reps.push(c), total_sReps += c.value) : "DEM" == c.PTY ? (s_dems.push(c), total_sDems += c.value) : (s_others.push(c), total_sOthers += c.value)
 //    }
 //    log("onFetchCandidatesSenate()"), endFetch()
 //}
-function onFetchCandidatesHouse(a) {
+function onFetchCluster(a) {
     for (var b = 0; b < a.length; b++) {
         var c = a[b];
         c.value = Number(c.Amount);
-        cns[c.CAND_ID] = c;
-        house.push(c);
+        cns[c.clusterId] = c;
+        //house.push(c);
         //"REP" == c.PTY ? (h_reps.push(c), total_hReps += c.value) : "DEM" == c.PTY ? (h_dems.push(c), total_hDems += c.value) : (h_others.push(c), total_hOthers += c.value)
         h_dems.push(c);
         total_hDems += c.value
     }
-    log("onFetchCandidatesHouse()"), endFetch()
+    log("onFetchCluster()"), endFetch()
 }
 //function onFetchContributionsSenate(a) {
 //    var b = 0;
@@ -93,21 +117,23 @@ function onFetchCandidatesHouse(a) {
 //        a.Key = "S" + b++, contributions.push(a), c_senate.push(a)
 //    }), log("onFetchContributionsSenate()"), endFetch()
 //}
-function onFetchContributionsHouse(a) {
+function onFetchCollects(a) {
     var b = 0;
     a.forEach(function (a) {
-        a.Key = "H" + b++, contributions.push(a), c_house.push(a)
-    }), log("onFetchContributionsHouse()"), endFetch()
+        a.Key = "H" + b++;
+        collects.push(a)//, c_house.push(a)
+    }), log("onFetchCollects()"), endFetch()
 }
-function onFetchPacsHouse(a) {
-    pacsHouse = a;
-    for (var b = 0; b < pacsHouse.length; b++)
-        pacsById["house_" + pacsHouse[b].CMTE_ID] = pacsHouse[b];
-    log("onFetchPacsHouse()"), endFetch()
+function onFetchSeries(a) {
+    serieses = a;
+    for (var b = 0; b < serieses.length; b++)
+        seriesesById[serieses[b].seriesId] = serieses[b];
+    log("onFetchSeries()");
+    endFetch();
 }
 //function onFetchPacsSenate(a) {
 //    pacsSenate = a;
-//    for (var b = 0; b < pacsSenate.length; b++)pacsById["senate_" + pacsSenate[b].CMTE_ID] = pacsSenate[b];
+//    for (var b = 0; b < pacsSenate.length; b++)pacsById["senate_" + pacsSenate[b].seriesId] = pacsSenate[b];
 //    log("onFetchPacsSenate()"), endFetch()
 //}
 function addStream(a, b) {
@@ -115,17 +141,19 @@ function addStream(a, b) {
     c.file = a, c["function"] = b, dataCalls.push(c)
 }
 function startFetch() {
-    numCalls = dataCalls.length, dataCalls.forEach(function (a) {
+    numCalls = dataCalls.length;
+    dataCalls.forEach(function (a) {
         d3.csv(a.file, a["function"])
     })
 }
 function endFetch() {
-    numCalls--, 0 == numCalls && main()
+    numCalls--;
+    0 == numCalls && main();
 }
 function buildChords() {
     var a = [];
     labels = [], chords = [], labelChords = [];
-    for (var b = 0; b < pacs.length; b++) {
+    for (var b = 0; b < serieses.length; b++) {
         var c = {};
         c.index = b, c.label = "null", c.angle = 0, labels.push(c);
         var d = {};
@@ -136,32 +164,50 @@ function buildChords() {
     nameByIndex = [];
     n = 0;
     var e = 0;
-    pacs.forEach(function (a) {
-        a = a.CMTE_ID;
+    serieses.forEach(function (a) {
+        a = a.seriesId;
         a in indexByName || (nameByIndex[n] = a, indexByName[a] = n++)
     });
-    pacs.forEach(function (b) {
-        var c = indexByName[b.CMTE_ID], d = a[c];
+    serieses.forEach(function (b) {
+        var c = indexByName[b.seriesId], d = a[c];
         if (!d) {
             d = a[c] = [];
-            for (var f = -1; ++f < n;)d[f] = 0
+            for (var f = -1; ++f < n;)
+                d[f] = 0;
         }
-        d[indexByName[b.CMTE_ID]] = Number(b.Amount), e += Number(b.Amount)
-    }), chord.matrix(a);
+        d[indexByName[b.seriesId]] = Number(b.Amount);
+        e += Number(b.Amount);
+    });
+    chord.matrix(a);
     chords = chord.chords();
     var f = 90 * Math.PI / 180, b = 0;
     chords.forEach(function (a) {
-        a.label = nameByIndex[b], a.angle = (a.source.startAngle + a.source.endAngle) / 2;
+        a.label = nameByIndex[b];
+        a.angle = (a.source.startAngle + a.source.endAngle) / 2;
         var c = {};
-        c.startAngle = a.source.startAngle, c.endAngle = a.source.endAngle, c.index = a.source.index, c.value = a.source.value, c.currentAngle = a.source.startAngle, c.currentLinkAngle = a.source.startAngle, c.Amount = a.source.value, c.source = a.source, c.relatedLinks = [], chordsById[a.label] = c;
+        c.startAngle = a.source.startAngle;
+        c.endAngle = a.source.endAngle;
+        c.index = a.source.index;
+        c.value = a.source.value;
+        c.currentAngle = a.source.startAngle;
+        c.currentLinkAngle = a.source.startAngle;
+        c.Amount = a.source.value;
+        c.source = a.source;
+        c.relatedLinks = [];
+        chordsById[a.label] = c;
         var d = {};
-        d.startAngle = a.source.startAngle - f / 2, d.endAngle = a.source.endAngle + f / 2, d.angle = a.angle + f, d.label = a.label, labelChords.push(d), b++
+        d.startAngle = a.source.startAngle - f / 2;
+        d.endAngle = a.source.endAngle + f / 2;
+        d.angle = a.angle + f;
+        d.label = a.label;
+        labelChords.push(d);
+        b++;
     }), log("buildChords()")
 }
 function updateLinks(a) {
     function b(a) {
-        var b = {}, c = {}, d = {}, e = {}, f = {}, g = chordsById[a.CMTE_ID], h = nodesById[a.CAND_ID], i = linkRadius, j = (i * Math.cos(g.currentLinkAngle - 1.57079633), i * Math.sin(g.currentLinkAngle - 1.57079633), g.currentLinkAngle - 1.57079633);
-        g.currentLinkAngle = g.currentLinkAngle + Number(a.TRANSACTION_AMT) / g.value * (g.endAngle - g.startAngle);
+        var b = {}, c = {}, d = {}, e = {}, f = {}, g = chordsById[a.seriesId], h = nodesById[a.clusterId], i = linkRadius, j = (i * Math.cos(g.currentLinkAngle - 1.57079633), i * Math.sin(g.currentLinkAngle - 1.57079633), g.currentLinkAngle - 1.57079633);
+        g.currentLinkAngle = g.currentLinkAngle + Number(a.collectAmt) / g.value * (g.endAngle - g.startAngle);
         var k = g.currentLinkAngle - 1.57079633;
         return c.x = i * Math.cos(j), c.y = i * Math.sin(j), b.x = h.x - (chordsTranslate - nodesTranslate), b.y = h.y - (chordsTranslate - nodesTranslate), f.x = i * Math.cos(k), f.y = i * Math.sin(k), d.source = c, d.target = b, e.source = b, e.target = f, [d, e]
     }
@@ -177,14 +223,14 @@ function updateLinks(a) {
         //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
         return demColor;
     }).style("fill-opacity", .2).attr("d", function (a, b) {
-        var c = {}, d = chordsById[a.CMTE_ID];
-        c.startAngle = d.currentAngle, d.currentAngle = d.currentAngle + Number(a.TRANSACTION_AMT) / d.value * (d.endAngle - d.startAngle), c.endAngle = d.currentAngle, c.value = Number(a.TRANSACTION_AMT);
+        var c = {}, d = chordsById[a.seriesId];
+        c.startAngle = d.currentAngle, d.currentAngle = d.currentAngle + Number(a.collectAmt) / d.value * (d.endAngle - d.startAngle), c.endAngle = d.currentAngle, c.value = Number(a.collectAmt);
         var e = d3.svg.arc(a, b).innerRadius(linkRadius).outerRadius(innerRadius);
-        return totalContributions += c.value, total.text(formatCurrency(totalContributions)), e(c, b)
+        return totalcollects += c.value, total.text(formatCurrency(totalcollects)), e(c, b)
     }).on("mouseover", function (a) {
-        node_onMouseOver(a, "CONTRIBUTION")
+        node_onMouseOver(a, "COLLECT")
     }).on("mouseout", function (a) {
-        node_onMouseOut(a, "CONTRIBUTION")
+        node_onMouseOut(a, "COLLECT")
     }), c.append("path").attr("class", "link").attr("id", function (a) {
         return "l_" + a.Key
     }).attr("d", function (a, c) {
@@ -198,24 +244,30 @@ function updateLinks(a) {
         //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
         return demColor;
     }).on("mouseover", function (a) {
-        node_onMouseOver(a, "CONTRIBUTION")
+        node_onMouseOver(a, "COLLECT")
     }).on("mouseout", function (a) {
-        node_onMouseOut(a, "CONTRIBUTION")
-    }), c.append("g").attr("class", "node").append("circle").style("fill", function (a) {
+        node_onMouseOut(a, "COLLECT")
+    });
+    c.append("g").attr("class", "node").append("circle").attr("id", function (a) {
+        //lianglei 2.25 add for ratioCircle
+        return "r_" + a.clusterId + "_" + a.seriesId;
+    }).style("fill", function (a) {
         //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
         return demColor;
-    }).style("fill-opacity", .2).style("stroke-opacity", 1).attr("r", function (a) {
-        var b = nodesById[a.CAND_ID];
-        b.currentAmount = b.currentAmount - Number(a.TRANSACTION_AMT);
-        var c = (b.Amount - b.currentAmount) / b.Amount;
+    }).style("fill-opacity", 0.2).style("stroke", "#000").style("stroke-opacity", 0).style("stroke-width", 1)//lianglei 2.25 add for ratioCircle
+    .attr("r", function (a) {
+        var b = nodesById[a.clusterId];
+        //b.currentAmount = b.currentAmount - Number(a.collectAmt);
+        //var c = (b.Amount - b.currentAmount) / b.Amount;
+        var c = Number(a.collectAmt) / b.Amount;
         return b.r * c
     }).attr("transform", function (a, b) {
         return "translate(" + a.links[0].target.x + "," + a.links[0].target.y + ")"
     }), linkGroup.exit().remove()
 }
 function updateNodes() {
-    var a = nodesSvg.selectAll("g.node").data(cands, function (a, b) {
-        return a.CAND_ID
+    var a = nodesSvg.selectAll("g.node").data(clusters, function (a, b) {
+        return a.clusterId
     }), b = a.enter().append("g").attr("class", "node").attr("transform", function (a) {
         return "translate(" + a.x + "," + a.y + ")"
     });
@@ -227,22 +279,22 @@ function updateNodes() {
         //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
         return demColor;
     }).style("stroke-opacity", function (a) {
-        return a.depth < 2 ? 0 : .2
+        return a.depth < 2 ? 0 : .6
     }).style("fill", function (a) {
         //return "DEM" == a.PTY ? demColor : "REP" == a.PTY ? repColor : otherColor
         return demColor;
     });
     var c = b.append("g").attr("id", function (a) {
-        return "c_" + a.CAND_ID
+        return "c_" + a.clusterId
     }).style("opacity", 0);
     c.append("circle").attr("r", function (a) {
         return a.r + 2
     }).style("fill-opacity", 0).style("stroke", "#FFF").style("stroke-width", 2.5).style("stroke-opacity", .7), c.append("circle").attr("r", function (a) {
         return a.r
     }).style("fill-opacity", 0).style("stroke", "#000").style("stroke-width", 1.5).style("stroke-opacity", 1).on("mouseover", function (a) {
-        node_onMouseOver(a, "CAND")
+        node_onMouseOver(a, "CLUSTER")
     }).on("mouseout", function (a) {
-        node_onMouseOut(a, "CAND")
+        node_onMouseOut(a, "CLUSTER")
     }), a.exit().remove().transition(500).style("opacity", 0), log("updateBubble()")
 }
 function updateChords() {
@@ -256,11 +308,11 @@ function updateChords() {
     }), b.append("path").style("fill-opacity", 0).style("stroke", "#555").style("stroke-opacity", .4), b.append("text").attr("class", "chord").attr("id", function (a) {
         return "t_" + a.label
     }).on("mouseover", function (a) {
-        node_onMouseOver(a, "PAC")
+        node_onMouseOver(a, "SERIES")
     }).on("mouseout", function (a) {
-        node_onMouseOut(a, "PAC")
+        node_onMouseOut(a, "SERIES")
     }).style("font-size", "0px").style("fill", "#777").append("textPath").text(function (a) {
-        return pacsById[office + "_" + a.label].CMTE_NM
+        return seriesesById[a.label].seriesName
     }).attr("text-anchor", "middle").attr("startOffset", "50%").style("overflow", "visible").attr("xlink:href", function (a, b) {
         return "#labelArc_" + a.label
     }), c.attr("d", function (a, b) {
@@ -271,19 +323,19 @@ function updateChords() {
         return c(a.source, b)
     }), c.exit().remove(), a.exit().remove(), log("updateChords()")
 }
-function trimLabel(a) {
-    return a.length > 25 ? String(a).substr(0, 25) + "..." : a
-}
-function getChordColor(a) {
-    var b = nameByIndex[a];
-    return void 0 == colorByName[b] && (colorByName[b] = fills(a)), colorByName[b]
-}
+//function trimLabel(a) {
+//    return a.length > 25 ? String(a).substr(0, 25) + "..." : a
+//}
+//function getChordColor(a) {
+//    var b = nameByIndex[a];
+//    return void 0 == colorByName[b] && (colorByName[b] = fills(a)), colorByName[b]
+//}
 function main() {
     initialize(), updateNodes(), updateChords(), intervalId = setInterval(onInterval, 1)
 }
 function onInterval() {
-    if (0 == contr.length)clearInterval(intervalId); else {
-        for (var a = 0; counter > a; a++)contr.length > 0 && renderLinks.push(contr.pop());
+    if (0 == coll.length)clearInterval(intervalId); else {
+        for (var a = 0; counter > a; a++)coll.length > 0 && renderLinks.push(coll.pop());
         counter = 30, updateLinks(renderLinks)
     }
 }
@@ -293,9 +345,9 @@ var maxWidth = Math.max(600, Math.min(window.innerWidth, window.innerHeight)),
     bubbleRadius = innerRadius - 50,
     linkRadius = .95 * innerRadius,
     nodesTranslate = outerRadius - innerRadius + (innerRadius - bubbleRadius),
-    chordsTranslate = outerRadius,
-    houseButton = d3.select(document.getElementById("houseButton"));
-    //senateButton = d3.select(document.getElementById("senateButton"));
+    chordsTranslate = outerRadius;
+//houseButton = d3.select(document.getElementById("houseButton"));
+//senateButton = d3.select(document.getElementById("senateButton"));
 
 d3.select(document.getElementById("mainDiv"))
     .style("width", 2 * outerRadius + "px")
@@ -330,7 +382,7 @@ nodesSvg = svg.append("g")
 bubble = d3.layout.pack()
     .sort(null)
     .size([2 * bubbleRadius, 2 * bubbleRadius])
-    .padding(1.5);
+    .padding(3);
 chord = d3.layout.chord().padding(.05).sortSubgroups(d3.descending).sortChords(d3.descending);
 diagonal = d3.svg.diagonal.radial();
 arc = d3.svg.arc().innerRadius(innerRadius).outerRadius(innerRadius + 10);
@@ -343,37 +395,36 @@ header1 = d3.select(document.getElementById("header1"));
 header2 = d3.select(document.getElementById("header2"));
 total = d3.select(document.getElementById("totalDiv"));
 //repColor = "#F80018";
-demColor = "#0543bc";
-otherColor = "#FFa400";
+demColor = "#0549bc";
+//otherColor = "#FFa400";
 fills = d3.scale.ordinal().range(["#00AC6B", "#20815D", "#007046", "#35D699", "#60D6A9"]);
-office = "house";
+//office = "house";
 linkGroup = [];
 cns = [];
-cands = [];
-pacs = [];
-pacsHouse = [];//20 committees
-pacsSentate = [];
-contr = [];
+clusters = [];
+serieses = [];
+//pacsHouse = [];//20 committees
+//pacsSentate = [];
+coll = [];
 h_dems = [];
 //h_reps = [];
-h_others = [];
-house = [];
+//h_others = [];
+//house = [];
 
-s_dems = [];
+//s_dems = [];
 //s_reps = [];
-s_others = [];
+//s_others = [];
 //senate = [];
 total_hDems = 0;
-total_sDems = 0;
+//total_sDems = 0;
 //total_hReps = 0;
 //total_sReps = 0;
-total_hOthers = 0;
-total_sOthers = 0;
-contributions = [];
+//total_hOthers = 0;
+//total_sOthers = 0;
+collects = [];
 //c_senate = [];
-c_house = [];
-pacs = [];
-pacsById = {};
+//c_house = [];
+seriesesById = {};
 chordsById = {};
 nodesById = {};
 chordCount = 20;
@@ -382,12 +433,12 @@ pChords = null;
 nodes = [];
 renderLinks = [];
 colorByName = {};
-totalContributions = 0;
+totalcollects = 0;
 delay = 2;
 
 var formatNumber = d3.format(",.0f");
 formatCurrency = function (a) {
-    return "$" + formatNumber(a)
+    return "Total Users: " + formatNumber(a)
 };
 buf_indexByName = {};
 indexByName = {};
@@ -397,13 +448,18 @@ chords = [];
 
 highlightLink = function (a, b) {
     var c = 1 == b ? .6 : .1, d = d3.select(document.getElementById("l_" + a.Key));
-    d.transition(1 == b ? 150 : 550).style("fill-opacity", c).style("stroke-opacity", c);
+    d.transition(1 == b ? 150 : 550).style("fill-opacity", c).style("stroke-opacity", 0);
     var e = d3.select(document.getElementById("a_" + a.Key));
     e.transition().style("fill-opacity", 1 == b ? c : .2);
-    var f = d3.select(document.getElementById("c_" + a.CAND_ID));
+    var f = d3.select(document.getElementById("c_" + a.clusterId));
     f.transition(1 == b ? 150 : 550).style("opacity", 1 == b ? 1 : 0);
-    var g = d3.select(document.getElementById("t_" + a.CMTE_ID));
-    g.transition(1 == b ? 0 : 550).style("fill", 1 == b ? "#000" : "#777").style("font-size", 1 == b ? Math.round(.035 * innerRadius) + "px" : "0px")
+    //lianglei 2.25 add
+    var ratioCircle = d3.select(document.getElementById("r_" + a.clusterId + "_" + a.seriesId));
+    ratioCircle.transition(1 == b ? 150 : 550).style("stroke-opacity", 1 == b ? 1 : 0);
+    //lianglei 2.25 add
+    var g = d3.select(document.getElementById("t_" + a.seriesId));
+    g.transition(1 == b ? 0 : 550).style("fill", 1 == b ? "#000" : "#777")
+        .style("font-size", 1 == b ? Math.round(.035 * innerRadius) + "px" : "0px")
 };
 //senateButton.on("click", function (a) {
 //    senateButton.attr("class", "selected");
