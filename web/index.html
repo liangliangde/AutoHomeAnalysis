@@ -1,11 +1,5 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: llei
-  Date: 16-2-23
-  Time: 下午3:58
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+
 
 <html>
 <head>
@@ -17,10 +11,18 @@
     <link rel="stylesheet" href="lib/jquery-ui-1.11.4/jquery-ui.min.css">
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <!--<link rel="stylesheet" href="jqueryui/style.css">-->
     <script type="text/javascript" src="lib/d3/d3.js"></script>
+    <script type="text/javascript" src="scripts/KValueSlider.js"></script>
 
 </head>
 <body>
+<p id="slider">
+    <div id="slider-range-min" style="width: 200px;"></div>
+    <label for="amount" style="font-size: 20px">Current K value: </label>
+    <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; font-size: 20px;">
+</p>
+
 <div id="bpg">
     <!--[if IE 6]>
     <div id="bpg-error">
@@ -72,12 +74,6 @@
     <div id="bpg-chartFrame">
     <![endif]-->
 
-    <div id="slider">
-        <div id="slider-range-min" style="width: 200px;"></div>
-        <label for="amount" style="font-size: 20px">Current K value: </label>
-        <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; font-size: 20px;">
-    </div>
-
     <div id="mainDiv">
         <div id="svgDiv"></div>
 
@@ -102,8 +98,8 @@
     </div>
 </div>
 
+
 <script type="text/javascript" src="scripts/political_influence.js"></script>
-<script type="text/javascript" src="scripts/KValueSlider.js"></script>
 
 </body>
 </html>
