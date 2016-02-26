@@ -7,7 +7,15 @@
         <element id="directory" name="classes">
           <element id="module-output" name="AutoHomeAnalysis" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="concurrentlinkedhashmap-lru-1.3.1" />
+          <element id="library" level="project" name="htmlparser1_6" />
+          <element id="library" level="project" name="json" />
+          <element id="library" level="project" name="lib" />
+        </element>
       </element>
+      <element id="library" level="project" name="concurrentlinkedhashmap-lru-1.3.1" />
+      <element id="library" level="project" name="lib" />
     </root>
   </artifact>
 </component>

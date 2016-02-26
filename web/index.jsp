@@ -77,7 +77,7 @@
         <input type="text" id="amount" style="border:0; color:#f6931f; font-weight:bold; font-size: 20px;">
     </div>
     <div id="slider-range-min" style="width: 200px;" align="center"></div>
-    <button onclick="sendSeries2Server()">ok</button>
+    <button onclick="sendSeries2Server(getSliderValue())">ok</button>
 
     <div id="mainDiv">
         <div id="svgDiv"></div>

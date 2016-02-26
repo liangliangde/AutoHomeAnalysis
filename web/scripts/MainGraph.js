@@ -109,7 +109,8 @@ function onFetchCluster(a) {
         h_dems.push(c);
         total_hDems += c.value
     }
-    log("onFetchCluster()"), endFetch()
+    log("onFetchCluster()");
+    endFetch();
 }
 //function onFetchContributionsSenate(a) {
 //    var b = 0;
@@ -122,7 +123,8 @@ function onFetchCollects(a) {
     a.forEach(function (a) {
         a.Key = "H" + b++;
         collects.push(a)//, c_house.push(a)
-    }), log("onFetchCollects()"), endFetch()
+    }), log("onFetchCollects()");
+    endFetch();
 }
 function onFetchSeries(a) {
     serieses = a;
@@ -138,7 +140,8 @@ function onFetchSeries(a) {
 //}
 function addStream(a, b) {
     var c = {};
-    c.file = a, c["function"] = b, dataCalls.push(c)
+    c.file = a, c["function"] = b;
+    dataCalls.push(c);
 }
 function startFetch() {
     numCalls = dataCalls.length;
@@ -334,119 +337,21 @@ function main() {
     initialize(), updateNodes(), updateChords(), intervalId = setInterval(onInterval, 1)
 }
 function onInterval() {
-    if (0 == coll.length)clearInterval(intervalId); else {
-        for (var a = 0; counter > a; a++)coll.length > 0 && renderLinks.push(coll.pop());
-        counter = 30, updateLinks(renderLinks)
+    if (0 == coll.length)
+        clearInterval(intervalId);
+    else {
+        for (var a = 0; counter > a; a++)
+            coll.length > 0 && renderLinks.push(coll.pop());
+        counter = 30;
+        updateLinks(renderLinks);
     }
 }
-var maxWidth = Math.max(600, Math.min(window.innerWidth, window.innerHeight)),
-    outerRadius = maxWidth / 2,
-    innerRadius = .9 * outerRadius,
-    bubbleRadius = innerRadius - 50,
-    linkRadius = .95 * innerRadius,
-    nodesTranslate = outerRadius - innerRadius + (innerRadius - bubbleRadius),
-    chordsTranslate = outerRadius;
-//houseButton = d3.select(document.getElementById("houseButton"));
-//senateButton = d3.select(document.getElementById("senateButton"));
-
-d3.select(document.getElementById("mainDiv"))
-    .style("width", 2 * outerRadius + "px")
-    .style("height", 2 * outerRadius + "px");
-
-d3.select(document.getElementById("bpg")).style("width", 2 * outerRadius + 100 + "px");
-
-var svg = d3.select(document.getElementById("svgDiv"))
-    .style("width", 2 * outerRadius + 200 + "px")
-    .style("height", 2 * outerRadius + 200 + "px")
-    .append("svg")  //add svg after 'svgDiv'
-    .attr("id", "svg")
-    .style("width", 2 * outerRadius + 200 + "px")
-    .style("height", 2 * outerRadius + 200 + "px");
-defs = svg.append("defs")
-    .append("g")
-    .attr("transform", "translate(" + chordsTranslate + "," + chordsTranslate + ")");
-topMargin = .15 * innerRadius;
-chordsSvg = svg.append("g")
-    .attr("class", "chords")
-    .attr("transform", "translate(" + chordsTranslate + "," + (chordsTranslate + topMargin) + ")");
-linksSvg = svg.append("g")
-    .attr("class", "links")
-    .attr("transform", "translate(" + chordsTranslate + "," + (chordsTranslate + topMargin) + ")");
-highlightSvg = svg.append("g")
-    .attr("transform", "translate(" + chordsTranslate + "," + (chordsTranslate + topMargin) + ")")
-    .style("opacity", 0);
-highlightLink = highlightSvg.append("path");
-nodesSvg = svg.append("g")
-    .attr("class", "nodes")
-    .attr("transform", "translate(" + nodesTranslate + "," + (nodesTranslate + topMargin) + ")");
-bubble = d3.layout.pack()
-    .sort(null)
-    .size([2 * bubbleRadius, 2 * bubbleRadius])
-    .padding(3);
-chord = d3.layout.chord().padding(.05).sortSubgroups(d3.descending).sortChords(d3.descending);
-diagonal = d3.svg.diagonal.radial();
-arc = d3.svg.arc().innerRadius(innerRadius).outerRadius(innerRadius + 10);
-diameter = 960;
-format = d3.format(",d");
-color = d3.scale.category20c();
-toolTip = d3.select(document.getElementById("toolTip"));
-header = d3.select(document.getElementById("head"));
-header1 = d3.select(document.getElementById("header1"));
-header2 = d3.select(document.getElementById("header2"));
-total = d3.select(document.getElementById("totalDiv"));
-//repColor = "#F80018";
-demColor = "#0549bc";
-//otherColor = "#FFa400";
-fills = d3.scale.ordinal().range(["#00AC6B", "#20815D", "#007046", "#35D699", "#60D6A9"]);
-//office = "house";
-linkGroup = [];
-cns = [];
-clusters = [];
-serieses = [];
-//pacsHouse = [];//20 committees
-//pacsSentate = [];
-coll = [];
-h_dems = [];
-//h_reps = [];
-//h_others = [];
-//house = [];
-
-//s_dems = [];
-//s_reps = [];
-//s_others = [];
-//senate = [];
-total_hDems = 0;
-//total_sDems = 0;
-//total_hReps = 0;
-//total_sReps = 0;
-//total_hOthers = 0;
-//total_sOthers = 0;
-collects = [];
-//c_senate = [];
-//c_house = [];
-seriesesById = {};
-chordsById = {};
-nodesById = {};
-chordCount = 20;
-pText = null;
-pChords = null;
-nodes = [];
-renderLinks = [];
-colorByName = {};
-totalcollects = 0;
-delay = 2;
-
 var formatNumber = d3.format(",.0f");
 formatCurrency = function (a) {
     return "Total Users: " + formatNumber(a)
 };
-buf_indexByName = {};
-indexByName = {};
-nameByIndex = {};
-labels = [];
-chords = [];
 
-highlightLink = function (a, b) {
+function highlightLink (a, b) {
     var c = 1 == b ? .6 : .1, d = d3.select(document.getElementById("l_" + a.Key));
     d.transition(1 == b ? 150 : 550).style("fill-opacity", c).style("stroke-opacity", 0);
     var e = d3.select(document.getElementById("a_" + a.Key));
@@ -476,6 +381,113 @@ highlightLink = function (a, b) {
 //    clearInterval(intervalId);
 //    main();
 //});
-var dataCalls = [], numCalls = 0;
-fetchData();
-var intervalId, counter = 2, renderLinks = [];
+
+function loadMainGraph(){
+//houseButton = d3.select(document.getElementById("houseButton"));
+//senateButton = d3.select(document.getElementById("senateButton"));
+    d3.select(document.getElementById("mainDiv"))
+        .style("width", 2 * outerRadius + "px")
+        .style("height", 2 * outerRadius + "px");
+
+    d3.select(document.getElementById("bpg")).style("width", 2 * outerRadius + 100 + "px");
+
+    svg = d3.select(document.getElementById("svgDiv"))
+        .style("width", 2 * outerRadius + 200 + "px")
+        .style("height", 2 * outerRadius + 200 + "px")
+        .append("svg")  //add svg after 'svgDiv'
+        .attr("id", "svg")
+        .style("width", 2 * outerRadius + 200 + "px")
+        .style("height", 2 * outerRadius + 200 + "px");
+    defs = svg.append("defs")
+        .append("g")
+        .attr("transform", "translate(" + chordsTranslate + "," + chordsTranslate + ")");
+    topMargin = .15 * innerRadius;
+    chordsSvg = svg.append("g")
+        .attr("class", "chords")
+        .attr("transform", "translate(" + chordsTranslate + "," + (chordsTranslate + topMargin) + ")");
+    linksSvg = svg.append("g")
+        .attr("class", "links")
+        .attr("transform", "translate(" + chordsTranslate + "," + (chordsTranslate + topMargin) + ")");
+    highlightSvg = svg.append("g")
+        .attr("transform", "translate(" + chordsTranslate + "," + (chordsTranslate + topMargin) + ")")
+        .style("opacity", 0);
+    _highlightLink = highlightSvg.append("path");
+    nodesSvg = svg.append("g")
+        .attr("class", "nodes")
+        .attr("transform", "translate(" + nodesTranslate + "," + (nodesTranslate + topMargin) + ")");
+    bubble = d3.layout.pack()
+        .sort(null)
+        .size([2 * bubbleRadius, 2 * bubbleRadius])
+        .padding(3);
+    chord = d3.layout.chord().padding(.05).sortSubgroups(d3.descending).sortChords(d3.descending);
+    diagonal = d3.svg.diagonal.radial();
+    arc = d3.svg.arc().innerRadius(innerRadius).outerRadius(innerRadius + 10);
+    diameter = 960;
+    format = d3.format(",d");
+    color = d3.scale.category20c();
+    toolTip = d3.select(document.getElementById("toolTip"));
+    header = d3.select(document.getElementById("head"));
+    header1 = d3.select(document.getElementById("header1"));
+    header2 = d3.select(document.getElementById("header2"));
+    total = d3.select(document.getElementById("totalDiv"));
+//repColor = "#F80018";
+    demColor = "#0549bc";
+//otherColor = "#FFa400";
+    fills = d3.scale.ordinal().range(["#00AC6B", "#20815D", "#007046", "#35D699", "#60D6A9"]);
+//office = "house";
+    linkGroup = [];
+    cns = [];
+    clusters = [];
+    serieses = [];
+//pacsHouse = [];//20 committees
+//pacsSentate = [];
+    coll = [];
+    h_dems = [];
+//h_reps = [];
+//h_others = [];
+//house = [];
+
+//s_dems = [];
+//s_reps = [];
+//s_others = [];
+//senate = [];
+    total_hDems = 0;
+//total_sDems = 0;
+//total_hReps = 0;
+//total_sReps = 0;
+//total_hOthers = 0;
+//total_sOthers = 0;
+    collects = [];
+//c_senate = [];
+//c_house = [];
+    seriesesById = {};
+    chordsById = {};
+    nodesById = {};
+    chordCount = 20;
+    pText = null;
+    pChords = null;
+    nodes = [];
+    renderLinks = [];
+    colorByName = {};
+    totalcollects = 0;
+    delay = 2;
+    buf_indexByName = {};
+    indexByName = {};
+    nameByIndex = {};
+    labels = [];
+    chords = [];
+    dataCalls = [];
+    numCalls = 0;
+    intervalId = 2;
+    counter = 2;
+    renderLinks = [];
+    fetchData();
+}
+var maxWidth = Math.max(600, Math.min(window.innerWidth, window.innerHeight)),
+    outerRadius = maxWidth / 2,
+    innerRadius = .9 * outerRadius,
+    bubbleRadius = innerRadius - 50,
+    linkRadius = .95 * innerRadius,
+    nodesTranslate = outerRadius - innerRadius + (innerRadius - bubbleRadius),
+    chordsTranslate = outerRadius;
+loadMainGraph();

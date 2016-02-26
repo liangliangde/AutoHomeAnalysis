@@ -14,14 +14,15 @@ import java.util.Map;
 public class Kmeans {
 
     private static final Double INF = 100000000.0;
+    private static final boolean SHOWPROCESS = false;
 
-    public static void main(String args[]) throws IOException {
-        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
-        int centerNum = 5;
-        Map<String, int[]> userSeriesIdMap = QueryFromNeo4j.queryUserBySeriesId(seriesIds);
-        Kmeans(userSeriesIdMap, centerNum, seriesIds.length);
-        System.out.println("user number = " + userSeriesIdMap.keySet().size());
-    }
+//    public static void main(String args[]) throws IOException {
+//        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
+//        int centerNum = 5;
+//        Map<String, int[]> userSeriesIdMap = QueryFromNeo4j.queryUserBySeriesId(seriesIds);
+//        Kmeans(userSeriesIdMap, centerNum, seriesIds.length);
+//        System.out.println("user number = " + userSeriesIdMap.keySet().size());
+//    }
 
     public static List<List<String>> Kmeans(Map<String, int[]> userSeriesIdMap, int centerNum, int degree) {
         List<List<Double>> centerList;
@@ -29,7 +30,7 @@ public class Kmeans {
         List<List<String>> cluster;
         int round = 1;
         do {
-            System.out.println("Round " + round++);
+            if(SHOWPROCESS) System.out.println("Round " + round++);
             centerList = newCenterList == null ? selectInitPoints(userSeriesIdMap, centerNum, degree) : newCenterList;
             cluster = new ArrayList<>();
             //assign center to cluster
@@ -50,7 +51,7 @@ public class Kmeans {
                 }
                 cluster.get(minDisNum).add(userSeriesId.getKey());
             }
-            showCluster(userSeriesIdMap, cluster);
+            if(SHOWPROCESS) showCluster(userSeriesIdMap, cluster);
             newCenterList = calCenter(userSeriesIdMap, cluster, degree);
         } while (!centerList.equals(newCenterList));
         return cluster;
@@ -86,8 +87,8 @@ public class Kmeans {
                 }
                 initPoints.add(firstVec);
                 initPoints.add(secondVec);
-                System.out.print("Initial points: \n" + firstVec.toString() + "\n" + secondVec.toString() + "\n");
                 centerNum -= 2;
+                if(SHOWPROCESS) System.out.print("Initial points: \n" + firstVec.toString() + "\n" + secondVec.toString() + "\n");
             } else {
                 int maxSquareDistance = -1;
                 String maxSquareDistanceSeriesId = "";
@@ -108,11 +109,11 @@ public class Kmeans {
                     inner.add(1.0 * userSeriesIdMap.get(maxSquareDistanceSeriesId)[i]);
                 }
                 initPoints.add(inner);
-                System.out.print(inner.toString() + "\n");
                 centerNum--;
+                if(SHOWPROCESS) System.out.print(inner.toString() + "\n");
             }
         }
-        System.out.println();
+        if(SHOWPROCESS) System.out.println();
         return initPoints;
     }
 
@@ -144,10 +145,8 @@ public class Kmeans {
     }
 
     private static void showCluster(Map<String, int[]> userSeriesIdMap, List<List<String>> cluster) {
-//        clusterInfo.append("clusterId,userNum\n");
         for (int i = 0; i < cluster.size(); i++) {
             System.out.print("Cluster " + i + ": ");
-//            clusterInfo.append(i + "," + cluster.get(i).size()+"\n");
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 System.out.print("(" + cluster.get(i).get(j) + "-" + int2String(userSeriesIdMap.get(cluster.get(i).get(j))) + ") ");
             }
@@ -178,11 +177,13 @@ public class Kmeans {
             }
             centerList.add(inner);
         }
-        System.out.print("Center points: ");
-        for (int i = 0; i < centerList.size(); i++) {
-            System.out.print(centerList.get(i).toString() + " ");
+        if(SHOWPROCESS) {
+            System.out.print("Center points: ");
+            for (int i = 0; i < centerList.size(); i++) {
+                System.out.print(centerList.get(i).toString() + " ");
+            }
+            System.out.println();
         }
-        System.out.println();
         return centerList;
     }
 }

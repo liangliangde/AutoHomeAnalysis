@@ -1,5 +1,5 @@
-function sendSeries2Server() {
-    var queryStr = "seriesIds=633, 639, 874, 66, 792, 364, 530, 2987&k=5";
+function sendSeries2Server(kValue) {
+    var queryStr = "seriesIds=633,639,874,66,792,364,530,2987&k=" + kValue;
     var url = "/kmeansresult?" + queryStr;
     if (window.XMLHttpRequest) {
         req = new XMLHttpRequest();
@@ -12,20 +12,19 @@ function sendSeries2Server() {
     req.send(null);
 }
 
+function getSliderValue(){
+    return $( "#slider-range-min" ).slider( "value" );
+}
+
 function freshMainGraph() {
     if (req.readyState == 4) {
         if (req.status == 200) {
-            var request = req.responseText.split("###");
-            var seriesInfo = request[0];
-            var clusterInfo = request[1];
-            var collectDetailInfo = request[2];
-            alert(request);
-            //var fso = new ActiveXObject("Scripting.FileSystemObject");
-            //var seriesPath = "../data/Series.csv";
-            //if(fso.FileExists(seriesPath))
-            //    fso.DeleteFile(seriesPath);
-            //var fileSeries = fso.createTextFile(seriesPath,true);
-
+            $("#svg").remove();
+            loadMainGraph();
+            //var request = req.responseText.split("###");
+            //var seriesInfo = request[0];
+            //var clusterInfo = request[1];
+            //var collectDetailInfo = request[2];
         }
     }
 }
