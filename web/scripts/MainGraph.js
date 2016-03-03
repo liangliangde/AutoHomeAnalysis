@@ -364,7 +364,7 @@ function highlightLink (a, b) {
     //lianglei 2.25 add
     var g = d3.select(document.getElementById("t_" + a.seriesId));
     g.transition(1 == b ? 0 : 550).style("fill", 1 == b ? "#000" : "#777")
-        .style("font-size", 1 == b ? Math.round(.035 * innerRadius) + "px" : "0px")
+        .style("font-size", 1 == b ? Math.round(.055 * innerRadius) + "px" : "0px")
 };
 //senateButton.on("click", function (a) {
 //    senateButton.attr("class", "selected");

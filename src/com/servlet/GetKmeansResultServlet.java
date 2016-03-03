@@ -24,7 +24,6 @@ public class GetKmeansResultServlet extends HttpServlet {
         resp.setContentType("text/html;charset=UTF-8");
 
         String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
-//        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
         int kValue = Integer.parseInt(req.getParameter("k").toString());
 
         Map<String, int[]> userSeriesIdMap = QueryFromNeo4j.queryUserBySeriesId(seriesIds);

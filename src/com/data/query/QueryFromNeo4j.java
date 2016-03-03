@@ -1,15 +1,17 @@
 package com.data.query;
 
-import com.algorithm.Kmeans;
+import com.algorithm.Kmeans.KmeansFor01Vec;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-import java.math.BigInteger;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.IO.IOProcess.writeFile;
 
 /**
  * Created by llei on 16-2-22.
@@ -18,14 +20,43 @@ public class QueryFromNeo4j {
 
     private static String baseURL = "/home/llei/IdeaProjects/autohome/auto_home.db";
 
-    public static void main(String args[]) {
-        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
-        Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
-        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 10);
-        String seriesInfo = querySeriesById(seriesIds);
-        String clusterInfo = getClusterInfo(cluster);
-        String collectDetailInfo = getCollectDetailInfo(cluster, seriesIds, userSeriesIdMap);
-        System.out.print(clusterInfo);
+    public static void main(String args[]) throws IOException {
+//        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
+//        String[] seriesIds = {"65", "66", "3207", "692", "588", "639", "364", "526", "633", "442"};
+//        Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
+//        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 10);
+//        String seriesInfo = querySeriesById(seriesIds);
+//        Map<String, String> seriesId2NameMap = seriesId2Name(seriesInfo);
+
+//        String clusterInfo = getClusterInfo(cluster);
+//        String collectDetailInfo = getCollectDetailInfo(cluster, seriesIds, userSeriesIdMap);
+//        System.out.print(clusterInfo);
+//        makeLDADoc(userSeriesIdMap, seriesIds, seriesId2NameMap);
+    }
+
+    private static Map<String, String> seriesId2Name(String seriesInfo) {
+        Map<String, String> seriesId2NameMap = new HashMap<>();
+        String[] seriesInfoArr = seriesInfo.split("\n");
+        for (int i = 1; i < seriesInfoArr.length; i++) {
+            String[] series = seriesInfoArr[i].split(",");
+            seriesId2NameMap.put(series[0], series[2]);
+        }
+        return seriesId2NameMap;
+    }
+
+    private static void makeLDADoc(Map<String, int[]> userSeriesIdMap, String[] seriesIds, Map<String, String> seriesId2NameMap) throws IOException {
+        StringBuffer str = new StringBuffer();
+        str.append(userSeriesIdMap.size()).append("\n");
+        for (Map.Entry<String, int[]> entry : userSeriesIdMap.entrySet()) {
+            int[] value = entry.getValue();
+            for (int i = 0; i < value.length; i++) {
+                if (value[i] == 1) {
+                    str.append(seriesId2NameMap.get(seriesIds[i])).append(" ");
+                }
+            }
+            str.append("\n");
+        }
+        writeFile("LDAinput.txt", str.toString());
     }
 
 
@@ -45,7 +76,7 @@ public class QueryFromNeo4j {
                 }
             }
             for (int k = 0; k < seriesIds.length; k++) {
-                if(collectAmt[k]>0) {
+                if (collectAmt[k] > 0) {
                     detail.append(seriesIds[k] + "," + collectAmt[k] + "," + i + "\n");
                 }
             }
@@ -63,7 +94,7 @@ public class QueryFromNeo4j {
     }
 
     public static List<List<String>> queryUserClusters(Map<String, int[]> userSeriesIdMap, String[] seriesIds, int clusterNum) {
-        return Kmeans.Kmeans(userSeriesIdMap, clusterNum, seriesIds.length);
+        return KmeansFor01Vec.Kmeans(userSeriesIdMap, clusterNum, seriesIds.length);
     }
 
     public static String querySeriesById(String[] seriesIds) {
@@ -71,8 +102,8 @@ public class QueryFromNeo4j {
         seriesInfo.append("seriesId,Amount,seriesName\n");
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
         try (Transaction ignored = db.beginTx();
-             Result result = db.execute("MATCH (s:Series)<-[r:Like]-(u:User) with s,count(u) as users  ORDER BY users DESC WHERE s.seriesId in "
-                     + array2String(seriesIds) + " RETURN s.seriesId + ',' + users + ',' + s.seriesName")) {
+             Result result = db.execute("MATCH (s:Series)<-[r:Like]-(u:User) with s,count(u) as userNum  ORDER BY users DESC WHERE s.seriesId in "
+                     + array2String(seriesIds) + " RETURN s.seriesId + ',' + userNum + ',' + s.seriesName")) {
             while (result.hasNext()) {
                 Map<String, Object> row = result.next();
                 for (Map.Entry<String, Object> column : row.entrySet()) {
@@ -82,21 +113,7 @@ public class QueryFromNeo4j {
             }
         }
         db.shutdown();
-//        registerShutdownHook(db);
         return seriesInfo.toString();
-    }
-
-    private static void registerShutdownHook( final GraphDatabaseService graphDb )
-    {
-        // Registers a shutdown hook for the Neo4j instance so that it
-        // shuts down nicely when the VM exits (even if you "Ctrl-C" the
-        // running application).
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                graphDb.shutdown();
-            }
-        });
     }
 
     private static String array2String(String[] arr) {
@@ -139,7 +156,6 @@ public class QueryFromNeo4j {
             }
         }
         db.shutdown();
-//        registerShutdownHook(db);
         return userSeriesIdMap;
     }
 

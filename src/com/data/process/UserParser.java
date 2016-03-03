@@ -14,10 +14,10 @@ import java.util.Set;
  */
 public class UserParser {
     public static void main(String args[]) throws IOException {
-        FileOutputStream outUserInfo = new FileOutputStream("auto_data/user.csv");
-        FileOutputStream outUser_user = new FileOutputStream("auto_data/user_followedBy_user.csv");
-        FileOutputStream outUser_style = new FileOutputStream("auto_data/user_style.csv");
-        FileOutputStream outUser_series = new FileOutputStream("auto_data/user_series.csv");
+        FileOutputStream outUserInfo = new FileOutputStream("user.csv");
+        FileOutputStream outUser_user = new FileOutputStream("user_followedBy_user.csv");
+        FileOutputStream outUser_style = new FileOutputStream("user_style.csv");
+        FileOutputStream outUser_series = new FileOutputStream("user_series.csv");
         File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/user");
         Set<String> seriesOfUserSet;
         File[] files = dist.listFiles();
@@ -40,7 +40,7 @@ public class UserParser {
                     JSONObject infoObject = (JSONObject) infoTokener.nextValue();
                     String username = infoObject.has("用户名") ? infoObject.getString("用户名") : null;
                     String gender = infoObject.has("性别") ? infoObject.getString("性别") : null;
-                    String location = infoObject.has("所在地") ? infoObject.getString("所在地") : null;
+                    String location = infoObject.has("所在地") ? infoObject.getString("所在地").split(" ")[0] : null;
                     String birthday = infoObject.has("生日") ? infoObject.getString("生日") : null;
                     String age_category;
                     if(birthday == null) {
@@ -48,14 +48,16 @@ public class UserParser {
                     }
                     else {
                         int age = 2016 - Integer.parseInt(birthday.substring(0, 4));
-                        if (age < 14) {
-                            age_category = "少年";
+                        if (age < 20) {
+                            age_category = "<20";
                         } else if (age < 30) {
-                            age_category = "青年";
+                            age_category = "20~29";
+                        } else if (age < 40) {
+                            age_category = "30~39";
                         } else if (age < 50) {
-                            age_category = "中年";
+                            age_category = "40~49";
                         } else {
-                            age_category = "老年";
+                            age_category = ">=50";
                         }
                     }
                     String verification = infoObject.getString("手机认证").equals("未认证") ? "false" : "true";

@@ -1,5 +1,5 @@
 function sendSeries2Server(kValue) {
-    var queryStr = "seriesIds=633,639,874,66,792,364,530,2987&k=" + kValue;
+    var queryStr = "seriesIds=65,66,3207,692,588,639,364,526,633,442&k=" + kValue;
     var url = "/kmeansresult?" + queryStr;
     if (window.XMLHttpRequest) {
         req = new XMLHttpRequest();
