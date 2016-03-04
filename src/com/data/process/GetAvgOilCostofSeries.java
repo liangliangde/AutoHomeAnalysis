@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.IO.IOProcess.readFile;
+
 /**
  * Created by llei on 16-3-1.
  */
@@ -69,19 +71,6 @@ public class GetAvgOilCostofSeries {
         }
     }
 
-    private static List<String[]> readFile(String path) throws IOException {
-        File brandFile = new File(path);
-        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(brandFile), "UTF-8");
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        String lineTxt;
-        List<String[]> list = new ArrayList<>();
-        while ((lineTxt = bufferedReader.readLine()) != null) {
-            list.add(lineTxt.split(","));
-        }
-        inputStreamReader.close();
-        bufferedReader.close();
-        return list;
-    }
 
 
 }

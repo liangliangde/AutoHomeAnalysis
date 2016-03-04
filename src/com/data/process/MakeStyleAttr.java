@@ -7,7 +7,7 @@ import java.util.TreeMap;
 /**
  * Created by llei on 16-3-3.
  */
-public class CreateAttrList {
+public class MakeStyleAttr {
     public static void main(String args[]) throws IOException {
         createStyle_Attr();
 //        createAttrList();

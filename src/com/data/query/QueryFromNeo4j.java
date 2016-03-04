@@ -6,7 +6,9 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +24,8 @@ public class QueryFromNeo4j {
 
     public static void main(String args[]) throws IOException {
 //        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
-//        String[] seriesIds = {"65", "66", "3207", "692", "588", "639", "364", "526", "633", "442"};
-//        Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
+        String[] seriesIds = {"65", "66", "3207", "692", "588", "639", "364", "526", "633", "442"};
+        Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
 //        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 10);
 //        String seriesInfo = querySeriesById(seriesIds);
 //        Map<String, String> seriesId2NameMap = seriesId2Name(seriesInfo);
@@ -114,6 +116,55 @@ public class QueryFromNeo4j {
         }
         db.shutdown();
         return seriesInfo.toString();
+    }
+
+    public static List<Map<String, Integer>> querySeriesAttrById(List<List<String>> clusterSeriesIds) {
+        List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
+        GraphDatabaseService db = new GraphDatabaseFactory()
+                .newEmbeddedDatabaseBuilder(baseURL)
+                .newGraphDatabase();
+        Map<String, Integer> totalTermsFreq = new HashMap<>();
+        for (int i = 0; i < clusterSeriesIds.size(); i++) {
+            Map<String, Integer> termsFreq = new HashMap<>();
+            List<String> seriesIds = clusterSeriesIds.get(i);
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (s:Series)-[Is]->(a:SeriesAttr) where s.seriesId in "
+                         + list2String(seriesIds) + " RETURN a.attr")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        if (!termsFreq.containsKey(value)) {
+                            termsFreq.put(value, 1);
+                        } else {
+                            termsFreq.put(value, termsFreq.get(value) + 1);
+                        }
+                        if (!totalTermsFreq.containsKey(value)) {
+                            totalTermsFreq.put(value, 1);
+                        } else {
+                            totalTermsFreq.put(value, totalTermsFreq.get(value) + 1);
+                        }
+                    }
+                }
+            }
+            clusterTermsFreq.add(termsFreq);
+        }
+        clusterTermsFreq.add(totalTermsFreq);
+        db.shutdown();
+        return clusterTermsFreq;
+    }
+
+    private static String list2String(List<String> seriesIds) {
+        StringBuffer str = new StringBuffer();
+        str.append("[");
+        for (int i = 0; i < seriesIds.size(); i++) {
+            str.append("'" + seriesIds.get(i) + "'");
+            if (i < seriesIds.size() - 1) {
+                str.append(',');
+            }
+        }
+        str.append("]");
+        return str.toString();
     }
 
     private static String array2String(String[] arr) {

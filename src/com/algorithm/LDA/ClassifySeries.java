@@ -1,6 +1,7 @@
 package com.algorithm.LDA;
 
 import com.data.process.VariousMap;
+import com.data.query.QueryFromNeo4j;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,22 +17,31 @@ public class ClassifySeries {
         int topicNum = 8;
         List<String> seriesIds = getSeriesIds("ldaresult/series_doc/LDADoc.txt");
         Map<String, Double[]> seriesIdUserMap = getUserVec("ldaresult/series_doc/model-01000.theta", seriesIds);
-        List<List<String>> cluster = assignToTopic(seriesIdUserMap, topicNum);
-        showFinalCluster(cluster);
         System.out.println("user number = " + seriesIdUserMap.keySet().size());
+        List<List<String>> cluster = assignToTopic(seriesIdUserMap, topicNum);
+        List<List<String>> terms = extractTerm(cluster);
+        showFinalCluster(cluster);
+    }
+
+    private static List<List<String>> extractTerm(List<List<String>> clusters) {
+        List<Map<String, Integer>> clusterTermsFreq = QueryFromNeo4j.querySeriesAttrById(clusters);
+        Map<String, Integer> totalTermsFreq = clusterTermsFreq.get(clusterTermsFreq.size() - 1);
+
+
+        return null;
     }
 
     private static List<List<String>> assignToTopic(Map<String, Double[]> seriesIdUserMap, int topicNum) {
         List<List<String>> cluster = new ArrayList<>();
-        for(int i=0;i<topicNum;i++){
+        for (int i = 0; i < topicNum; i++) {
             cluster.add(new ArrayList<>());
         }
-        for (Map.Entry<String, Double[]> entry: seriesIdUserMap.entrySet()) {
+        for (Map.Entry<String, Double[]> entry : seriesIdUserMap.entrySet()) {
             Double[] vec = entry.getValue();
             int maxTopic = 0;
             Double maxPro = 0.0;
-            for(int i=0;i<vec.length;i++){
-                if(vec[i] > maxPro){
+            for (int i = 0; i < vec.length; i++) {
+                if (vec[i] > maxPro) {
                     maxPro = vec[i];
                     maxTopic = i;
                 }
@@ -76,7 +86,7 @@ public class ClassifySeries {
             System.out.print("Cluster " + i + ":====================================================\n");
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 String detail = seriesIdtoDetail.get(cluster.get(i).get(j));
-                if(detail != null)
+                if (detail != null)
                     System.out.print(detail + "\n");
             }
         }
@@ -84,7 +94,7 @@ public class ClassifySeries {
 
     private static Double[] stringArr2Double(String[] strArr) {
         Double[] doubleArr = new Double[strArr.length];
-        for(int i=0;i<strArr.length;i++){
+        for (int i = 0; i < strArr.length; i++) {
             doubleArr[i] = Double.parseDouble(strArr[i]);
         }
         return doubleArr;
