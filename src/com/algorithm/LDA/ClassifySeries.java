@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.algorithm.Kmeans.KmeansForLDAResult.showFinalCluster;
+import static com.data.process.ExtractKeyTerms.extractTerm;
+
 /**
  * Created by llei on 16-3-3.
  */
@@ -17,19 +20,12 @@ public class ClassifySeries {
         int topicNum = 8;
         List<String> seriesIds = getSeriesIds("ldaresult/series_doc/LDADoc.txt");
         Map<String, Double[]> seriesIdUserMap = getUserVec("ldaresult/series_doc/model-01000.theta", seriesIds);
-        System.out.println("user number = " + seriesIdUserMap.keySet().size());
+        System.out.println("series number = " + seriesIdUserMap.keySet().size());
         List<List<String>> cluster = assignToTopic(seriesIdUserMap, topicNum);
         List<List<String>> terms = extractTerm(cluster);
-        showFinalCluster(cluster);
+        showFinalCluster(cluster, terms);
     }
 
-    private static List<List<String>> extractTerm(List<List<String>> clusters) {
-        List<Map<String, Integer>> clusterTermsFreq = QueryFromNeo4j.querySeriesAttrById(clusters);
-        Map<String, Integer> totalTermsFreq = clusterTermsFreq.get(clusterTermsFreq.size() - 1);
-
-
-        return null;
-    }
 
     private static List<List<String>> assignToTopic(Map<String, Double[]> seriesIdUserMap, int topicNum) {
         List<List<String>> cluster = new ArrayList<>();
@@ -80,17 +76,17 @@ public class ClassifySeries {
         return seriesIdUserMap;
     }
 
-    private static void showFinalCluster(List<List<String>> cluster) throws IOException {
-        Map<String, String> seriesIdtoDetail = VariousMap.seriesId2Detail();
-        for (int i = 0; i < cluster.size(); i++) {
-            System.out.print("Cluster " + i + ":====================================================\n");
-            for (int j = 0; j < cluster.get(i).size(); j++) {
-                String detail = seriesIdtoDetail.get(cluster.get(i).get(j));
-                if (detail != null)
-                    System.out.print(detail + "\n");
-            }
-        }
-    }
+//    private static void showFinalCluster(List<List<String>> cluster) throws IOException {
+//        Map<String, String> seriesIdtoDetail = VariousMap.seriesId2Detail();
+//        for (int i = 0; i < cluster.size(); i++) {
+//            System.out.print("Cluster " + i + ":====================================================\n");
+//            for (int j = 0; j < cluster.get(i).size(); j++) {
+//                String detail = seriesIdtoDetail.get(cluster.get(i).get(j));
+//                if (detail != null)
+//                    System.out.print(detail + "\n");
+//            }
+//        }
+//    }
 
     private static Double[] stringArr2Double(String[] strArr) {
         Double[] doubleArr = new Double[strArr.length];

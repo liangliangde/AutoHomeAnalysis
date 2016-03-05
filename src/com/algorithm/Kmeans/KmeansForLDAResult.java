@@ -5,6 +5,8 @@ import com.data.process.VariousMap;
 import java.io.*;
 import java.util.*;
 
+import static com.data.process.ExtractKeyTerms.extractTerm;
+
 /**
  * Created by llei on 15-9-29.
  */
@@ -15,19 +17,25 @@ public class KmeansForLDAResult {
 
     public static void main(String args[]) throws IOException {
         int centerNum = 8;
+        int degree = 8;
         List<String> seriesIds = getSeriesIds("ldaresult/series_doc/LDADoc.txt");
         Map<String, Double[]> seriesIdUserMap = getUserVec("ldaresult/series_doc/model-final.theta", seriesIds);
-        List<List<String>> cluster = Kmeans(seriesIdUserMap, centerNum, 10);
-        showFinalCluster(cluster);
-        System.out.println("user number = " + seriesIdUserMap.keySet().size());
+        System.out.println("series number = " + seriesIdUserMap.keySet().size());
+        List<List<String>> cluster = Kmeans(seriesIdUserMap, centerNum, degree);
+        List<List<String>> terms = extractTerm(cluster);
+        showFinalCluster(cluster, terms);
     }
 
-    private static void showFinalCluster(List<List<String>> cluster) throws IOException {
+    public static void showFinalCluster(List<List<String>> cluster, List<List<String>> terms) throws IOException {
         Map<String,String> seriesIdtoDetail = VariousMap.seriesId2Detail();
         for (int i = 0; i < cluster.size(); i++) {
-            System.out.print("Cluster " + i + ":\n");
+            System.out.print("\nCluster==================================================== " + i + ":\n");
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 System.out.print(seriesIdtoDetail.get(cluster.get(i).get(j))+"\n");
+            }
+            System.out.println("\nKey words:");
+            for(int j=0;j<terms.get(i).size();j++){
+                System.out.print(terms.get(i).get(j));
             }
         }
     }
