@@ -13,12 +13,12 @@ import static com.IO.IOProcess.writeFile;
  */
 public class MakeSeriesAttr {
     public static void main(String args[]) throws IOException {
-        List<String[]> seriesList = readFile("/home/llei/IdeaProjects/autohome/auto_data/series.csv");
-//        String attrName[] = {"车系id", "车系", "价格", "车型", "工信部综合油耗(L/100km)", "品牌"};
-//        String attrList = makeAttrList(seriesList, attrName);
-//        writeFile("/home/llei/IdeaProjects/autohome/auto_data/seriesAttr.csv", attrList);
-        String seriesId_attr_List = makeSeriesId_Attr(seriesList);
-        writeFile("/home/llei/IdeaProjects/autohome/auto_data/seriesId_attr.csv", seriesId_attr_List);
+        List<String[]> seriesList = readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series.csv");
+        String attrName[] = {"车系id", "车系", "价格", "车型", "工信部综合油耗(L/100km)", "品牌"};
+        String attrList = makeAttrList(seriesList, attrName);
+        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/seriesAttr.csv", attrList);
+//        String seriesId_attr_List = makeSeriesId_Attr(seriesList);
+//        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/seriesId_attr.csv", seriesId_attr_List);
     }
 
     private static String makeSeriesId_Attr(List<String[]> seriesList) {
@@ -105,26 +105,27 @@ public class MakeSeriesAttr {
                 attrMap.put("[" + attrName[5] + "]" + attr[5], "");
             }
         }
+        int i=1;
         for (Map.Entry<String, String> entry : attrMap.entrySet()) {
-            attrList.append(entry.getKey() + "\n");
+            attrList.append(i++ + "," + entry.getKey() + "\n");
         }
-        attrList.append("[价格]5万以下\n" +
-                "[价格]5-8万\n" +
-                "[价格]8-10万\n" +
-                "[价格]10-15万\n" +
-                "[价格]15-20万\n" +
-                "[价格]20-25万\n" +
-                "[价格]25-35万\n" +
-                "[价格]35-50万\n" +
-                "[价格]50-70万\n" +
-                "[价格]70-100万\n" +
-                "[价格]100万以上\n" +
-                "[工信部综合油耗(L/100km)]3以下\n" +
-                "[工信部综合油耗(L/100km)]3-6\n" +
-                "[工信部综合油耗(L/100km)]6-9\n" +
-                "[工信部综合油耗(L/100km)]9-12\n" +
-                "[工信部综合油耗(L/100km)]12-15\n" +
-                "[工信部综合油耗(L/100km)]15以上");
+        attrList.append(i++ +",[价格]5万以下\n");
+        attrList.append(i++ +",[价格]5-8万\n");
+        attrList.append(i++ +",[价格]8-10万\n");
+        attrList.append(i++ +",[价格]10-15万\n");
+        attrList.append(i++ +",[价格]15-20万\n");
+        attrList.append(i++ +",[价格]20-25万\n");
+        attrList.append(i++ +",[价格]25-35万\n");
+        attrList.append(i++ +",[价格]35-50万\n");
+        attrList.append(i++ +",[价格]50-70万\n");
+        attrList.append(i++ +",[价格]70-100万\n");
+        attrList.append(i++ +",[价格]100万以上\n");
+        attrList.append(i++ +",[工信部综合油耗(L/100km)]3以下\n");
+        attrList.append(i++ +",[工信部综合油耗(L/100km)]3-6\n");
+        attrList.append(i++ +",[工信部综合油耗(L/100km)]6-9\n");
+        attrList.append(i++ +",[工信部综合油耗(L/100km)]9-12\n");
+        attrList.append(i++ +",[工信部综合油耗(L/100km)]12-15\n");
+        attrList.append(i++ +",[工信部综合油耗(L/100km)]15以上\n");
         return attrList.toString();
     }
 }

@@ -1,5 +1,7 @@
 package com.algorithm.Kmeans;
 
+import com.IO.IOProcess;
+import com.data.process.ShowCluster;
 import com.data.process.VariousMap;
 
 import java.io.*;
@@ -18,26 +20,13 @@ public class KmeansForLDAResult {
     public static void main(String args[]) throws IOException {
         int centerNum = 8;
         int degree = 8;
-        List<String> seriesIds = getSeriesIds("ldaresult/series_doc/LDADoc.txt");
-        Map<String, Double[]> seriesIdUserMap = getUserVec("ldaresult/series_doc/model-final.theta", seriesIds);
+        List<String> seriesIds = getSeriesIds("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/ldaresult/series_doc/LDADoc.txt");
+        Map<String, Double[]> seriesIdUserMap = getUserVec("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/ldaresult/series_doc/model-final.theta", seriesIds);
         System.out.println("series number = " + seriesIdUserMap.keySet().size());
         List<List<String>> cluster = Kmeans(seriesIdUserMap, centerNum, degree);
         List<List<String>> terms = extractTerm(cluster);
-        showFinalCluster(cluster, terms);
-    }
-
-    public static void showFinalCluster(List<List<String>> cluster, List<List<String>> terms) throws IOException {
-        Map<String,String> seriesIdtoDetail = VariousMap.seriesId2Detail();
-        for (int i = 0; i < cluster.size(); i++) {
-            System.out.print("\nCluster==================================================== " + i + ":\n");
-            for (int j = 0; j < cluster.get(i).size(); j++) {
-                System.out.print(seriesIdtoDetail.get(cluster.get(i).get(j))+"\n");
-            }
-            System.out.println("\nKey words:");
-            for(int j=0;j<terms.get(i).size();j++){
-                System.out.print(terms.get(i).get(j));
-            }
-        }
+        String content = ShowCluster.getFinalCluster(cluster, terms);
+        IOProcess.writeFile("src/com/algorithm/clusterresult/lda_kmeans_result", content);
     }
 
     private static Map<String,Double[]> getUserVec(String path, List<String> seriesIds) throws IOException {

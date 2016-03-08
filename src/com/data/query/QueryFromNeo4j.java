@@ -6,7 +6,6 @@ import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import java.util.Map;
 import static com.IO.IOProcess.writeFile;
 
 /**
- * Created by llei on 16-2-22.
+ *    Created by llei on 16-2-22.
  */
 public class QueryFromNeo4j {
 
@@ -118,42 +117,6 @@ public class QueryFromNeo4j {
         return seriesInfo.toString();
     }
 
-    public static List<Map<String, Integer>> querySeriesAttrById(List<List<String>> clusterSeriesIds) {
-        List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
-        GraphDatabaseService db = new GraphDatabaseFactory()
-                .newEmbeddedDatabaseBuilder(baseURL)
-                .newGraphDatabase();
-        Map<String, Integer> totalTermsFreq = new HashMap<>();
-        for (int i = 0; i < clusterSeriesIds.size(); i++) {
-            Map<String, Integer> termsFreq = new HashMap<>();
-            List<String> seriesIds = clusterSeriesIds.get(i);
-            try (Transaction ignored = db.beginTx();
-                 Result result = db.execute("match (s:Series)-[Is]->(a:SeriesAttr) where s.seriesId in "
-                         + list2String(seriesIds) + " RETURN a.attr")) {
-                while (result.hasNext()) {
-                    Map<String, Object> row = result.next();
-                    for (Map.Entry<String, Object> column : row.entrySet()) {
-                        String value = (String) column.getValue();
-                        if (!termsFreq.containsKey(value)) {
-                            termsFreq.put(value, 1);
-                        } else {
-                            termsFreq.put(value, termsFreq.get(value) + 1);
-                        }
-                        if (!totalTermsFreq.containsKey(value)) {
-                            totalTermsFreq.put(value, 1);
-                        } else {
-                            totalTermsFreq.put(value, totalTermsFreq.get(value) + 1);
-                        }
-                    }
-                }
-            }
-            clusterTermsFreq.add(termsFreq);
-        }
-        clusterTermsFreq.add(totalTermsFreq);
-        db.shutdown();
-        return clusterTermsFreq;
-    }
-
     private static String list2String(List<String> seriesIds) {
         StringBuffer str = new StringBuffer();
         str.append("[");
@@ -210,4 +173,167 @@ public class QueryFromNeo4j {
         return userSeriesIdMap;
     }
 
+    public static List<String[]> querySeriesPair(int num) {
+        //query series pairs with more than 'num' common collect users
+        List<String[]> seriesPairs = new ArrayList<>();
+        GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
+        try (Transaction ignored = db.beginTx();
+             Result result = db.execute("match (s1:Series)<-[:Like]-(u:User)-[:Like]->(s2:Series) with s1,s2, count(u) as num " +
+                     "where s1.seriesId > s2.seriesId and num>=" + num + " return s1.seriesId+','+s2.seriesId")) {
+            while (result.hasNext()) {
+                Map<String, Object> row = result.next();
+                for (Map.Entry<String, Object> column : row.entrySet()) {
+                    seriesPairs.add(((String) column.getValue()).split(","));
+                }
+            }
+        }
+        db.shutdown();
+        return seriesPairs;
+    }
+
+    public static List<Map<String, Integer>> querySeriesAttrById(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+        List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
+        Map<String, Integer> totalTermsFreq = new HashMap<>();
+        for (int i = 0; i < clusterSeriesIds.size(); i++) {
+            Map<String, Integer> termsFreq = new HashMap<>();
+            List<String> seriesIds = clusterSeriesIds.get(i);
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (s:Series)-[Is]->(a:SeriesAttr) where s.seriesId in "
+                         + list2String(seriesIds) + " RETURN a.attr")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        if (!termsFreq.containsKey(value)) {
+                            termsFreq.put(value, 1);
+                        } else {
+                            termsFreq.put(value, termsFreq.get(value) + 1);
+                        }
+                        if (!totalTermsFreq.containsKey(value)) {
+                            totalTermsFreq.put(value, 1);
+                        } else {
+                            totalTermsFreq.put(value, totalTermsFreq.get(value) + 1);
+                        }
+                    }
+                }
+            }
+            clusterTermsFreq.add(termsFreq);
+        }
+        clusterTermsFreq.add(totalTermsFreq);
+        return clusterTermsFreq;
+    }
+
+    public static List<Map<String, Integer>> queryUserInfoBySeriesId(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+        List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
+        Map<String, Integer> totalTermsFreq = new HashMap<>();
+        for (int i = 0; i < clusterSeriesIds.size(); i++) {
+            Map<String, Integer> termsFreq = new HashMap<>();
+            List<String> seriesIds = clusterSeriesIds.get(i);
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (s:Series)<-[:Like]-(u:User) where s.seriesId in "
+                         + list2String(seriesIds) + "return '<性别>'+u.gender+',<所在地>'+u.location+',<年龄段>'+u.ageCategory")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        String terms[] = value.split(",");
+                        for (int j = 0; j < terms.length; j++) {
+                            String term = terms[j];
+                            if (term.contains("null") || term.contains("其他") || term.contains("其它"))
+                                continue;
+                            if (!termsFreq.containsKey(term)) {
+                                termsFreq.put(term, 1);
+                            } else {
+                                termsFreq.put(term, termsFreq.get(term) + 1);
+                            }
+                            if (!totalTermsFreq.containsKey(term)) {
+                                totalTermsFreq.put(term, 1);
+                            } else {
+                                totalTermsFreq.put(term, totalTermsFreq.get(term) + 1);
+                            }
+                        }
+                    }
+                }
+            }
+            clusterTermsFreq.add(termsFreq);
+        }
+        clusterTermsFreq.add(totalTermsFreq);
+        return clusterTermsFreq;
+    }
+
+    public static List<Map<String, Integer>> queryKoubeiBySeriesId(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+        List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
+        Map<String, Integer> totalTermsFreq = new HashMap<>();
+        for (int i = 0; i < clusterSeriesIds.size(); i++) {
+            Map<String, Integer> termsFreq = new HashMap<>();
+            List<String> seriesIds = clusterSeriesIds.get(i);
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("MATCH (series:Series)-[r:Has]->(style:Style)<-[:About]-(k:Koubei) where series.seriesId in "
+                         + list2String(seriesIds) + " RETURN k.aim")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        if (value.equals("null"))
+                            continue;
+                        String terms[] = value.split(" ");
+                        for (int j = 0; j < terms.length; j++) {
+                            String term = "[购车目的]" + terms[j];
+                            if (!termsFreq.containsKey(term)) {
+                                termsFreq.put(term, 1);
+                            } else {
+                                termsFreq.put(term, termsFreq.get(term) + 1);
+                            }
+                            if (!totalTermsFreq.containsKey(term)) {
+                                totalTermsFreq.put(term, 1);
+                            } else {
+                                totalTermsFreq.put(term, totalTermsFreq.get(term) + 1);
+                            }
+                        }
+                    }
+                }
+            }
+            clusterTermsFreq.add(termsFreq);
+        }
+        clusterTermsFreq.add(totalTermsFreq);
+        return clusterTermsFreq;
+    }
+
+    public static List<Integer> queryUserNumOfClusters(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+        List<Integer> clusterUserNums = new ArrayList<>();
+        for (int i = 0; i < clusterSeriesIds.size(); i++) {
+            List<String> seriesIds = clusterSeriesIds.get(i);
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("MATCH (s:Series)<-[r:Like]-(u:User) where s.seriesId in "
+                         + list2String(seriesIds) + " return count(distinct u)")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = column.getValue().toString();
+                        clusterUserNums.add(Integer.parseInt(value));
+                    }
+                }
+            }
+        }
+        return clusterUserNums;
+    }
+
+    public static List<Integer> queryKoubeiNumOfClusters(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+        List<Integer> clusterKoubeiNums = new ArrayList<>();
+        for (int i = 0; i < clusterSeriesIds.size(); i++) {
+            List<String> seriesIds = clusterSeriesIds.get(i);
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("MATCH (series:Series)-[r:Has]->(style:Style)<-[:About]-(k:Koubei) where series.seriesId in "
+                         + list2String(seriesIds) + " return count(distinct k)")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = column.getValue().toString();
+                        clusterKoubeiNums.add(Integer.parseInt(value));
+                    }
+                }
+            }
+        }
+        return clusterKoubeiNums;
+    }
 }
