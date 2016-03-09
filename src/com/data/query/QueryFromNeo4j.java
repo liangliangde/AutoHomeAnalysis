@@ -7,32 +7,44 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.IO.IOProcess.writeFile;
 
 /**
- *    Created by llei on 16-2-22.
+ * Created by llei on 16-2-22.
  */
 public class QueryFromNeo4j {
 
     private static String baseURL = "/home/llei/IdeaProjects/autohome/auto_home.db";
 
     public static void main(String args[]) throws IOException {
-//        String[] seriesIds = {"633", "639", "874", "66", "792", "364", "530", "2987"};
-        String[] seriesIds = {"65", "66", "3207", "692", "588", "639", "364", "526", "633", "442"};
-        Map<String, int[]> userSeriesIdMap = queryUserBySeriesId(seriesIds);
-//        List<List<String>> cluster = queryUserClusters(userSeriesIdMap, seriesIds, 10);
-//        String seriesInfo = querySeriesById(seriesIds);
-//        Map<String, String> seriesId2NameMap = seriesId2Name(seriesInfo);
+//        String[] seriesIds = {"633", "639"};
+//        GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
+//        List<String> attrList = QueryFromNeo4j.querySeriesAttrBySeriesIds(seriesIds, db);
+//        List<String> similarSeries = QueryFromNeo4j.querySeriesByAttr(seriesIds, attrList, db);
+//        int[][] comUsersMatrix = queryComUsersOfSimilarSeries(similarSeries, db);
+//        int candNum = 10;
+//        List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
+////        System.out.print(list2String(candSeries));
+//        db.shutdown();
+    }
 
-//        String clusterInfo = getClusterInfo(cluster);
-//        String collectDetailInfo = getCollectDetailInfo(cluster, seriesIds, userSeriesIdMap);
-//        System.out.print(clusterInfo);
-//        makeLDADoc(userSeriesIdMap, seriesIds, seriesId2NameMap);
+
+    public static int querComUsersOf2Series(String s1, String s2, GraphDatabaseService db) {
+        int comUser = 0;
+        try (Transaction ignored = db.beginTx();
+             Result result = db.execute("match (s1:Series{seriesId:'" + s1 + "'})<-[:Like]-(u:User)-[:Like]->(s2:Series{seriesId:'"
+                     + s2 + "'}) return count(distinct u)")) {
+            while (result.hasNext()) {
+                Map<String, Object> row = result.next();
+                for (Map.Entry<String, Object> column : row.entrySet()) {
+                    String record = column.getValue().toString();
+                    comUser = Integer.parseInt(record);
+                }
+            }
+        }
+        return comUser;
     }
 
     private static Map<String, String> seriesId2Name(String seriesInfo) {
@@ -191,7 +203,7 @@ public class QueryFromNeo4j {
         return seriesPairs;
     }
 
-    public static List<Map<String, Integer>> querySeriesAttrById(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+    public static List<Map<String, Integer>> querySeriesAttrByCluster(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
         List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
         Map<String, Integer> totalTermsFreq = new HashMap<>();
         for (int i = 0; i < clusterSeriesIds.size(); i++) {
@@ -223,7 +235,7 @@ public class QueryFromNeo4j {
         return clusterTermsFreq;
     }
 
-    public static List<Map<String, Integer>> queryUserInfoBySeriesId(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+    public static List<Map<String, Integer>> queryUserInfoBySeriesCluster(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
         List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
         Map<String, Integer> totalTermsFreq = new HashMap<>();
         for (int i = 0; i < clusterSeriesIds.size(); i++) {
@@ -261,7 +273,7 @@ public class QueryFromNeo4j {
         return clusterTermsFreq;
     }
 
-    public static List<Map<String, Integer>> queryKoubeiBySeriesId(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
+    public static List<Map<String, Integer>> queryKoubeiBySeriesCluster(List<List<String>> clusterSeriesIds, GraphDatabaseService db) {
         List<Map<String, Integer>> clusterTermsFreq = new ArrayList<>();
         Map<String, Integer> totalTermsFreq = new HashMap<>();
         for (int i = 0; i < clusterSeriesIds.size(); i++) {
@@ -335,5 +347,60 @@ public class QueryFromNeo4j {
             }
         }
         return clusterKoubeiNums;
+    }
+
+    public static List<String> querySeriesAttrBySeriesIds(String[] seriesIds, GraphDatabaseService db) {
+        List<String> attrList = new ArrayList<>();
+        try (Transaction ignored = db.beginTx();
+             Result result = db.execute("match (s:Series)-[Is]->(a:SeriesAttr) where s.seriesId in "
+                     + array2String(seriesIds) + " RETURN a.attr")) {
+            while (result.hasNext()) {
+                Map<String, Object> row = result.next();
+                for (Map.Entry<String, Object> column : row.entrySet()) {
+                    String value = (String) column.getValue();
+                    if (value.contains("品牌"))
+                        continue;
+                    if (!attrList.contains(value))
+                        attrList.add(value);
+                }
+            }
+        }
+        return attrList;
+    }
+
+    public static List<String> querySeriesByAttr(List<String> attrList, GraphDatabaseService db) {
+        List<String> typeList = new ArrayList<>();
+        List<String> priceList = new ArrayList<>();
+        List<String> oilCostList = new ArrayList<>();
+        for (int i = 0; i < attrList.size(); i++) {
+            String attr = attrList.get(i);
+            if (attr.contains("车型")) {
+                typeList.add(attr.replace("[车型]", ""));
+            } else if (attr.contains("价格")) {
+                priceList.add(attr);
+            } else if (attr.contains("工信部")) {
+                oilCostList.add(attr.replace("[工信部综合油耗(L/100km)]", ""));
+            }
+        }
+        List<String> seriesList = new ArrayList<>();
+        String cypher = "match (s:Series)-[:Is]->(a:SeriesAttr) where s.seriesType in " + list2String(typeList);
+        if (priceList.size() > 0) {
+            cypher += " and a.attr in " + list2String(priceList);
+        }
+        if (oilCostList.size() > 0) {
+            cypher += " and s.oilCostRange in " + list2String(oilCostList);
+        }
+        cypher += " RETURN DISTINCT s.seriesId";
+        try (Transaction ignored = db.beginTx();
+             Result result = db.execute(cypher)) {
+            while (result.hasNext()) {
+                Map<String, Object> row = result.next();
+                for (Map.Entry<String, Object> column : row.entrySet()) {
+                    String value = (String) column.getValue();
+                    seriesList.add(value);
+                }
+            }
+        }
+        return seriesList;
     }
 }

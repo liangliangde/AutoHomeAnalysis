@@ -39,7 +39,7 @@ public class ExtractKeyTerms {
             totalUserNums += i;
         }
         List<List<String>> terms = new ArrayList<>();
-        List<Map<String, Integer>> clusterTermsFreqUsers = QueryFromNeo4j.queryUserInfoBySeriesId(clusters, db);
+        List<Map<String, Integer>> clusterTermsFreqUsers = QueryFromNeo4j.queryUserInfoBySeriesCluster(clusters, db);
         Map<String, Integer> totalTermsFreqUsers = clusterTermsFreqUsers.get(clusterTermsFreqUsers.size() - 1);
         for (int i = 0; i < clusterTermsFreqUsers.size() - 1; i++) {
             int userNums = clusterUserNums.get(i);
@@ -78,7 +78,7 @@ public class ExtractKeyTerms {
             totalKoubeiNums += i;
         }
         List<List<String>> terms = new ArrayList<>();
-        List<Map<String, Integer>> clusterTermsFreqKoubei = QueryFromNeo4j.queryKoubeiBySeriesId(clusters, db);
+        List<Map<String, Integer>> clusterTermsFreqKoubei = QueryFromNeo4j.queryKoubeiBySeriesCluster(clusters, db);
         Map<String, Integer> totalTermsFreqKoubei = clusterTermsFreqKoubei.get(clusterTermsFreqKoubei.size() - 1);
         for (int i = 0; i < clusterTermsFreqKoubei.size() - 1; i++) {
             int koubeiNums = clusterKoubeiNums.get(i);
@@ -100,7 +100,7 @@ public class ExtractKeyTerms {
     private static List<List<String>> extractTermOfSeries(List<List<String>> clusters, int totalSeriesSize, GraphDatabaseService db) {
         //extract terms from series attribution
         List<List<String>> terms = new ArrayList<>();
-        List<Map<String, Integer>> clusterTermsFreqSeries = QueryFromNeo4j.querySeriesAttrById(clusters, db);
+        List<Map<String, Integer>> clusterTermsFreqSeries = QueryFromNeo4j.querySeriesAttrByCluster(clusters, db);
         Map<String, Integer> totalTermsFreqSeries = clusterTermsFreqSeries.get(clusterTermsFreqSeries.size() - 1);
         for (int i = 0; i < clusterTermsFreqSeries.size() - 1; i++) {
             int clusterSize = clusters.get(i).size();

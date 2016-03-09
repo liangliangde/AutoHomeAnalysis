@@ -11,4 +11,13 @@
         <servlet-name>KmeansResultServlet</servlet-name>
         <url-pattern>/kmeansresult</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MainGraphDataServlet</servlet-name>
+        <servlet-class>com.servlet.GetMainGraphDataServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MainGraphDataServlet</servlet-name>
+        <url-pattern>/maingraphdata</url-pattern>
+    </servlet-mapping>
 </web-app>

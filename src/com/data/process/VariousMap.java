@@ -144,4 +144,21 @@ public class VariousMap {
         bufferedReader.close();
         return attr2AttrIdMap;
     }
+
+    public static Map<String,String> seriesId2OilAttr() throws IOException {
+        Map<String, String> seriesId2AttrMap = new HashMap<>();
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/seriesId_attr.csv");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            if(lineTxt.contains("工信部")) {
+                int split = lineTxt.indexOf(",");
+                seriesId2AttrMap.put(lineTxt.substring(0, split), lineTxt.substring(split + 1));
+            }
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return seriesId2AttrMap;
+    }
 }
