@@ -38,6 +38,9 @@
             stroke-width: .5px;
         }
 
+        .ui-dialog-title {
+            color: #000000;
+        }
     </style>
 </head>
 <body>
@@ -55,33 +58,95 @@
 <script src="js/jquery.arrayUtilities.min.js"></script><!--<script src="js/bit-array.js"></script>-->
 <script src="js/vendor/jquery.tablesorter.min.js"></script>
 <div class="ui-layout-west">
-
+    <div class="header">Gernes</div>
+    <div class="content" style="height: 80%;">
+        <div>Movies by Genre (incl. overlaps)</div>
+        <ul id="setOfCardinality" class="CardinalityList">
+        </ul>
+        <div>Movies by #Genres</div>
+        <ul id="elementsByDegree" class="DegreeList">
+        </ul>
+    </div>
 </div>
 <div class="ui-layout-east">
     <div class="ui-layout-center">
-
+        <div class="header">Selected Movies</div>
+        <div class="content">
+            <div> <label id="lblSelection"></label> </div>
+            <div id="divSelectedRows"> <label id="lblSelectedRows"></label> </div>
+            <div id="divSelEntities">
+                <table id="tabSelEntities" class="Entities" border="1">
+                </table>
+            </div>
+        </div>
     </div>
     <div class="ui-layout-south">
-
+        <div class="header">Show itemset of Size:</div>
+        <div class="content">
+            <table id="tabItemsets" border="1" class="tablesorter">
+            </table>
+        </div>
     </div>
 </div>
 <div class="ui-layout-south">
-
+    <div class="header">Log</div>
+    <div class="content">
+        <ul id="log" class="log">
+        </ul>
+    </div>
 </div>
 <div id="mainContent">
+    <div class="header">Radial Sets Showing How Genres Overlap</div>
     <div class="content"> <a id="reload" href="#">Reload</a>&nbsp;&nbsp; <a
-            id="clearSel" href="#"><b><font color="#d64741">Clear Selection</font></b></a>
+            id="clearSel" href="#"><b><font color="#d64741">Clear Selection</font></b></a>&nbsp;&nbsp;
+        <a id="openHelp" href="#">How to Select Movies?</a>
+        &nbsp;&nbsp; Color movies by:
+        <select id="schemas">
+        </select>
+        (median)
         <a id="openLegend" href="#">Legend</a> <span class="float-right"> <label>Search:</label>
                     <input id="txtSearch" value="" type="text"> </span>
         <div id="radialset"> <svg></svg> </div>
     </div>
 </div>
 <div id="initDialog">
-
+    <ul class="infoBlock">
+        <li> <label>Files:</label> <span>
+                        <select id="selFiles">
+                            <option value="movies.csv">movies.csv</option>
+                            <option value="imdbMovies.csv">imdbMovies.csv</option>
+                        </select>
+                    </span> </li>
+        <li> <label>Entry Limit:</label> <span> <input id="inpEntryLimit"
+                                                       value="5000"> </span> </li>
+        <li> <label>Logging:</label> <span><input id="chkLog"
+                                                  type="checkbox"></span> </li>
+    </ul>
+</div>
+<div id="diaHelp">
+    <ul class="infoBlock">
+        <li> <label>Clicking a bar:</label><span>selects the movies
+                        aggregated in it</span></li>
+        <li> <label>Clicking an arc:</label><span>selects the movies that
+                        have both genres</span></li>
+        <li> <label>Holding SHIFT:</label><span>adds the new selection to
+                        the existing one</span></li>
+        <li> <label>Holding CTRL:</label><span>intersects the new selection
+                        with the existing one</span></li>
+        <li> <label>Holding ALT:</label><span>subtracts the new selection
+                        from the existing one</span></li>
+    </ul>
+</div>
+<div id="diaLegend">
+    <table id="tabLegend">
+    </table>
 </div>
 <script>
 
     var outerLayout, innerLayout;
+
+
+    var showConsole = (localStorage.getItem("consoleShow") === "true" ? true : false);
 
     var layoutSettings_Outer = {
         name: "outerLayout"
@@ -151,6 +216,7 @@
             , slidable: true   // REFERENCE - cannot slide if spacing_closed = 0
             , initClosed: true
         }
+
         , center: {
             paneSelector: "#mainContent"      // sample: use an ID to select pane instead of a class
             , minWidth: 200
@@ -159,6 +225,7 @@
     };
 
     outerLayout = $("body").layout(layoutSettings_Outer);
+
 
     var westSelector = "body > .ui-layout-west"; // outer-west pane
     var eastSelector = "body > .ui-layout-east"; // outer-east pane

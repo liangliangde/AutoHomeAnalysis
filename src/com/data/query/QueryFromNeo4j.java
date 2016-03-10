@@ -31,7 +31,7 @@ public class QueryFromNeo4j {
     }
 
 
-    public static int querComUsersOf2Series(String s1, String s2, GraphDatabaseService db) {
+    public static int queryComUsersOf2Series(String s1, String s2, GraphDatabaseService db) {
         int comUser = 0;
         try (Transaction ignored = db.beginTx();
              Result result = db.execute("match (s1:Series{seriesId:'" + s1 + "'})<-[:Like]-(u:User)-[:Like]->(s2:Series{seriesId:'"
@@ -142,7 +142,7 @@ public class QueryFromNeo4j {
         return str.toString();
     }
 
-    private static String array2String(String[] arr) {
+    private static String array2String(Object[] arr) {
         StringBuffer str = new StringBuffer();
         str.append("[");
         for (int i = 0; i < arr.length; i++) {
@@ -155,16 +155,16 @@ public class QueryFromNeo4j {
         return str.toString();
     }
 
-    public static Map<String, int[]> queryUserBySeriesId(String[] seriesIds) {
+    public static Map<String, int[]> queryUserBySeriesId(Object[] seriesIds, GraphDatabaseService db) {
         Map<String, int[]> userSeriesIdMap = new HashMap<>();
-        Map<String, Integer> seriesIds2Num = new HashMap<>();
+        Map<Object, Integer> seriesIds2Num = new HashMap<>();
         for (int i = 0; i < seriesIds.length; i++) {
             seriesIds2Num.put(seriesIds[i], i);
         }
 
-        GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
         try (Transaction ignored = db.beginTx();
-             Result result = db.execute("MATCH (u)-[r:Like]->(s:Series) where s.seriesId in " + array2String(seriesIds) + " RETURN s.seriesId + ',' + u.userId")) {
+             Result result = db.execute("MATCH (u)-[r:Like]->(s:Series) where s.seriesId in " + array2String(seriesIds)
+                     + " RETURN s.seriesId + ',' + u.userId + ',' + u.userName + ',' + u.gender + ',' + u.location + ',' + u.birthday + ',' + u.verified")) {
             while (result.hasNext()) {
                 Map<String, Object> row = result.next();
                 for (Map.Entry<String, Object> column : row.entrySet()) {
@@ -181,7 +181,7 @@ public class QueryFromNeo4j {
                 }
             }
         }
-        db.shutdown();
+        System.out.println("Query users of candidate series finished!");
         return userSeriesIdMap;
     }
 
@@ -365,6 +365,7 @@ public class QueryFromNeo4j {
                 }
             }
         }
+        System.out.println("Query series attribution finished!");
         return attrList;
     }
 
@@ -401,6 +402,7 @@ public class QueryFromNeo4j {
                 }
             }
         }
+        System.out.println("Query all matched serieses finished!");
         return seriesList;
     }
 }
