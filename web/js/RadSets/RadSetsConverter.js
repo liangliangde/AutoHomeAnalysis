@@ -39,18 +39,18 @@ var RadSet = (function (window, document, $, undefined) {
     _x.ElementsByDegree = [];
 
 
-    _x.ActiveSchema = "avgRating";
-    _x.Schemas = {
-        "avgRating": { file: "AvgRating.csv", order: "desc" },
-        "releaseDate": { file: "releaseDate.csv", order: "desc" },
-        "watches": { file: "watches.csv", order: "desc" },
-    };
-    _x.Legend = {
-        "avgRating": { file: "AvgRating_TF.csv"},
-        "releaseDate": { file: "releaseDate_TF.csv"},
-        "watches": { file: "watches_TF.csv"},
-    };
-    _x.LegendData = null;
+    //_x.ActiveSchema = "avgRating";
+    //_x.Schemas = {
+    //    "avgRating": { file: "AvgRating.csv", order: "desc" },
+    //    "releaseDate": { file: "releaseDate.csv", order: "desc" },
+    //    "watches": { file: "watches.csv", order: "desc" },
+    //};
+    //_x.Legend = {
+    //    "avgRating": { file: "AvgRating_TF.csv"},
+    //    "releaseDate": { file: "releaseDate_TF.csv"},
+    //    "watches": { file: "watches_TF.csv"},
+    //};
+    //_x.LegendData = null;
 
 
     /* Constructors */

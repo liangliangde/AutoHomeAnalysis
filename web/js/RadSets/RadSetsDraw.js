@@ -244,10 +244,10 @@ var RadSet = (function (window, document, $, undefined) {
                 el.addClass("HighLight");
                 el.find(".InnerMeter").css("width", p);
 
-                //update selected in tooltip
-                var title = el.parent().attr("title");
-                title = title.substring(0, title.indexOf("(")) + "(" + selC.Count + " selected)";
-                el.parent().attr("title", title);
+                ////update selected in tooltip
+                //var title = el.parent().attr("title");
+                //title = title.substring(0, title.indexOf("(")) + "(" + selC.Count + " selected)";
+                //el.parent().attr("title", title);
             }
         }
 
@@ -277,9 +277,9 @@ var RadSet = (function (window, document, $, undefined) {
                 el.find(".InnerMeter").css("width", p);
 
                 //update selected in tooltip
-                var title = el.parent().attr("title");
-                title = title.substring(0, title.indexOf("(")) + "(" + selD.Count + " selected)";
-                el.parent().attr("title", title);
+                //var title = el.parent().attr("title");
+                //title = title.substring(0, title.indexOf("(")) + "(" + selD.Count + " selected)";
+                //el.parent().attr("title", title);
             }
         }
     }
@@ -402,15 +402,14 @@ var RadSet = (function (window, document, $, undefined) {
 
         var donut = d3.layout.pie()
             .sort(function (a, b) { return b.SortOrder < a.SortOrder ? -1 : b.SortOrder > a.SortOrder ? 1 : 0; });
-
-        if (_x.ScaleMode === _x.ScaleModes.Compact) {
-            donut.value(function (d) { return d.MaxCountInHistogram(); });
-        } else if (_x.ScaleMode === _x.ScaleModes.SetSize) {
-            donut.value(function (d) { return d.Count; });
-        } else {
-            donut.value(function (d) { return d.Count; });
-        }
-
+        donut.value(function (d) { return d.Count; });
+        //if (_x.ScaleMode === _x.ScaleModes.Compact) {
+        //    donut.value(function (d) { return d.MaxCountInHistogram(); });
+        //} else if (_x.ScaleMode === _x.ScaleModes.SetSize) {
+        //    donut.value(function (d) { return d.Count; });
+        //} else {
+        //    donut.value(function (d) { return d.Count; });
+        //}
 
         var arc = d3.svg.arc()
             .innerRadius(innerRadius)
@@ -440,7 +439,7 @@ var RadSet = (function (window, document, $, undefined) {
             .attr("width", winWidth - 50)
             .attr("height", winHeight - 50);
 
-        CreateGradients(vis, 5, "#006600", "#00cc00");
+        //CreateGradients(vis, 5, "#006600", "#000066");
 
         var arcs = vis.selectAll("g.arc")
             .data(donut)
@@ -548,8 +547,6 @@ var RadSet = (function (window, document, $, undefined) {
                         var sel = $.extend({}, data);
                         var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
 
-
-
                         if (options.SelectionAlignHistogram === "center") {
                             sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
                             sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
@@ -571,60 +568,60 @@ var RadSet = (function (window, document, $, undefined) {
                 histoDrawObjs.push(data);
             }
 
-            var HistArc = d3.svg.arc()
-                .innerRadius(function (d, i) { return d.InnerRadius; })
-                .outerRadius(function (d, i) { return d.OuterRadius; })
-                .startAngle(function (d, i) { return d.StartAngle; })
-                .endAngle(function (d, i) { return d.EndAngle; });
+            //var HistArc = d3.svg.arc()
+            //    .innerRadius(function (d, i) { return d.InnerRadius; })
+            //    .outerRadius(function (d, i) { return d.OuterRadius; })
+            //    .startAngle(function (d, i) { return d.StartAngle; })
+            //    .endAngle(function (d, i) { return d.EndAngle; });
 
-            var ele = document.getElementById("sector_" + c.Name);
-            var histogramPaths = d3.select(ele)
-                .selectAll("path.Histogram")
-                .data(histoDrawObjs)
-                .enter()
-                .append("path")
-                .on("click", function (d, i) {
-                    _x.Select(d.Name, d.Degree);
-                })
-                .attr("stroke", "black")
-                .attr("stroke-width", "1")
-                .attr("fill", options.HistoColor)
-                .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
-                .attr("d", HistArc);
+            //var ele = document.getElementById("sector_" + c.Name);
+            //var histogramPaths = d3.select(ele)
+            //    .selectAll("path.Histogram")
+            //    .data(histoDrawObjs)
+            //    .enter()
+            //    .append("path")
+            //    .on("click", function (d, i) {
+            //        _x.Select(d.Name, d.Degree);
+            //    })
+            //    .attr("stroke", "black")
+            //    .attr("stroke-width", "1")
+            //    .attr("fill", options.HistoColor)
+            //    .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
+            //    .attr("d", HistArc);
 
-            histogramPaths.append("svg:title")
-                .text(function (d, i) {
-                    return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
-                });
+            //histogramPaths.append("svg:title")
+            //    .text(function (d, i) {
+            //        return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
+            //    });
 
-            if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
-                var selectedPaths = d3.select(ele)
-                    .selectAll("path.HistogramSelection")
-                    .data(histoSelectionDrawObjs)
-                    .enter()
-                    .append("path")
-                    .on("click", function (d, i) {
-                        _x.Select(d.Name, d.Degree);
-                    })
-                    .attr("stroke", "black")
-                    .attr("stroke-width", HistogramSelectionStrokeWidth)
-                    .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
-                    .attr("d", HistArc);
+            //if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
+            //    var selectedPaths = d3.select(ele)
+            //        .selectAll("path.HistogramSelection")
+            //        .data(histoSelectionDrawObjs)
+            //        .enter()
+            //        .append("path")
+            //        .on("click", function (d, i) {
+            //            _x.Select(d.Name, d.Degree);
+            //        })
+            //        .attr("stroke", "black")
+            //        .attr("stroke-width", HistogramSelectionStrokeWidth)
+            //        .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
+            //        .attr("d", HistArc);
+            //
+            //    selectedPaths.append("svg:title")
+            //        .text(function (d, i) {
+            //            return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
+            //        });
+            //}
 
-                selectedPaths.append("svg:title")
-                    .text(function (d, i) {
-                        return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
-                    });
-            }
-
-            if (options.EnableHover) {
-                histogramPaths.on("mouseover", function (d, i) {
-                    d3.select(this).style("fill", options.HoverColor);
-                })
-                    .on("mouseout", function (d, i) {
-                        d3.select(this).style("fill", null);
-                    });
-            }
+            //if (options.EnableHover) {
+            //    histogramPaths.on("mouseover", function (d, i) {
+            //        d3.select(this).style("fill", options.HoverColor);
+            //    })
+            //        .on("mouseout", function (d, i) {
+            //            d3.select(this).style("fill", null);
+            //        });
+            //}
 
         }
 
@@ -804,7 +801,7 @@ var RadSet = (function (window, document, $, undefined) {
                 conArc.Count = connection.Count;
 
 
-                if (_x.CurrentSelection !== null) {
+                if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
                     var selConArc = $.extend({}, conArc);
                     var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
 
@@ -865,7 +862,7 @@ var RadSet = (function (window, document, $, undefined) {
                 return CreateTooltipForConnectionArc(d.Cat1, d.Cat2, d.Count, d.SelCount);
             });
 
-        //Blurs chart if single selection is active
+        ////Blurs chart if single selection is active
         var fillColor = options.HighlightColor;
         if(_x.EntryRelationPreview !== null)
             fillColor = options.BlurredHighlightColor;

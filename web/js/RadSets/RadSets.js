@@ -31,7 +31,7 @@ var RadSet = (function (window, document, $, undefined) {
          @default 5000
          @for Options
          **/
-        EntryLimit: 5000,
+        EntryLimit: 20000,
         /**
          Idicates if the selected entities will be writen in the log
          @property LogSelectionEntries
@@ -95,7 +95,7 @@ var RadSet = (function (window, document, $, undefined) {
          @default ["ReleaseDate", "AvgRating", "Watches", "Animation"]
          @for Options
          */
-        ListOfNonCategories: ["userId","userName","gender","location","birthday","verfied"],
+        ListOfNonCategories: ["userId", "userName", "gender", "location", "birthday", "verfied"],
         /**
          List of Histogram Colors
          @property HistoColors
@@ -158,7 +158,7 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          @default ["Action", "Adventure", "Children", "Fantasy", "Musical", "War", "Comedy", "Romance", "Drama", "Documentary", "Western", "Noir", "Mystery", "Crime", "Horror", "Thriller", "SciFi"]
          */
-        CategoryOrder: ["宝马3系","奥迪A4L","奔驰C级","一汽-大众CC","凯迪拉克ATS-L","蒙迪欧","迈腾","沃尔沃S60L"],
+        CategoryOrder: ["宝马3系", "奥迪A4L", "奔驰C级", "一汽-大众CC", "凯迪拉克ATS-L", "蒙迪欧", "迈腾", "沃尔沃S60L"],
         /**
          Indicates if Entries without Categories are ignored
          @property IgnoreEntriesWithoutCategories
@@ -206,12 +206,12 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          @default "false"
          */
-        SearchCaseSensitiv : false
+        SearchCaseSensitiv: false
     };
 
 
     var StartTime = new Date();
-    _x.ScaleModes = { SetSize: 0, Compact: 1, Equal: 2 };
+    _x.ScaleModes = {SetSize: 0, Compact: 1, Equal: 2};
 
     /**
      Indicates how to scale the Radial Sets view
@@ -232,36 +232,36 @@ var RadSet = (function (window, document, $, undefined) {
         $.extend(_x.options, options);
 
         _x.ReadCSV(_x.options.File);
-        _x.FillSelectedElements(_x.options.TableSelectedEntitiesID, _x.Entries);
+        //_x.FillSelectedElements(_x.options.TableSelectedEntitiesID, _x.Entries);
         _x.ElementsByCardinality = _x.FillCardinality(_x.options.DivSetOfCardinalityID, _x.CatList);
         _x.ElementsByDegree = _x.FillElementsByDegree(_x.options.DivElementsByDegreeID, _x.Entries);
         _x.BindKeyListeners();
         _x.BindSearchTextbox(_x.options.SearchTextBox);
         _x.CreateStyleTag();
-        for (var sch in _x.Schemas) {
-            var file = _x.Schemas[sch].file;
-            var order = _x.Schemas[sch].order;
-            _x.CreateColorSchemaFromCSV(sch, file, order);
-            $('#schemas').append($('<option>', {
-                value: sch,
-                text: sch
-            }));
-        }
-        for (var sch in _x.Legend) {
-            var file = _x.Legend[sch].file;
-            _x.ReadLegendCSV(sch, file);
-        }
+        //for (var sch in _x.Schemas) {
+        //    var file = _x.Schemas[sch].file;
+        //    var order = _x.Schemas[sch].order;
+        //    _x.CreateColorSchemaFromCSV(sch, file, order);
+        //    $('#schemas').append($('<option>', {
+        //        value: sch,
+        //        text: sch
+        //    }));
+        //}
+        //for (var sch in _x.Legend) {
+        //    var file = _x.Legend[sch].file;
+        //    _x.ReadLegendCSV(sch, file);
+        //}
 
-        if (_x.Schemas !== undefined) {
-            $("#schemas").change(function () {
-                var v = $("#schemas").val();
-                RadSet.ActivateSchema(v);
-            });
-        }
+        //if (_x.Schemas !== undefined) {
+        //    $("#schemas").change(function () {
+        //        var v = $("#schemas").val();
+        //        RadSet.ActivateSchema(v);
+        //    });
+        //}
 
-        if (_x.ActiveSchema !== null) {
-            _x.ActivateSchema(_x.ActiveSchema);
-        }
+        //if (_x.ActiveSchema !== null) {
+        //    _x.ActivateSchema(_x.ActiveSchema);
+        //}
 
         _x.Draw();
     };
@@ -298,7 +298,7 @@ var RadSet = (function (window, document, $, undefined) {
         var DegreeList = [];
         for (var i = entries.length - 1; i >= 0; i--) {
             if (DegreeList[entries[i].Degree] === undefined) {
-                DegreeList[entries[i].Degree] = { Degree: entries[i].Degree, Count: 1 };
+                DegreeList[entries[i].Degree] = {Degree: entries[i].Degree, Count: 1};
             } else {
                 DegreeList[entries[i].Degree].Count += 1;
             }
@@ -329,14 +329,14 @@ var RadSet = (function (window, document, $, undefined) {
             for (var c = entry.Cats.length - 1; c >= 0; c--) {
                 var cname = entry.Cats[c];
                 if (catList[cname] === undefined) {
-                    catList[cname] = { Category: cname, Count: 1 };
+                    catList[cname] = {Category: cname, Count: 1};
                 } else {
                     catList[cname].Count += 1;
                 }
                 //add Degree Grouping
                 if (andDegree !== undefined && andDegree === true) {
                     if (catList[cname][entry.Degree] === undefined) {
-                        catList[cname][entry.Degree] = { Degree: entry.Degree, Count: 1 };
+                        catList[cname][entry.Degree] = {Degree: entry.Degree, Count: 1};
                     } else {
                         catList[cname][entry.Degree].Count += 1;
                     }
@@ -355,7 +355,7 @@ var RadSet = (function (window, document, $, undefined) {
      **/
     _x.GetEntriesFromIDs = function (ids) {
         var entries = [];
-        for (var i = ids.length - 1 ; i >= 0 ; i--) {
+        for (var i = ids.length - 1; i >= 0; i--) {
             var id = ids[i];
             var entry = _x.Entries[id];
             entries.push(entry);
@@ -371,13 +371,13 @@ var RadSet = (function (window, document, $, undefined) {
      **/
     _x.GetCategoriesFromNames = function (names) {
         var categories = [];
-        for (var i = 0 ; i < _x.CatList.length ; i++) {
+        for (var i = 0; i < _x.CatList.length; i++) {
             var cat = _x.CatList[i];
 
-            for (var j = 0; j < names.length; j++){
+            for (var j = 0; j < names.length; j++) {
                 var name = names[j];
 
-                if(name.localeCompare(cat.Name) === 0){
+                if (name.localeCompare(cat.Name) === 0) {
                     categories.push(cat);
                 }
             }

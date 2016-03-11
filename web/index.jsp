@@ -71,7 +71,7 @@
 <div id="mainContent">
     <div class="content"> <a id="reload" href="#">Reload</a>&nbsp;&nbsp; <a
             id="clearSel" href="#"><b><font color="#d64741">Clear Selection</font></b></a>
-        <a id="openLegend" href="#">Legend</a> <span class="float-right"> <label>Search:</label>
+        <span class="float-right"> <label>Search:</label>
                     <input id="txtSearch" value="" type="text"> </span>
         <div id="radialset"> <svg></svg> </div>
     </div>

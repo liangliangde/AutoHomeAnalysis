@@ -28,7 +28,7 @@ $(function () {
 
     var options = {
         File: "data/users.csv",
-        EntryLimit: 5000,
+        EntryLimit: 20000,
         TableSelectedEntitiesID: "tabSelEntities",
         DivSetOfCardinalityID: "setOfCardinality",
         DivElementsByDegreeID: "elementsByDegree",
@@ -48,9 +48,9 @@ $(function () {
         title: "Legend"
     });
 
-    $("#openLegend").click(function () {
-        RadSet.ShowLegend();
-    });
+    //$("#openLegend").click(function () {
+    //    RadSet.ShowLegend();
+    //});
 
     $("#reload").click(function () {
         RadSet.Draw();
