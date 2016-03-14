@@ -402,7 +402,8 @@ var RadSet = (function (window, document, $, undefined) {
 
         var donut = d3.layout.pie()
             .sort(function (a, b) { return b.SortOrder < a.SortOrder ? -1 : b.SortOrder > a.SortOrder ? 1 : 0; });
-        donut.value(function (d) { return d.Count; });
+        //donut.value(function (d) { return d.Count; });
+        donut.value(function (d) { return 1; });
         //if (_x.ScaleMode === _x.ScaleModes.Compact) {
         //    donut.value(function (d) { return d.MaxCountInHistogram(); });
         //} else if (_x.ScaleMode === _x.ScaleModes.SetSize) {
@@ -413,7 +414,9 @@ var RadSet = (function (window, document, $, undefined) {
 
         var arc = d3.svg.arc()
             .innerRadius(innerRadius)
-            .outerRadius(outerRadius)
+            .outerRadius(function (d) {
+                return  (r - innerRadius) * (d.data.Count / 2220) + innerRadius;
+            })
             .startAngle(function (d) {
                 var cname = d.data.Name;
                 var x = d.startAngle + whiteSpaceSize;
@@ -567,62 +570,66 @@ var RadSet = (function (window, document, $, undefined) {
 
                 histoDrawObjs.push(data);
             }
+            /**
+             * 矩形图
+             */
+            var HistArc = d3.svg.arc()
+                .innerRadius(function (d, i) { return d.InnerRadius; })
+                .outerRadius(function (d, i) { return d.OuterRadius; })
+                .startAngle(function (d, i) { return d.StartAngle; })
+                .endAngle(function (d, i) { return d.EndAngle; });
 
-            //var HistArc = d3.svg.arc()
-            //    .innerRadius(function (d, i) { return d.InnerRadius; })
-            //    .outerRadius(function (d, i) { return d.OuterRadius; })
-            //    .startAngle(function (d, i) { return d.StartAngle; })
-            //    .endAngle(function (d, i) { return d.EndAngle; });
+            var ele = document.getElementById("sector_" + c.Name);
+            var histogramPaths = d3.select(ele)
+                .selectAll("path.Histogram")
+                .data(histoDrawObjs)
+                .enter()
+                .append("path")
+                .on("click", function (d, i) {
+                    _x.Select(d.Name, d.Degree);
+                })
+                .attr("stroke", "black")
+                .attr("stroke-height", "1")
+                .attr("fill", options.HistoColor)
+                .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
+                .attr("d", HistArc);
 
-            //var ele = document.getElementById("sector_" + c.Name);
-            //var histogramPaths = d3.select(ele)
-            //    .selectAll("path.Histogram")
-            //    .data(histoDrawObjs)
-            //    .enter()
-            //    .append("path")
-            //    .on("click", function (d, i) {
-            //        _x.Select(d.Name, d.Degree);
-            //    })
-            //    .attr("stroke", "black")
-            //    .attr("stroke-width", "1")
-            //    .attr("fill", options.HistoColor)
-            //    .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
-            //    .attr("d", HistArc);
+            histogramPaths.append("svg:title")
+                .text(function (d, i) {
+                    return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
+                });
 
-            //histogramPaths.append("svg:title")
-            //    .text(function (d, i) {
-            //        return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
-            //    });
+            if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
+                var selectedPaths = d3.select(ele)
+                    .selectAll("path.HistogramSelection")
+                    .data(histoSelectionDrawObjs)
+                    .enter()
+                    .append("path")
+                    .on("click", function (d, i) {
+                        _x.Select(d.Name, d.Degree);
+                    })
+                    .attr("stroke", "black")
+                    .attr("stroke-height", HistogramSelectionStrokeWidth)
+                    .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
+                    .attr("d", HistArc);
 
-            //if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
-            //    var selectedPaths = d3.select(ele)
-            //        .selectAll("path.HistogramSelection")
-            //        .data(histoSelectionDrawObjs)
-            //        .enter()
-            //        .append("path")
-            //        .on("click", function (d, i) {
-            //            _x.Select(d.Name, d.Degree);
-            //        })
-            //        .attr("stroke", "black")
-            //        .attr("stroke-width", HistogramSelectionStrokeWidth)
-            //        .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
-            //        .attr("d", HistArc);
-            //
-            //    selectedPaths.append("svg:title")
-            //        .text(function (d, i) {
-            //            return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
-            //        });
-            //}
+                selectedPaths.append("svg:title")
+                    .text(function (d, i) {
+                        return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
+                    });
+            }
 
-            //if (options.EnableHover) {
-            //    histogramPaths.on("mouseover", function (d, i) {
-            //        d3.select(this).style("fill", options.HoverColor);
-            //    })
-            //        .on("mouseout", function (d, i) {
-            //            d3.select(this).style("fill", null);
-            //        });
-            //}
-
+            if (options.EnableHover) {
+                histogramPaths.on("mouseover", function (d, i) {
+                    d3.select(this).style("fill", options.HoverColor);
+                })
+                    .on("mouseout", function (d, i) {
+                        d3.select(this).style("fill", null);
+                    });
+            }
+            /***
+             * juxingtu
+             */
         }
 
         if (ADD_TEXTS) {

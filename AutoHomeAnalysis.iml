@@ -27,5 +27,6 @@
     <orderEntry type="library" name="mallet" level="project" />
     <orderEntry type="library" name="mallet-deps" level="project" />
     <orderEntry type="library" name="args4j-2.0.6" level="project" />
+    <orderEntry type="library" name="annotations-api" level="project" />
   </component>
 </module>
