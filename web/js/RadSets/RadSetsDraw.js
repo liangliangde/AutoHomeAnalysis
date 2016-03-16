@@ -499,7 +499,10 @@ var RadSet = (function (window, document, $, undefined) {
         for (var cIdx = _x.CatList.length - 1; cIdx >= 0; cIdx--) {
             var c = _x.CatList[cIdx];
             var histos = c.Histograms;
-
+            var HCount= c.ConnectedCats;
+            //var hCount =0;
+            //for (var hIdx = 0; hIdx < histos.length; hIdx++) {
+            //    var Count = histos[hIdx];}
             if (categoryStartAngles[c.Name] === undefined) {
                 continue;
             }
@@ -507,7 +510,7 @@ var RadSet = (function (window, document, $, undefined) {
             var cStartAngle = categoryStartAngles[c.Name];
             var cEndAngle = categoryEndAngles[c.Name];
             var cAngleDiff = cEndAngle - cStartAngle;
-            var middleAngle = cAngleDiff / 2; //middle of angle
+            var middleAngle = cAngleDiff / _x.CatList.length; //middle of angle
 
             _x.CatList[cIdx].StartAngle = cStartAngle;
             _x.CatList[cIdx].EndAngle = cEndAngle;
@@ -531,42 +534,55 @@ var RadSet = (function (window, document, $, undefined) {
                 var divByCount = cAngleDiff / maxHistoCounterInCat;
                 var diffAngleForHisto = divByCount * h.Count;
                 diffAngleForHisto = diffAngleForHisto / 2;
-
-                var data = {
+                if(hIdx == 0){
+                    var data = {
                     Name: c.Name,
                     Degree: h.Degree,
-                    Count: h.Count,
+                    Count: _x.CatList[cIdx].Count,
                     SelCount: 0,
-                    InnerRadius: (outerRadius - (histoRadSize * h.Degree)),
-                    OuterRadius: (outerRadius - (histoRadSize * (h.Degree - 1))),
-                    StartAngle: (cStartAngle + middleAngle - diffAngleForHisto),
-                    EndAngle: (cStartAngle + middleAngle + diffAngleForHisto)
+                    InnerRadius: (innerRadius),
+                    OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius),
+                    StartAngle: (cStartAngle+ middleAngle * (h.Degree-1) ),
+                    EndAngle: (cStartAngle + middleAngle * h.Degree)
                 };
+                }else{
+                    var data = {
+                        Name: c.Name,
+                        Degree: h.Degree,
+                        Count: HCount[hIdx-1].Count,
+                        SelCount: 0,
+                        InnerRadius: (innerRadius),
+                        OuterRadius: ((((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius)-innerRadius)*h.Count*2/_x.CatList[cIdx].Count+innerRadius),
+                        StartAngle: (cStartAngle+ middleAngle * (h.Degree-1) ),
+                        EndAngle: (cStartAngle + middleAngle * h.Degree)
+                    };
+                }
+
 
                 //calculate Selection of Histogram
-                if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
-                    var selObj = selectionGrouped[c.Name][h.Degree];
-                    if (selObj !== undefined) {
-                        var sel = $.extend({}, data);
-                        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
-
-                        if (options.SelectionAlignHistogram === "center") {
-                            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
-                            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
-                        } else if (options.SelectionAlignHistogram === "left") {
-                            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
-                            sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
-                        } else if (options.SelectionAlignHistogram === "right") {
-                            sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
-                            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
-                        }
-
-                        data.SelCount = selObj.Count;
-                        sel.SelCount = selObj.Count;
-
-                        histoSelectionDrawObjs.push(sel);
-                    }
-                }
+                //if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
+                //    var selObj = selectionGrouped[c.Name][h.Degree];
+                //    if (selObj !== undefined) {
+                //        var sel = $.extend({}, data);
+                //        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
+                //
+                //        if (options.SelectionAlignHistogram === "center") {
+                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
+                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
+                //        } else if (options.SelectionAlignHistogram === "left") {
+                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
+                //            sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
+                //        } else if (options.SelectionAlignHistogram === "right") {
+                //            sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
+                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
+                //        }
+                //
+                //        data.SelCount = selObj.Count;
+                //        sel.SelCount = selObj.Count;
+                //
+                //        histoSelectionDrawObjs.push(sel);
+                //    }
+                //}
 
                 histoDrawObjs.push(data);
             }
@@ -589,7 +605,7 @@ var RadSet = (function (window, document, $, undefined) {
                     _x.Select(d.Name, d.Degree);
                 })
                 .attr("stroke", "black")
-                .attr("stroke-height", "1")
+                .attr("stroke-width", "1")
                 .attr("fill", options.HistoColor)
                 .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
                 .attr("d", HistArc);
