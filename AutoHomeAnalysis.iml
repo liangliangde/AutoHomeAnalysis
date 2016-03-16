@@ -19,7 +19,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Tomcat 9.0.0.M1" level="application_server_libraries" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="json" level="project" />
     <orderEntry type="library" name="htmlparser1_6" level="project" />
@@ -27,6 +26,6 @@
     <orderEntry type="library" name="mallet" level="project" />
     <orderEntry type="library" name="mallet-deps" level="project" />
     <orderEntry type="library" name="args4j-2.0.6" level="project" />
-    <orderEntry type="library" name="annotations-api" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Tomcat 9.0.0.M3" level="application_server_libraries" />
   </component>
 </module>
