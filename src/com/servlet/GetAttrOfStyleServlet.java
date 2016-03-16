@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by llei on 16-3-16.
@@ -21,9 +22,9 @@ public class GetAttrOfStyleServlet extends HttpServlet {
         req.setCharacterEncoding("utf-8");
         resp.setContentType("text/html;charset=UTF-8");
 //        String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
-        String styleId = "633";
+        String styleId = "13884";
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
-//        List<String> styleAttrList = QueryFromNeo4j.queryAttrOfStyle(styleId, db);
+        List<String> styleAttrList = QueryFromNeo4j.queryAttrOfStyle(styleId, db);
         db.shutdown();
     }
 

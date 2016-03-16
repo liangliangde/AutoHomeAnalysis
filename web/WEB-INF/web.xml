@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
     <!--<servlet>-->
-        <!--<servlet-name>KmeansResultServlet</servlet-name>-->
-        <!--<servlet-class>com.servlet.GetKmeansResultServlet</servlet-class>-->
+    <!--<servlet-name>KmeansResultServlet</servlet-name>-->
+    <!--<servlet-class>com.servlet.GetKmeansResultServlet</servlet-class>-->
     <!--</servlet>-->
     <!--<servlet-mapping>-->
-        <!--<servlet-name>KmeansResultServlet</servlet-name>-->
-        <!--<url-pattern>/kmeansresult</url-pattern>-->
+    <!--<servlet-name>KmeansResultServlet</servlet-name>-->
+    <!--<url-pattern>/kmeansresult</url-pattern>-->
     <!--</servlet-mapping>-->
 
     <servlet>
@@ -31,11 +31,20 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>UserInfoOfSeries</servlet-name>
-        <servlet-class>com.servlet.GetDetailSelesOfSeriesServlet</servlet-class>
+        <servlet-name>DetailSaleOfSeriesServlet</servlet-name>
+        <servlet-class>com.servlet.GetDetailSaleOfSeriesServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>UserInfoOfSeries</servlet-name>
-        <url-pattern>/userinfoofseries</url-pattern>
+        <servlet-name>DetailSaleOfSeriesServlet</servlet-name>
+        <url-pattern>/detailsaleofseries</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AttrOfStyleServlet</servlet-name>
+        <servlet-class>com.servlet.GetAttrOfStyleServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AttrOfStyleServlet</servlet-name>
+        <url-pattern>/attrofstyle</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by llei on 16-3-16.
  */
-public class GetDetailSelesOfSeriesServlet extends HttpServlet {
+public class GetDetailSaleOfSeriesServlet extends HttpServlet {
     private static String baseURL = "/home/llei/IdeaProjects/autohome/auto_home.db";
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,7 +25,7 @@ public class GetDetailSelesOfSeriesServlet extends HttpServlet {
 //        String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
         String seriesId = "633";
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
-        List<String> style2SeleList = QueryFromNeo4j.queryDetailSeleOfSeries(seriesId, db);
+        List<String> style2SaleList = QueryFromNeo4j.queryDetailSaleOfSeries(seriesId, db);
         db.shutdown();
     }
 
