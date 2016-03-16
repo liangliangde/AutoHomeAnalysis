@@ -7,7 +7,10 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.IO.IOProcess.writeFile;
 
@@ -404,5 +407,52 @@ public class QueryFromNeo4j {
         }
         System.out.println("Query all matched serieses finished!");
         return seriesList;
+    }
+
+    public static Map<String, List<String>> queryGeneralAttrOfSeries(String[] seriesIds, GraphDatabaseService db) {
+        Map<String, List<String>> generalAttrMap = new HashMap<>();
+        for (int i = 0; i < seriesIds.length; i++) {
+            String seriesId = seriesIds[i];
+            generalAttrMap.put(seriesId, new ArrayList<>());
+            String cypher = "match (se:Series{seriesId:'" + seriesId + "'})-[:Has]->(s:Style)-[r:Is]->(a:StyleAttr)" +
+                    " with a,count(r) as num order by num desc return a.attr+','+num";
+            int styleNum = 0;
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute(cypher)) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        int split = value.indexOf(",");
+                        String attr = value.substring(0, split);
+                        int num = Integer.parseInt(value.substring(split + 1));
+                        styleNum = styleNum == 0 ? num : styleNum;
+                        if (num > styleNum * 0.6) {
+//                            List<String> list = generalAttrMap.get(seriesId);
+//                            list.add(attr);
+//                            generalAttrMap.put(seriesId, list);
+                            generalAttrMap.get(seriesId).add(attr);
+                        }
+                    }
+                }
+            }
+        }
+        return generalAttrMap;
+    }
+
+    public static List<String> queryDetailSeleOfSeries(String seriesId, GraphDatabaseService db) {
+        List<String> style2SeleList = new ArrayList<>();
+        try (Transaction ignored = db.beginTx();
+             Result result = db.execute("match (se:Series{seriesId:'" + seriesId + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
+                     "with s, count(s) as num order by num desc return s.styleId+','+s.styleName+','num")) {
+            while (result.hasNext()) {
+                Map<String, Object> row = result.next();
+                for (Map.Entry<String, Object> column : row.entrySet()) {
+                    String value = (String) column.getValue();
+                    style2SeleList.add(value);
+                }
+            }
+        }
+        return style2SeleList;
     }
 }

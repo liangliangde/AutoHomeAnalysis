@@ -161,4 +161,19 @@ public class VariousMap {
         bufferedReader.close();
         return seriesId2AttrMap;
     }
+
+    public static Map<String,String> chinese2Score() throws IOException{
+        Map<String, String> chinese2ScoreMap = new HashMap<>();
+        File file = new File("auto_data/Chinese2Score");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GB2312");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null){
+            String[] strs = lineTxt.split(" ");
+            chinese2ScoreMap.put(strs[0], strs[1]);
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return chinese2ScoreMap;
+    }
 }

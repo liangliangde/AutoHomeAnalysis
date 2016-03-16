@@ -568,60 +568,60 @@ var RadSet = (function (window, document, $, undefined) {
                 histoDrawObjs.push(data);
             }
 
-            //var HistArc = d3.svg.arc()
-            //    .innerRadius(function (d, i) { return d.InnerRadius; })
-            //    .outerRadius(function (d, i) { return d.OuterRadius; })
-            //    .startAngle(function (d, i) { return d.StartAngle; })
-            //    .endAngle(function (d, i) { return d.EndAngle; });
+            var HistArc = d3.svg.arc()
+                .innerRadius(function (d, i) { return d.InnerRadius; })
+                .outerRadius(function (d, i) { return d.OuterRadius; })
+                .startAngle(function (d, i) { return d.StartAngle; })
+                .endAngle(function (d, i) { return d.EndAngle; });
 
-            //var ele = document.getElementById("sector_" + c.Name);
-            //var histogramPaths = d3.select(ele)
-            //    .selectAll("path.Histogram")
-            //    .data(histoDrawObjs)
-            //    .enter()
-            //    .append("path")
-            //    .on("click", function (d, i) {
-            //        _x.Select(d.Name, d.Degree);
-            //    })
-            //    .attr("stroke", "black")
-            //    .attr("stroke-width", "1")
-            //    .attr("fill", options.HistoColor)
-            //    .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
-            //    .attr("d", HistArc);
+            var ele = document.getElementById("sector_" + c.Name);
+            var histogramPaths = d3.select(ele)
+                .selectAll("path.Histogram")
+                .data(histoDrawObjs)
+                .enter()
+                .append("path")
+                .on("click", function (d, i) {
+                    _x.Select(d.Name, d.Degree);
+                })
+                .attr("stroke", "black")
+                .attr("stroke-width", "1")
+                .attr("fill", options.HistoColor)
+                .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
+                .attr("d", HistArc);
 
-            //histogramPaths.append("svg:title")
-            //    .text(function (d, i) {
-            //        return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
-            //    });
+            histogramPaths.append("svg:title")
+                .text(function (d, i) {
+                    return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
+                });
 
-            //if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
-            //    var selectedPaths = d3.select(ele)
-            //        .selectAll("path.HistogramSelection")
-            //        .data(histoSelectionDrawObjs)
-            //        .enter()
-            //        .append("path")
-            //        .on("click", function (d, i) {
-            //            _x.Select(d.Name, d.Degree);
-            //        })
-            //        .attr("stroke", "black")
-            //        .attr("stroke-width", HistogramSelectionStrokeWidth)
-            //        .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
-            //        .attr("d", HistArc);
-            //
-            //    selectedPaths.append("svg:title")
-            //        .text(function (d, i) {
-            //            return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
-            //        });
-            //}
+            if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
+                var selectedPaths = d3.select(ele)
+                    .selectAll("path.HistogramSelection")
+                    .data(histoSelectionDrawObjs)
+                    .enter()
+                    .append("path")
+                    .on("click", function (d, i) {
+                        _x.Select(d.Name, d.Degree);
+                    })
+                    .attr("stroke", "black")
+                    .attr("stroke-width", HistogramSelectionStrokeWidth)
+                    .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
+                    .attr("d", HistArc);
 
-            //if (options.EnableHover) {
-            //    histogramPaths.on("mouseover", function (d, i) {
-            //        d3.select(this).style("fill", options.HoverColor);
-            //    })
-            //        .on("mouseout", function (d, i) {
-            //            d3.select(this).style("fill", null);
-            //        });
-            //}
+                selectedPaths.append("svg:title")
+                    .text(function (d, i) {
+                        return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
+                    });
+            }
+
+            if (options.EnableHover) {
+                histogramPaths.on("mouseover", function (d, i) {
+                    d3.select(this).style("fill", options.HoverColor);
+                })
+                    .on("mouseout", function (d, i) {
+                        d3.select(this).style("fill", null);
+                    });
+            }
 
         }
 

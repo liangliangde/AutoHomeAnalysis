@@ -20,4 +20,22 @@
         <servlet-name>MainGraphDataServlet</servlet-name>
         <url-pattern>/maingraphdata</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GeneralAttrOfSeries</servlet-name>
+        <servlet-class>com.servlet.GetGeneralAttrOfSeriesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GeneralAttrOfSeries</servlet-name>
+        <url-pattern>/generalattr</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UserInfoOfSeries</servlet-name>
+        <servlet-class>com.servlet.GetDetailSelesOfSeriesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserInfoOfSeries</servlet-name>
+        <url-pattern>/userinfoofseries</url-pattern>
+    </servlet-mapping>
 </web-app>
