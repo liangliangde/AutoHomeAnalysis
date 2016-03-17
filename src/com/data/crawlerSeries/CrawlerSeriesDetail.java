@@ -7,7 +7,7 @@ public class CrawlerSeriesDetail {
     public static void main(String[] args) throws IOException, InterruptedException {
         DetailParser conparser = new DetailParser();
         FileOutputStream outstyle = new FileOutputStream("series.csv", true);
-        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series.csv");
+        File file = new File("auto_data/series.csv");
 
         if (file.isFile() && file.exists()) { // �ж��ļ��Ƿ����
             InputStreamReader read = new InputStreamReader(new FileInputStream(

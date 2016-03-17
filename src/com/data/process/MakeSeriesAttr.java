@@ -13,12 +13,12 @@ import static com.IO.IOProcess.writeFile;
  */
 public class MakeSeriesAttr {
     public static void main(String args[]) throws IOException {
-        List<String[]> seriesList = readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series.csv");
+        List<String[]> seriesList = readFile("auto_data/series.csv");
         String attrName[] = {"车系id", "车系", "价格", "车型", "工信部综合油耗(L/100km)", "品牌"};
         String attrList = makeAttrList(seriesList, attrName);
-        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/seriesAttr.csv", attrList);
+        writeFile("auto_data/seriesAttr.csv", attrList);
 //        String seriesId_attr_List = makeSeriesId_Attr(seriesList);
-//        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/seriesId_attr.csv", seriesId_attr_List);
+//        writeFile("auto_data/seriesId_attr.csv", seriesId_attr_List);
     }
 
     private static String makeSeriesId_Attr(List<String[]> seriesList) {

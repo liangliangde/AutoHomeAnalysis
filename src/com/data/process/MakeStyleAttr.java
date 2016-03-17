@@ -15,10 +15,10 @@ public class MakeStyleAttr {
     }
 
     private static void createStyle_Attr() throws IOException {
-        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/styleId_attr.txt");
+        File file = new File("auto_data/styleId_attr.txt");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        FileOutputStream out = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/styleId_attr_new.csv");
+        FileOutputStream out = new FileOutputStream("auto_data/styleId_attr_new.csv");
         String lineTxt = null;
         while ((lineTxt = bufferedReader.readLine()) != null) {
             String value = lineTxt.substring(lineTxt.indexOf("]") + 1);
@@ -29,10 +29,10 @@ public class MakeStyleAttr {
     }
 
     private static void createAttrList() throws IOException {
-        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/styleId_attr.txt");
+        File file = new File("auto_data/styleId_attr.txt");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        FileOutputStream out = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/Attribution.csv");
+        FileOutputStream out = new FileOutputStream("auto_data/Attribution.csv");
         String lineTxt = null;
         Map<String, String> map = new TreeMap<>();
         while ((lineTxt = bufferedReader.readLine()) != null) {

@@ -19,8 +19,8 @@ import static com.data.process.ExtractKeyTerms.extractTerm;
 public class ClassifySeriesByMaxTopic {
     public static void main(String args[]) throws IOException {
         int topicNum = 8;
-        List<String> seriesIds = getSeriesIds("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/ldaresult/series_doc/LDADoc.txt");
-        Map<String, Double[]> seriesIdUserMap = getUserVec("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/ldaresult/series_doc/model-01000.theta", seriesIds);
+        List<String> seriesIds = getSeriesIds("src/com/algorithm/ldaresult/series_doc/LDADoc.txt");
+        Map<String, Double[]> seriesIdUserMap = getUserVec("src/com/algorithm/ldaresult/series_doc/model-01000.theta", seriesIds);
         System.out.println("series number = " + seriesIdUserMap.keySet().size());
         List<List<String>> cluster = assignToTopic(seriesIdUserMap, topicNum);
         List<List<String>> terms = extractTerm(cluster);

@@ -352,16 +352,12 @@ var RadSet = (function (window, document, $, undefined) {
 
         var newSelection = new Selection(category, degree);
         newSelection.Entries = CreateSelectionEntries(category, degree, entity);
+        //newSelection.styles = queryStyles(category);
 
         UpdateSelection(newSelection, _x.CurrentSelMode);
 
-        if (_x.options.LogSelectionEntries) {
-            _x.log(_x.CurrentSelection.Entries);
-        }
-        _x.log("CurrentSelMode: " + _x.CurrentSelMode);
-        _x.log("selected Category: {0}  Degree: {1}".format(category, degree));
+        ActiveSelection(category);
 
-        ActiveSelection();
     };
 
     /**
@@ -399,7 +395,7 @@ var RadSet = (function (window, document, $, undefined) {
      @private
      @for RadSet
      **/
-    function ActiveSelection() {
+    function ActiveSelection(category) {
         $("#lblSelection").text(_x.CurrentSelection.toString());
 
         _x.ShowCategoryInEntries();
@@ -407,9 +403,8 @@ var RadSet = (function (window, document, $, undefined) {
         _x.Draw();
         _x.ShowCategoryInCardiality();
         _x.ShowCategoryInDegree();
-
         _x.DeactivateSchema();
-
+        _x.ShowStylePie(category);
         _x.log("CurrentSelection drawn");
 
     };

@@ -20,8 +20,8 @@ public class KmeansForLDAResult {
     public static void main(String args[]) throws IOException {
         int centerNum = 8;
         int degree = 8;
-        List<String> seriesIds = getSeriesIds("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/ldaresult/series_doc/LDADoc.txt");
-        Map<String, Double[]> seriesIdUserMap = getUserVec("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/ldaresult/series_doc/model-final.theta", seriesIds);
+        List<String> seriesIds = getSeriesIds("src/com/algorithm/ldaresult/series_doc/LDADoc.txt");
+        Map<String, Double[]> seriesIdUserMap = getUserVec("src/com/algorithm/ldaresult/series_doc/model-final.theta", seriesIds);
         System.out.println("series number = " + seriesIdUserMap.keySet().size());
         List<List<String>> cluster = Kmeans(seriesIdUserMap, centerNum, degree);
         List<List<String>> terms = extractTerm(cluster);
