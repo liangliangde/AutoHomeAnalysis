@@ -219,7 +219,7 @@ var RadSet = (function (window, document, $, undefined) {
      Holds Current Selction Object
      @attribute CurrentSelection
      */
-    _x.CurrentSelection = null;
+     _x.CurrentSelection = null;
 
     /**
      Holds Entry Object for Relation Preview

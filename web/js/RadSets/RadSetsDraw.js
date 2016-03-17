@@ -562,38 +562,50 @@ var RadSet = (function (window, document, $, undefined) {
                         StartAngle: (cStartAngle+ middleAngle * (h.Degree-1) ),
                         EndAngle: (cStartAngle + middleAngle * h.Degree)
                     };
+                    if(_data.length<(_x.CatList.length - 1)*histos.length)
                     _data.push(data);
 
                 }
 
+                /***
+                 * 点击线显示对应的柱状图
+                 */
 
                 //calculate Selection of Histogram
-                //if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
-                //    var selObj = selectionGrouped[c.Name][h.Degree];
-                //    if (selObj !== undefined) {
-                //        var sel = $.extend({}, data);
-                //        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
-                //
-                //        if (options.SelectionAlignHistogram === "center") {
-                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
-                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
-                //        } else if (options.SelectionAlignHistogram === "left") {
-                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
-                //            sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
-                //        } else if (options.SelectionAlignHistogram === "right") {
-                //            sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
-                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
-                //        }
-                //
-                //        data.SelCount = selObj.Count;
-                //        sel.SelCount = selObj.Count;
-                //
-                //        histoSelectionDrawObjs.push(sel);
-                //    }
-                //}
+                if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
+                    var selObj = selectionGrouped[c.Name][h.Degree];
+                    if (selObj !== undefined) {
+                        var sel = $.extend({}, data);
+
+                        //var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
+                        for(var i =0; i<_data.length;i++){
+                            if(c.Name==_data[i].Name&& h.Degree==_data[i].Degree){
+                                sel.StartAngle=_data[i].StartAngle;
+                                sel.EndAngle=_data[i].EndAngle;
+
+                            }
+                        }
+                        //if (options.SelectionAlignHistogram === "center") {
+                        //    sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
+                        //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
+                        //} else if (options.SelectionAlignHistogram === "left") {
+                        //    sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
+                        //    sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
+                        //} else if (options.SelectionAlignHistogram === "right") {
+                        //    sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
+                        //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
+                        //}
+
+                        data.SelCount = selObj.Count;
+                        sel.SelCount = selObj.Count;
+
+                        histoSelectionDrawObjs.push(sel);
+                    }
+                }
 
                 histoDrawObjs.push(data);
             }
+
             /**
              * 矩形图
              */
@@ -655,7 +667,7 @@ var RadSet = (function (window, document, $, undefined) {
              * juxingtu
              */
         }
-
+        console.log(_data);
         if (ADD_TEXTS) {
             arcs.append("svg:text")
                 .attr("transform", function (d) {
@@ -795,9 +807,9 @@ var RadSet = (function (window, document, $, undefined) {
                 for(var i = 0 ; i<_data.length ; i++){
                     if(c.Name == _data[i].Name && connection.Count == _data[i].Count){
 
-                    var th1 = (_data[i].StartAngle+0.02);}//将关联的点连线，根据换分的柱状图的startangle
+                    var th1 = (_data[i].StartAngle+0.04);}//将关联的点连线，根据换分的柱状图的startangle
                     if(c2.Name == _data[i].Name && connection.Count == _data[i].Count){
-                    var th2 = (_data[i].StartAngle +0.02) ;}
+                    var th2 = (_data[i].StartAngle +0.04) ;}
                 }
 
                 var midAngle = (th1 + th2) / 2;
@@ -835,29 +847,39 @@ var RadSet = (function (window, document, $, undefined) {
                 var conArc = new ConnectionArc(x, y, rad1, rad2, startAngle, endAngle, c.Name, c2.Name);
                 conArc.Count = connection.Count;
 
+                /**
+                 * 点击柱状图找到对应的线以及对应的柱状图
+                 */
+                if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
+                    var selConArc = $.extend({}, conArc);
+                    var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
 
-                //if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
-                //    var selConArc = $.extend({}, conArc);
-                //    var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
-                //
-                //    conArc.SelCount = selCount;
-                //    selConArc.SelCount = selCount;
-                //
-                //    var selThickness = 6 * selCount / maxConnectedArcCount;
-                //    selThickness *= options.ConnectionArcMultiply;
-                //
-                //    if (options.SelectionAlignConnectionArc === "center") {
-                //        selConArc.innerRadius = (rad - (selThickness / 2));
-                //        selConArc.outerRadius = (rad + (selThickness / 2));
-                //    } else if (options.SelectionAlignConnectionArc === "left") {
-                //        selConArc.innerRadius = (rad - (thickness / 2));
-                //        selConArc.outerRadius = (rad - (thickness / 2) + selThickness);
-                //    } else if (options.SelectionAlignConnectionArc === "right") {
-                //        selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
-                //        selConArc.outerRadius = (rad + (thickness / 2));
-                //    }
-                //    selectedConnectedArcs.push(selConArc);
-                //}
+                    conArc.SelCount = selCount;
+                    selConArc.SelCount = selCount;
+
+                    var selThickness = 6 * selCount / maxConnectedArcCount;
+                    selThickness *= options.ConnectionArcMultiply;
+
+                    for(var i =0; i<_data.length;i++){
+                        if(c.Name==_data[i].Name&& h.Degree==_data[i].Degree){
+                            selConArc.StartAngle=_data[i].StartAngle;
+                            selConArc.EndAngle=_data[i].EndAngle;
+                            selConArc.innerRadius ==_data[i].innerRadius;
+                            selConArc.outerRadius ==_data[i].outerRadius;
+                        }
+                }
+                    //if (options.SelectionAlignConnectionArc === "center") {
+                    //    selConArc.innerRadius = (rad - (selThickness / 2));
+                    //    selConArc.outerRadius = (rad + (selThickness / 2));
+                    //} else if (options.SelectionAlignConnectionArc === "left") {
+                    //    selConArc.innerRadius = (rad - (thickness / 2));
+                    //    selConArc.outerRadius = (rad - (thickness / 2) + selThickness);
+                    //} else if (options.SelectionAlignConnectionArc === "right") {
+                    //    selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
+                    //    selConArc.outerRadius = (rad + (thickness / 2));
+                    //}
+                    selectedConnectedArcs.push(selConArc);
+                }
 
                 connectedArcs.push(conArc);
             }
