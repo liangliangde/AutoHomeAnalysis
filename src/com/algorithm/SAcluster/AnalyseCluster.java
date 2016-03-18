@@ -16,7 +16,7 @@ import static com.data.process.ShowCluster.getFinalCluster;
  */
 public class AnalyseCluster {
     public static void main(String args[]) throws IOException {
-        List<String[]> list = IOProcess.readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/SAcluster/DBLP84170/cluster(comUsers>=8).txt");
+        List<String[]> list = IOProcess.readFile("src/com/algorithm/SAcluster/DBLP84170/cluster(comUsers>=8).txt");
         int k = 10;
         List<List<String>> cluster = processList(list, k);
         List<List<String>> terms = extractTerm(cluster);

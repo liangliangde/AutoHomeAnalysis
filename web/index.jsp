@@ -9,7 +9,10 @@
 <html class="no-js">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--><!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]--><!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+    <!--[if lt IE 7]>
+    <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--><!--[if IE 7]>
+    <html class="no-js lt-ie9 lt-ie8"> <![endif]--><!--[if IE 8]>
+    <html class="no-js lt-ie9"> <![endif]-->
     <!--[if gt IE 8]><!--><!--<![endif]-->
     <meta name="robots" content="noindex">
     <meta charset="utf-8">
@@ -26,13 +29,11 @@
     <!--<link rel="sytlesheet" type="text/css" href="css/jquery-ui-1.10.2.custom.min.css"/>-->
     <script src="js/vendor/modernizr-2.6.2.min.js"></script>
     <style>
-        body
-        {
+        body {
             font: 15px sans-serif;
         }
 
-        .chord path
-        {
+        .chord path {
             fill-opacity: .67;
             stroke: #000;
             stroke-width: .5px;
@@ -46,34 +47,44 @@
 <p class="chromeframe">
 <![endif]-->
 <!-- Add your site or application content here --><!-- <p>Hello world! This is HTML5 Boilerplate.</p> -->
-<script src="js/jquery.js"></script><!--<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>-->
+<script src="js/jquery.js"></script>
+<!--<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>-->
 <script src="js/jquery-ui-1.10.2.custom.min.js"></script>
 <script src="js/plugins.js"></script>
 <script src="js/main.js"></script>
 <script src="js/jquery.layout-latest.js"></script>
 <script src="js/d3.v3.js"></script>
-<script src="js/jquery.arrayUtilities.min.js"></script><!--<script src="js/bit-array.js"></script>-->
+<script src="js/jquery.arrayUtilities.min.js"></script>
+<!--<script src="js/bit-array.js"></script>-->
 <script src="js/vendor/jquery.tablesorter.min.js"></script>
 <div class="ui-layout-west">
+    <div class="ui-layout-center">
 
+    </div>
+    <div class="ui-layout-south">
+        <div id="pieChart"></div>
+    </div>
 </div>
 <div class="ui-layout-east">
     <div class="ui-layout-center">
 
     </div>
     <div class="ui-layout-south">
-
+        <div class="radarChart"></div>
     </div>
 </div>
 <div class="ui-layout-south">
 
 </div>
 <div id="mainContent">
-    <div class="content"> <a id="reload" href="#">Reload</a>&nbsp;&nbsp; <a
+    <div class="content"><a id="reload" href="#">Reload</a>&nbsp;&nbsp; <a
             id="clearSel" href="#"><b><font color="#d64741">Clear Selection</font></b></a>
         <span class="float-right"> <label>Search:</label>
                     <input id="txtSearch" value="" type="text"> </span>
-        <div id="radialset"> <svg></svg> </div>
+
+        <div id="radialset">
+            <svg></svg>
+        </div>
     </div>
 </div>
 <div id="initDialog">
@@ -108,7 +119,7 @@
             , fxSettings_close: {easing: "easeOutQuint"}
         }
         , west: {
-            size: 250
+            size: 400
             , spacing_closed: 21      // wider space when closed
             , togglerLength_closed: 21      // make toggler 'square' - 21x21
             , togglerAlign_closed: "top"   // align to top of resizer
@@ -121,9 +132,14 @@
             , slidable: true
             //  add 'bounce' option to default 'slide' effect
             , fxSettings_open: {easing: ""}
+            , childOptions: {
+                south: {
+                    size: 400
+                }
+            }
         }
         , east: {
-            size: 350
+            size: 450
             , spacing_closed: 21      // wider space when closed
             , togglerLength_closed: 21      // make toggler 'square' - 21x21
             , togglerAlign_closed: "top"   // align to top of resizer
@@ -140,13 +156,13 @@
             , fxSettings: {easing: ""} // nullify default easing
             , childOptions: {
                 south: {
-                    size: 300
+                    size: 400
                 }
             }
         }
         , south: {
-            maxSize: 200
-            , minSize: 200
+            maxSize: 400
+            , minSize: 400
             , spacing_closed: 0     // HIDE resizer & toggler when 'closed'
             , slidable: true   // REFERENCE - cannot slide if spacing_closed = 0
             , initClosed: true
@@ -179,7 +195,7 @@
     //westLayout = $(divWestCont).layout();
 
     // DEMO HELPER: prevent hyperlinks from reloading page when a 'base.href' is set
-    $("a").each(function() {
+    $("a").each(function () {
         var path = document.location.href;
         if (path.substr(path.length - 1) == "#")
             path = path.substr(0, path.length - 1);
@@ -193,5 +209,7 @@
 <script src="js/RadSets/RadSetsSelector.js"></script>
 <script src="js/RadSets/RadSetsDraw.js"></script>
 <script src="js/RadSet.js"></script>
+<script src="js/radarChart/radarChart.js"></script>
+<script src="js/pie/d3pie.js"></script>
 </body>
 </html>

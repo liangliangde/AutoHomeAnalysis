@@ -115,6 +115,7 @@ var RadSet = (function (window, document, $, undefined) {
             return this.Cats.join(",");
         };
     }
+
     /**
      Category class
      @class Category
@@ -185,7 +186,9 @@ var RadSet = (function (window, document, $, undefined) {
             }
             return max;
         };
+        this.StyleList = [];
     }
+
     /**
      ConnectedCategory class
      @class ConnectedCategory
@@ -207,7 +210,7 @@ var RadSet = (function (window, document, $, undefined) {
          @property Entries
          @type [Int]
          **/
-        this.Entries = [ firstEntryId ]; //list of the connected entry ids
+        this.Entries = [firstEntryId]; //list of the connected entry ids
         /**
          @method GetNumberOfConnected
          @return Int
@@ -222,6 +225,7 @@ var RadSet = (function (window, document, $, undefined) {
             return count;
         };
     }
+
     /**
      Histogram class
      @class Histogram
@@ -250,6 +254,13 @@ var RadSet = (function (window, document, $, undefined) {
         this.Count = 0;
     }
 
+    function Style(Id, Name, Num) {
+        this.Id = Id;
+        this.Name = Name;
+        this.Num = parseInt(Num);
+        this.attr = [];
+    }
+
     /**
      Reads a list of strings an transforms it into Entries and Categories
      @method ConvertCSVtoObjects
@@ -268,7 +279,7 @@ var RadSet = (function (window, document, $, undefined) {
             maxLines = _x.options.EntryLimit;
         }
 
-        for (var i = 0; i < maxLines ; i++) {
+        for (var i = 0; i < maxLines; i++) {
             var line = allTextLines[i];
             var lineParts = line.split(sep);
             var e = null;
@@ -426,6 +437,54 @@ var RadSet = (function (window, document, $, undefined) {
         });
     };
 
+    _x.QueryStyle = function QueryStyle(catList) {
+        var queryStr = "seriesNames=";
+        for (var i = 0; i < catList.length; i++) {
+            queryStr += catList[i].Name;
+            if (i < catList.length - 1) {
+                queryStr += ",";
+            }
+        }
+        var url = "detailsaleofseries?" + queryStr;
+        if (window.XMLHttpRequest) {
+            req = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            req = new ActiveXObject("Microsoft.XMLHttp");
+        }
+        req.open("POST", url, false);
+        req.onreadystatechange = FillStyleOfCategory;
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        req.send(null);
+    };
+
+    function FillStyleOfCategory() {
+        if (req.readyState == 4) {
+            if (req.status == 200) {
+                //alert(req.responseText);
+                var allTextLines = req.responseText.split(/\r\n|\n/);
+                var len = allTextLines.length;
+                for (var i = 0; i < len; i++) {
+                    var lineTxt = allTextLines[i];
+                    if (lineTxt === "") {
+                        continue;
+                    }
+                    var lineParts = lineTxt.split(",");
+                    var seriesName = lineParts[0];
+                    var styleId = lineParts[1]
+                    var styleName = lineParts[2];
+                    var styleNum = lineParts[3];
+                    var style = new Style(styleId, styleName, styleNum);
+                    var catNum = _x.CatList.length;
+                    for (var j = 0; j < catNum; j++) {
+                        if(_x.CatList[j].Name == seriesName){
+                            _x.CatList[j].StyleList.push(style);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     _x.CreateColorSchemaFromCSV = function (name, filename, order) {
         $.ajax({
             url: filename,
@@ -502,7 +561,7 @@ var RadSet = (function (window, document, $, undefined) {
         var headerIdxAndCatIdx = [];
         var schema = {};
 
-        for (var i = 0; i < maxLines ; i++) {
+        for (var i = 0; i < maxLines; i++) {
             var line = allTextLines[i];
             var lineParts = line.split(sep);
             var e = null;
@@ -535,7 +594,7 @@ var RadSet = (function (window, document, $, undefined) {
         var headerIdxAndCatIdx = [];
         var schema = {};
 
-        for (var i = 0; i < maxLines ; i++) {
+        for (var i = 0; i < maxLines; i++) {
             var line = allTextLines[i];
             var lineParts = line.split(sep);
             var e = null;
@@ -555,7 +614,7 @@ var RadSet = (function (window, document, $, undefined) {
                     if (order === "asc") {
                         schema[cat][x] = t;
                     } else if (order === "desc") {
-                        schema[cat][lineParts.length-x] = t;
+                        schema[cat][lineParts.length - x] = t;
                     }
                 }
             }
@@ -592,7 +651,7 @@ var RadSet = (function (window, document, $, undefined) {
         var headerIdxAndCatIdx = [];
         var data = {};
 
-        for (var i = 0; i < maxLines ; i++) {
+        for (var i = 0; i < maxLines; i++) {
             var line = allTextLines[i];
             var lineParts = line.split(sep);
             var e = null;
@@ -688,7 +747,6 @@ var RadSet = (function (window, document, $, undefined) {
 
         return str;
     }
-
 
 
     return _x;

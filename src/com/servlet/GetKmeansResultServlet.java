@@ -37,9 +37,9 @@ public class GetKmeansResultServlet extends HttpServlet {
 ////        StringBuffer kmeansResult = new StringBuffer();
 ////        kmeansResult.append(seriesInfo).append("###").append(clusterInfo).append("###").append(collectDetailInfo);
 ////        toClient.print(kmeansResult.toString());
-//        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/out/artifacts/AutoHomeAnalysis_war_exploded/data/Series.csv",seriesInfo);
-//        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/out/artifacts/AutoHomeAnalysis_war_exploded/data/CollectAmt.csv",collectDetailInfo);
-//        writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/out/artifacts/AutoHomeAnalysis_war_exploded/data/Cluster.csv",clusterInfo);
+//        writeFile("out/artifacts/AutoHomeAnalysis_war_exploded/data/Series.csv",seriesInfo);
+//        writeFile("out/artifacts/AutoHomeAnalysis_war_exploded/data/CollectAmt.csv",collectDetailInfo);
+//        writeFile("out/artifacts/AutoHomeAnalysis_war_exploded/data/Cluster.csv",clusterInfo);
     }
 
     @Override

@@ -19,11 +19,11 @@ public class GetAvgOilCostofSeries {
     private static Map<String, String> series_oilMap;
 
     public static void main(String args[]) throws IOException {
-        style = readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/style.csv");
-        series = readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series_lackOilcost.csv");
-        series_style = readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series_style.csv");
+        style = readFile("auto_data/style.csv");
+        series = readFile("auto_data/series_lackOilcost.csv");
+        series_style = readFile("auto_data/series_style.csv");
         series_oilMap = new HashMap<>();
-        FileOutputStream seriesOut = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series.csv");
+        FileOutputStream seriesOut = new FileOutputStream("auto_data/series.csv");
         DecimalFormat df = new DecimalFormat("#.00");
         for (int i = 0; i < series_style.size(); ) {
             int curStyleNum = 1;

@@ -22,6 +22,6 @@ public class AddOilCostRangeToSeries {
             String oilCostRange = seriesId2AttrMap.get(seriesId);
             str.append(seriesId).append(",").append(seriesInfo.replace("(L/100km)","")).append(",").append(oilCostRange).append("\n");
         }
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/series2.csv", str.toString());
+        IOProcess.writeFile("auto_data/series2.csv", str.toString());
     }
 }

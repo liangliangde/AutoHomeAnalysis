@@ -29,7 +29,7 @@ public class GetMainGraphDataServlet extends HttpServlet {
         resp.setContentType("text/html;charset=UTF-8");
 
 //        String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
-        String[] seriesIds = {"66", "692"};
+        String[] seriesIds = {"364"};
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
         List<String> attrList = QueryFromNeo4j.querySeriesAttrBySeriesIds(seriesIds, db);
         List<String> similarSeries = QueryFromNeo4j.querySeriesByAttr(attrList, db);
@@ -70,7 +70,7 @@ public class GetMainGraphDataServlet extends HttpServlet {
             }
             str.append("\n");
         }
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/web/data/users.csv", str.toString());
+        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/web/data/users.csv", str.toString());
         System.out.println("Create Users.csv finished!");
     }
 

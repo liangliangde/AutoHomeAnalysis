@@ -233,6 +233,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         _x.ReadCSV(_x.options.File);
         //_x.FillSelectedElements(_x.options.TableSelectedEntitiesID, _x.Entries);
+        _x.QueryStyle(_x.CatList);
         _x.ElementsByCardinality = _x.FillCardinality(_x.options.DivSetOfCardinalityID, _x.CatList);
         _x.ElementsByDegree = _x.FillElementsByDegree(_x.options.DivElementsByDegreeID, _x.Entries);
         _x.BindKeyListeners();

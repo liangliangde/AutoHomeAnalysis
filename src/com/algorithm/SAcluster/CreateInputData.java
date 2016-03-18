@@ -17,7 +17,7 @@ public class CreateInputData {
         Map<String, String> seriesId2NumMap = VariousMap.seriesId2Num();
         Map<String, String> attrName2AttrId = VariousMap.attrName2AttrId();
         Map<String, String> attr2AttrIdMap = VariousMap.attr2AttrId();
-        List<String[]> seriesId_attrList = IOProcess.readFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/auto_data/seriesId_attr.csv");
+        List<String[]> seriesId_attrList = IOProcess.readFile("auto_data/seriesId_attr.csv");
         createDataAttrbute(seriesId2NumMap, attrName2AttrId, attr2AttrIdMap, seriesId_attrList);
         createDataset(seriesId2NumMap, attr2AttrIdMap, seriesId_attrList);
     }
@@ -43,7 +43,7 @@ public class CreateInputData {
             transMatrix[x][y] = transMatrix[y][x] = 1;
         }
         Double[][] probMatrix = createProbMatrix(transMatrix);
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/SAcluster/inputdata/Dataset.txt", createSparseMatrix(probMatrix));
+        IOProcess.writeFile("src/com/algorithm/SAcluster/inputdata/Dataset.txt", createSparseMatrix(probMatrix));
     }
 
     private static String createSparseMatrix(Double[][] probMatrix) {
@@ -89,13 +89,13 @@ public class CreateInputData {
             String attrName = attr.substring(0, attr.indexOf("]") + 1);
             str.append(seriesId2NumMap.get(seriesId)).append("  ").append(attrName2AttrId.get(attrName)).append("  ").append(attr2AttrIdMap.get(attr)).append("\n");
         }
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/SAcluster/inputdata/DataAttribute.txt", str.toString());
+        IOProcess.writeFile("src/com/algorithm/SAcluster/inputdata/DataAttribute.txt", str.toString());
     }
 
     private static void createAttr2AttrIdMap() throws IOException {
         StringBuffer str = new StringBuffer();
         str.append("1,").append("[品牌]\n").append("2,").append("[车型]\n").append("3,").append("[价格]\n").append("4,").append("[工信部综合油耗(L/100km)]\n");
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis/src/com/algorithm/SAcluster/inputdata/attrId_attrName", str.toString());
+        IOProcess.writeFile("src/com/algorithm/SAcluster/inputdata/attrId_attrName", str.toString());
     }
 
 }
