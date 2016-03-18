@@ -158,7 +158,7 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          @default ["Action", "Adventure", "Children", "Fantasy", "Musical", "War", "Comedy", "Romance", "Drama", "Documentary", "Western", "Noir", "Mystery", "Crime", "Horror", "Thriller", "SciFi"]
          */
-        CategoryOrder: ["宝马3系", "奥迪A4L", "奔驰C级", "一汽-大众CC", "凯迪拉克ATS-L", "蒙迪欧", "迈腾", "沃尔沃S60L"],
+        CategoryOrder: [],//["宝马3系", "奥迪A4L", "奔驰C级", "一汽-大众CC", "凯迪拉克ATS-L", "蒙迪欧", "迈腾", "沃尔沃S60L"],
         /**
          Indicates if Entries without Categories are ignored
          @property IgnoreEntriesWithoutCategories
@@ -233,7 +233,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         _x.ReadCSV(_x.options.File);
         //_x.FillSelectedElements(_x.options.TableSelectedEntitiesID, _x.Entries);
-        _x.QueryStyle(_x.CatList);
+        _x.QuerySeriesDetail(_x.CatList);
         _x.ElementsByCardinality = _x.FillCardinality(_x.options.DivSetOfCardinalityID, _x.CatList);
         _x.ElementsByDegree = _x.FillElementsByDegree(_x.options.DivElementsByDegreeID, _x.Entries);
         _x.BindKeyListeners();

@@ -67,10 +67,9 @@
 </div>
 <div class="ui-layout-east">
     <div class="ui-layout-center">
-
+        <div class="radarChart"></div>
     </div>
     <div class="ui-layout-south">
-        <div class="radarChart"></div>
     </div>
 </div>
 <div class="ui-layout-south">
@@ -134,7 +133,7 @@
             , fxSettings_open: {easing: ""}
             , childOptions: {
                 south: {
-                    size: 400
+                    size: 360
                 }
             }
         }

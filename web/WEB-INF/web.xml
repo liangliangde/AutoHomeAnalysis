@@ -31,12 +31,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>DetailSaleOfSeriesServlet</servlet-name>
-        <servlet-class>com.servlet.GetDetailSaleOfSeriesServlet</servlet-class>
+        <servlet-name>DetailOfSeriesServlet</servlet-name>
+        <servlet-class>com.servlet.GetDetailOfSeriesServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>DetailSaleOfSeriesServlet</servlet-name>
-        <url-pattern>/detailsaleofseries</url-pattern>
+        <servlet-name>DetailOfSeriesServlet</servlet-name>
+        <url-pattern>/detailofseries</url-pattern>
     </servlet-mapping>
 
     <servlet>

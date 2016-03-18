@@ -409,12 +409,12 @@ public class QueryFromNeo4j {
         return seriesList;
     }
 
-    public static Map<String, List<String>> queryGeneralAttrOfSeries(String[] seriesIds, GraphDatabaseService db) {
+    public static Map<String, List<String>> queryGeneralAttrOfSeries(String[] seriesNames, GraphDatabaseService db) {
         Map<String, List<String>> generalAttrMap = new HashMap<>();
-        for (int i = 0; i < seriesIds.length; i++) {
-            String seriesId = seriesIds[i];
-            generalAttrMap.put(seriesId, new ArrayList<>());
-            String cypher = "match (se:Series{seriesId:'" + seriesId + "'})-[:Has]->(s:Style)-[r:Is]->(a:StyleAttr)" +
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            generalAttrMap.put(seriesName, new ArrayList<>());
+            String cypher = "match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)-[r:Is]->(a:StyleAttr)" +
                     " with a,count(r) as num order by num desc return a.attr+','+num";
             int styleNum = 0;
             try (Transaction ignored = db.beginTx();
@@ -431,13 +431,33 @@ public class QueryFromNeo4j {
 //                            List<String> list = generalAttrMap.get(seriesId);
 //                            list.add(attr);
 //                            generalAttrMap.put(seriesId, list);
-                            generalAttrMap.get(seriesId).add(attr);
+                            generalAttrMap.get(seriesName).add(attr);
                         }
                     }
                 }
             }
         }
         return generalAttrMap;
+    }
+
+    public static List<String> queryStyleAttrListOfSeries(String[] seriesNames, GraphDatabaseService db) {
+        List<String> styleAttrList = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            String cypher = "match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)-[r:Is]->(a:StyleAttr)" +
+                    " return se.seriesName + ',' + s.styleId + ',' + a.attr";
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute(cypher)) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        styleAttrList.add(value);
+                    }
+                }
+            }
+        }
+        return styleAttrList;
     }
 
     public static List<String> queryDetailSaleOfSeries(String seriesNames[], GraphDatabaseService db) {
@@ -473,5 +493,25 @@ public class QueryFromNeo4j {
             }
         }
         return attrList;
+    }
+
+    public static List<String> querySeriesScoreList(String[] seriesNames, GraphDatabaseService db) {
+        List<String> seriesScoreList = new ArrayList<>();
+        for(int i=0;i<seriesNames.length;i++) {
+            String seriesName = seriesNames[i];
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
+                         "return avg(toInt(k.costPerform))+','+avg(toInt(k.control))+','+avg(toInt(k.space))+','+avg(toInt(k.comfort))" +
+                         "+','+avg(toInt(k.interior))+','+avg(toInt(k.oil))+','+avg(toInt(k.appearence))+','+avg(toInt(k.power))")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        seriesScoreList.add(seriesName + "," +value);
+                    }
+                }
+            }
+        }
+        return seriesScoreList;
     }
 }
