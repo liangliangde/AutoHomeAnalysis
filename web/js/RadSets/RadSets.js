@@ -55,6 +55,16 @@ var RadSet = (function (window, document, $, undefined) {
          @type String
          @for Options
          **/
+
+        SeriesComparisonID: "seriesComparison",
+        /**
+         ID from the table where the selected elements will be displayed
+         @property TableSelectedEntitiesID
+         @default "tabSelEntities"
+         @type String
+         @for Options
+         **/
+
         TableItemSetsID: "tabItemsets",
         /**
          ID of the div element where the sets of cardinality will be displayed

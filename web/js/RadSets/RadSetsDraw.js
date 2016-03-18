@@ -137,6 +137,70 @@ var RadSet = (function (window, document, $, undefined) {
     };
 
     /**
+     @method FillSelectedElements
+     @for RadSet
+     **/
+    _x.FillSeriesComparison = function FillSeriesComparison(SeriesComparisonID, catgory1, catgory2) {
+        var style1 = GetHotestStyle(catgory1);
+        var style2 = GetHotestStyle(catgory2);
+        var table$ = $("#"+SeriesComparisonID);
+        table$.empty();
+        //header
+        var header = "<thead><tr>";
+        header += "<th>属性</th>";
+        header += "<th>" + catgory1.Name + "<br>" + style1.Name + "</th>";
+        header += "<th>" + catgory2.Name + "<br>" + style2.Name + "</th>";
+        header += "</tr></thead>";
+
+        //body
+        var body = "<tbody>";
+        var len1 = style1.attr.length;
+        var len2 = style2.attr.length;
+        var selectedAttr = [];
+        for (var i = 0; i < len1; i++) {
+            var attrName1 = style1.attr[i].attrName;
+            var attrValue1 = style1.attr[i].attrValue;
+            body += "<tr class='ShowEntry'><td>" + attrName1 + "</td>";
+            body += "<td>" + attrValue1 + "</td>";
+            selectedAttr.push(attrName1);
+            for (var j = 0; j < len2; j++) {
+                if (attrName1 == style2.attr[j].attrName) {
+                    body += "<td>" + style2.attr[j].attrValue + "</td></tr>";
+                    break;
+                }
+                if (j == len2 - 1) {
+                    body += "<td>-</td></tr>";
+                }
+            }
+        }
+        for (var i = 0; i < len2; i++) {
+            var attrName2 = style2.attr[i].attrName;
+            if (selectedAttr.indexOf(attrName2) < 0) {
+                body += "<tr class='ShowEntry'><td>" + attrName2 + "</td><td>-</td>";
+                body += "<td>" + style2.attr[i].attrValue + "</td></tr>";
+            }
+        }
+        body += "</tbody>";
+        table$.append(header);
+        table$.append(body);
+
+        _x.log("inserted Selected Elements list ");
+    }
+
+    function GetHotestStyle(catgory) {
+        var len = catgory.StyleList.length;
+        var maxNum = 0;
+        var maxNumStyle;
+        for (var i = 0; i < len; i++) {
+            if (catgory.StyleList[i].Num > maxNum) {
+                maxNumStyle = catgory.StyleList[i];
+                maxNum =catgory.StyleList[i].Num;
+            }
+        }
+        return maxNumStyle;
+    }
+
+    /**
      Created Tuple Count Table
      @method ShowTupleHistogram
      @for RadSet
@@ -302,17 +366,63 @@ var RadSet = (function (window, document, $, undefined) {
     };
 
     /**
+     Show comparison of series score
+     @method ShowScoreComparison
+     @for RadSet
+     **/
+    _x.ShowScoreComparison = function ShowScoreComparison(catgory1, catgory2) {
+        var margin = {top: 50, right: 50, bottom: 50, left: 70},
+            width = Math.min(400, window.innerWidth - 10) - margin.left - margin.right,
+            height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
+        var data = [
+            [//cat1
+                {axis: "外观", value: catgory1.Score["appearance"]},
+                {axis: "舒适度", value: catgory1.Score["comfort"]},
+                {axis: "操控", value: catgory1.Score["control"]},
+                {axis: "性价比", value: catgory1.Score["costPerform"]},
+                {axis: "内饰", value: catgory1.Score["interior"]},
+                {axis: "油耗", value: catgory1.Score["oil"]},
+                {axis: "动力", value: catgory1.Score["power"]},
+                {axis: "空间", value: catgory1.Score["space"]}
+            ], [//cat2
+                {axis: "外观", value: catgory2.Score["appearance"]},
+                {axis: "舒适度", value: catgory2.Score["comfort"]},
+                {axis: "操控", value: catgory2.Score["control"]},
+                {axis: "性价比", value: catgory2.Score["costPerform"]},
+                {axis: "内饰", value: catgory2.Score["interior"]},
+                {axis: "油耗", value: catgory2.Score["oil"]},
+                {axis: "动力", value: catgory2.Score["power"]},
+                {axis: "空间", value: catgory2.Score["space"]}
+            ]
+        ];
+        var color = d3.scale.ordinal()
+            .range(["#EDC951", "#00A0B0", "#CC333F"]);
+        var radarChartOptions = {
+            w: width,
+            h: height,
+            margin: margin,
+            maxValue: 5,
+            levels: 5,
+            roundStrokes: false,
+            color: color
+        };
+        //Call function to draw the Radar chart
+        RadarChart(".radarChart", data, radarChartOptions);
+    }
+
+    /**
      Show styles of series
      @method ShowStylePie
      @for RadSet
      **/
     _x.ShowStylePie = function ShowStylePie(Name) {
-        var color = ["#2484c1","#0c6197","#4daa4b", "#90c469", "#daca61", "#e4a14b",
+        var color = ["#2484c1", "#0c6197", "#4daa4b", "#90c469", "#daca61", "#e4a14b",
             "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b",
-            "#b0ec44", "#a4a0c9","#322849","#86f71a","#d1c87f","#7d9058","#44b9b0","#7c37c0","#cc9fb1","#e65414","#8b6834",
-            "#248838","#2484c1","#0c6197","#4daa4b", "#90c469", "#daca61", "#e4a14b",
+            "#b0ec44", "#a4a0c9", "#322849", "#86f71a", "#d1c87f", "#7d9058", "#44b9b0", "#7c37c0", "#cc9fb1", "#e65414", "#8b6834",
+            "#248838", "#2484c1", "#0c6197", "#4daa4b", "#90c469", "#daca61", "#e4a14b",
             "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b",
-            "#b0ec44", "#a4a0c9","#322849","#86f71a","#d1c87f","#7d9058","#44b9b0","#7c37c0","#cc9fb1","#e65414","#8b6834",
+            "#b0ec44", "#a4a0c9", "#322849", "#86f71a", "#d1c87f", "#7d9058", "#44b9b0", "#7c37c0", "#cc9fb1", "#e65414", "#8b6834",
             "#248838"];
         var content = [];
         for (var i = 0; i < _x.CatList.length; i++) {

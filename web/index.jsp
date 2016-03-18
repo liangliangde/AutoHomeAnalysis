@@ -70,6 +70,14 @@
         <div class="radarChart"></div>
     </div>
     <div class="ui-layout-south">
+        <div class="header">参数对比</div>
+        <div class="content">
+            <div> <label id="lblSelection"></label> </div>
+            <div id="divSelEntities">
+                <table id="seriesComparison" class="Entities" border="1">
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 <div class="ui-layout-south">
@@ -155,7 +163,7 @@
             , fxSettings: {easing: ""} // nullify default easing
             , childOptions: {
                 south: {
-                    size: 400
+                    size: 450
                 }
             }
         }

@@ -1,66 +1,3 @@
-$(function () {
-    //////////////////////////////////////////////////////////////
-    //////////////////////// Set-Up //////////////////////////////
-    //////////////////////////////////////////////////////////////
-
-    var margin = {top: 50, right: 50, bottom: 50, left: 70},
-        width = Math.min(400, window.innerWidth - 10) - margin.left - margin.right,
-        height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-
-    //////////////////////////////////////////////////////////////
-    ////////////////////////// Data //////////////////////////////
-    //////////////////////////////////////////////////////////////
-
-    var data = [
-        [//iPhone
-            {axis:"Battery Life",value:0.22},
-            {axis:"Brand",value:0.28},
-            {axis:"Contract Cost",value:0.29},
-            {axis:"Design And Quality",value:0.17},
-            {axis:"Have Internet Connectivity",value:0.22},
-            {axis:"Large Screen",value:0.02},
-            {axis:"Price Of Device",value:0.21},
-            {axis:"To Be A Smartphone",value:0.50}
-        ],[//Samsung
-            {axis:"Battery Life",value:0.27},
-            {axis:"Brand",value:0.16},
-            {axis:"Contract Cost",value:0.35},
-            {axis:"Design And Quality",value:0.13},
-            {axis:"Have Internet Connectivity",value:0.20},
-            {axis:"Large Screen",value:0.13},
-            {axis:"Price Of Device",value:0.35},
-            {axis:"To Be A Smartphone",value:0.38}
-        ],[//Nokia Smartphone
-            {axis:"Battery Life",value:0.26},
-            {axis:"Brand",value:0.10},
-            {axis:"Contract Cost",value:0.30},
-            {axis:"Design And Quality",value:0.14},
-            {axis:"Have Internet Connectivity",value:0.22},
-            {axis:"Large Screen",value:0.04},
-            {axis:"Price Of Device",value:0.41},
-            {axis:"To Be A Smartphone",value:0.30}
-        ]
-    ];
-    //////////////////////////////////////////////////////////////
-    //////////////////// Draw the Chart //////////////////////////
-    //////////////////////////////////////////////////////////////
-
-    var color = d3.scale.ordinal()
-        .range(["#EDC951","#CC333F","#00A0B0"]);
-
-    var radarChartOptions = {
-        w: width,
-        h: height,
-        margin: margin,
-        maxValue: 0.5,
-        levels: 5,
-        roundStrokes: true,
-        color: color
-    };
-    //Call function to draw the Radar chart
-    RadarChart(".radarChart", data, radarChartOptions);
-});
-
 function RadarChart(id, data, options) {
     var cfg = {
         w: 600,				//Width of the circle
@@ -155,7 +92,8 @@ function RadarChart(id, data, options) {
         .attr("dy", "0.4em")
         .style("font-size", "10px")
         .attr("fill", "#737373")
-        .text(function(d,i) { return Format(maxValue * d/cfg.levels); });
+        .text(function(d,i) { return d; });
+        //.text(function(d,i) { return Format(maxValue * d/cfg.levels); });
 
     /////////////////////////////////////////////////////////
     //////////////////// Draw the axes //////////////////////
@@ -267,6 +205,7 @@ function RadarChart(id, data, options) {
         .data(function(d,i) { return d; })
         .enter().append("circle")
         .attr("class", "radarInvisibleCircle")
+        .attr("class", "radarInvisibleCircle")
         .attr("r", cfg.dotRadius*1.5)
         .attr("cx", function(d,i){ return rScale(d.value) * Math.cos(angleSlice*i - Math.PI/2); })
         .attr("cy", function(d,i){ return rScale(d.value) * Math.sin(angleSlice*i - Math.PI/2); })
@@ -279,7 +218,8 @@ function RadarChart(id, data, options) {
             tooltip
                 .attr('x', newX)
                 .attr('y', newY)
-                .text(Format(d.value))
+                .text(d.value)
+                //.text(Format(d.value))
                 .transition().duration(200)
                 .style('opacity', 1);
         })

@@ -322,14 +322,25 @@ var RadSet = (function (window, document, $, undefined) {
         sel2.Entries = CreateSelectionEntries(cat2, -1);
         var intSel = new IntersectSelection(newSelection, sel2);
 
-        UpdateSelection(intSel, _x.CurrentSelMode);
 
+        UpdateSelection(intSel, _x.CurrentSelMode);
         if (_x.options.LogSelectionEntries) {
             _x.log(_x.CurrentSelection.Entries);
         }
         _x.log("Select Arc: " + cat1 + " + " + cat2);
-
         ActiveSelection();
+
+        var catgory1, catgory2;
+        for(var i=0;i<_x.CatList.length;i++){
+            if(_x.CatList[i].Name == cat1){
+                catgory1 = _x.CatList[i];
+            }
+            if(_x.CatList[i].Name == cat2){
+                catgory2 = _x.CatList[i];
+            }
+        }
+        _x.FillSeriesComparison(_x.options.SeriesComparisonID, catgory1, catgory2);
+        _x.ShowScoreComparison(catgory1, catgory2);
     };
 
     /**
@@ -355,9 +366,8 @@ var RadSet = (function (window, document, $, undefined) {
         //newSelection.styles = queryStyles(category);
 
         UpdateSelection(newSelection, _x.CurrentSelMode);
-
-        ActiveSelection(category);
-
+        ActiveSelection();
+        _x.ShowStylePie(category);
     };
 
     /**
@@ -395,7 +405,7 @@ var RadSet = (function (window, document, $, undefined) {
      @private
      @for RadSet
      **/
-    function ActiveSelection(category) {
+    function ActiveSelection() {
         $("#lblSelection").text(_x.CurrentSelection.toString());
 
         _x.ShowCategoryInEntries();
@@ -404,7 +414,6 @@ var RadSet = (function (window, document, $, undefined) {
         _x.ShowCategoryInCardiality();
         _x.ShowCategoryInDegree();
         _x.DeactivateSchema();
-        _x.ShowStylePie(category);
         _x.log("CurrentSelection drawn");
 
     };
