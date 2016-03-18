@@ -143,6 +143,9 @@ var RadSet = (function (window, document, $, undefined) {
     _x.FillSeriesComparison = function FillSeriesComparison(SeriesComparisonID, catgory1, catgory2) {
         var style1 = GetHotestStyle(catgory1);
         var style2 = GetHotestStyle(catgory2);
+        if(style1 == undefined || style2 == undefined) {
+            return;
+        }
         var table$ = $("#"+SeriesComparisonID);
         table$.empty();
         //header
@@ -206,8 +209,6 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowTupleHistogram = function ShowTupleHistogram(tabID, selElements, maxConnections) {
-
-
         var table$ = $(document.getElementById(tabID));
         var headers = ["Sets", "Fq all", "Fq sel"];
         var countHeaders = headers.length;
@@ -371,31 +372,36 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowScoreComparison = function ShowScoreComparison(catgory1, catgory2) {
-        var margin = {top: 50, right: 50, bottom: 50, left: 70},
-            width = Math.min(400, window.innerWidth - 10) - margin.left - margin.right,
-            height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-
-        var data = [
-            [//cat1
-                {axis: "外观", value: catgory1.Score["appearance"]},
+        $(".radarChart").empty();
+        var data= [];
+        var dataExist = false;
+        if(catgory1.Score["appearance"] >= 0){
+            data.push([{axis: "外观", value: catgory1.Score["appearance"]},
                 {axis: "舒适度", value: catgory1.Score["comfort"]},
                 {axis: "操控", value: catgory1.Score["control"]},
                 {axis: "性价比", value: catgory1.Score["costPerform"]},
                 {axis: "内饰", value: catgory1.Score["interior"]},
                 {axis: "油耗", value: catgory1.Score["oil"]},
                 {axis: "动力", value: catgory1.Score["power"]},
-                {axis: "空间", value: catgory1.Score["space"]}
-            ], [//cat2
-                {axis: "外观", value: catgory2.Score["appearance"]},
+                {axis: "空间", value: catgory1.Score["space"]}]);
+            dataExist = true;
+        }
+        if(catgory2.Score["appearance"] >= 0){
+            data.push([{axis: "外观", value: catgory2.Score["appearance"]},
                 {axis: "舒适度", value: catgory2.Score["comfort"]},
                 {axis: "操控", value: catgory2.Score["control"]},
                 {axis: "性价比", value: catgory2.Score["costPerform"]},
                 {axis: "内饰", value: catgory2.Score["interior"]},
                 {axis: "油耗", value: catgory2.Score["oil"]},
                 {axis: "动力", value: catgory2.Score["power"]},
-                {axis: "空间", value: catgory2.Score["space"]}
-            ]
-        ];
+                {axis: "空间", value: catgory2.Score["space"]}]);
+            dataExist = true;
+        }
+        if(dataExist == false) return;
+        var margin = {top: 50, right: 50, bottom: 50, left: 70},
+            width = Math.min(400, window.innerWidth - 10) - margin.left - margin.right,
+            height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
         var color = d3.scale.ordinal()
             .range(["#EDC951", "#00A0B0", "#CC333F"]);
         var radarChartOptions = {
@@ -417,6 +423,7 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowStylePie = function ShowStylePie(Name) {
+        $("#pieChart").empty();
         var color = ["#2484c1", "#0c6197", "#4daa4b", "#90c469", "#daca61", "#e4a14b",
             "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b",
             "#b0ec44", "#a4a0c9", "#322849", "#86f71a", "#d1c87f", "#7d9058", "#44b9b0", "#7c37c0", "#cc9fb1", "#e65414", "#8b6834",
@@ -428,6 +435,9 @@ var RadSet = (function (window, document, $, undefined) {
         for (var i = 0; i < _x.CatList.length; i++) {
             var Cat = _x.CatList[i];
             if (Name == Cat.Name) {
+                if(Cat.StyleList.length == 0){
+                    return;
+                }
                 for (var j = 0; j < Cat.StyleList.length; j++) {
                     var c = {};
                     c["label"] = Cat.StyleList[j].Name;
@@ -559,6 +569,9 @@ var RadSet = (function (window, document, $, undefined) {
     _x.Draw = function Draw() {
         _x.log("begin draw function");
 
+        var radialset = $("#radialset");
+        radialset.empty();
+
         var options = _x.options;
 
         /*VARS*/
@@ -633,11 +646,12 @@ var RadSet = (function (window, document, $, undefined) {
                 return x;
             });
 
-        //Delete previous svg
-        var svg = $("svg");
-        if (svg.length > 0) {
-            d3.select(svg[0]).remove();
-        }
+        ////Delete previous svg
+        //var svg = $("svg");
+        //if (svg.length > 0) {
+        //    d3.select(svg[length-1]).remove();
+        //}
+
 
         var vis = d3.select(radialset)
             .append("svg:svg")
@@ -1243,6 +1257,7 @@ var RadSet = (function (window, document, $, undefined) {
         _x.ShowTupleHistogram(_x.options.TableItemSetsID, selectedEntries, maxConnectedArcCount);
 
         _x.log("end draw function");
+
     };
 
 

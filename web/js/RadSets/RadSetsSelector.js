@@ -323,11 +323,7 @@ var RadSet = (function (window, document, $, undefined) {
         var intSel = new IntersectSelection(newSelection, sel2);
 
 
-        UpdateSelection(intSel, _x.CurrentSelMode);
-        if (_x.options.LogSelectionEntries) {
-            _x.log(_x.CurrentSelection.Entries);
-        }
-        _x.log("Select Arc: " + cat1 + " + " + cat2);
+        //UpdateSelection(intSel, _x.CurrentSelMode);
         ActiveSelection();
 
         var catgory1, catgory2;
@@ -406,14 +402,14 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     function ActiveSelection() {
-        $("#lblSelection").text(_x.CurrentSelection.toString());
+        //$("#lblSelection").text(_x.CurrentSelection.toString());
 
-        _x.ShowCategoryInEntries();
+        //_x.ShowCategoryInEntries();
         //_x.ShowCategoryInRadSet(category,degree);
         _x.Draw();
-        _x.ShowCategoryInCardiality();
-        _x.ShowCategoryInDegree();
-        _x.DeactivateSchema();
+        //_x.ShowCategoryInCardiality();
+        //_x.ShowCategoryInDegree();
+        //_x.DeactivateSchema();
         _x.log("CurrentSelection drawn");
 
     };
