@@ -11,7 +11,7 @@
  **/
 var RadSet = (function (window, document, $, undefined) {
     var _x = window.RadSet || {};
-    var _data = [];
+    var _data=[];
 
     /**
      Created Degree Meters from entries list
@@ -67,7 +67,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         var catListNameAndCount = [];
         for (var idx = 0; idx < catList.length; idx++) {
-            catListNameAndCount.push({Name: catList[idx].Name, Count: catList[idx].Count});
+            catListNameAndCount.push({ Name: catList[idx].Name, Count: catList[idx].Count });
         }
 
         var sorted = catListNameAndCount.sort(function (a, b) {
@@ -77,6 +77,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         var count = sorted.length;
         //var sum = sorted.reduce(function (a, b) { return a + b.Count; }, 0);
+
 
 
         var str = "";
@@ -145,7 +146,7 @@ var RadSet = (function (window, document, $, undefined) {
 
 
         var table$ = $(document.getElementById(tabID));
-        var headers = ["Sets", "Fq all", "Fq sel"];
+        var headers = ["Sets","Fq all","Fq sel"];
         var countHeaders = headers.length;
         //header
         var header = "<thead><tr>";
@@ -168,17 +169,17 @@ var RadSet = (function (window, document, $, undefined) {
                 var tuple = [cat.Name, cc.Name].sort();
                 var tupelString = tuple.join("-");
 
-                if (tuples.indexOf(tupelString) !== -1)
+                if(tuples.indexOf(tupelString) !== -1)
                     continue;
 
                 tuples.push(tupelString);
 
                 var selectedFreq = 0;
 
-                if (selElements !== null)
+                if(selElements !== null)
                     selectedFreq = cc.GetNumberOfConnected(selElements);
 
-                if (selectedFreq === 0)
+                if(selectedFreq === 0)
                     continue;
 
                 var percentage = (cc.Count / maxConnections) * 100;
@@ -194,21 +195,21 @@ var RadSet = (function (window, document, $, undefined) {
 
                 //Save html row in list, for sorting
                 list.push({
-                    sort1: cat.Name,
-                    sort2: cc.Name,
-                    tableData: format
+                    sort1 : cat.Name,
+                    sort2 : cc.Name,
+                    tableData : format
                 });
             }
         }
         //Sort rows
-        list.sort(function (a, b) {
-            if (a.sort1 !== b.sort1)
+        list.sort(function(a,b){
+            if(a.sort1 !== b.sort1)
                 return (a.sort1 < b.sort1) ? -1 : 1;
             else
                 return (a.sort2 < b.sort2) ? -1 : (a.sort2 > b.sort2) ? 1 : 0;
         });
 
-        for (var i = 0; i < list.length; i++)
+        for(var i = 0; i < list.length; i++)
             body += list[i].tableData;
 
         body += "</tbody>";
@@ -292,98 +293,11 @@ var RadSet = (function (window, document, $, undefined) {
     _x.ShowCategoryInEntries = function ShowCategoryInEntries() {
         $(".ShowEntry").removeClass("ShowEntry");
 
-        var nodes = $.map(_x.CurrentSelection.Entries, function (i) {
-            return document.getElementById(i)
-        });
+        var nodes = $.map(_x.CurrentSelection.Entries, function (i) { return document.getElementById(i) });
         $(nodes).addClass("ShowEntry");
 
         var eleSelRows = $("#lblSelectedRows");
         eleSelRows.text($("table .ShowEntry").length + " items");
-    };
-
-    /**
-     Show styles of series
-     @method ShowStylePie
-     @for RadSet
-     **/
-    _x.ShowStylePie = function ShowStylePie(Name) {
-        var color = ["#2484c1","#0c6197","#4daa4b", "#90c469", "#daca61", "#e4a14b",
-            "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b",
-            "#b0ec44", "#a4a0c9","#322849","#86f71a","#d1c87f","#7d9058","#44b9b0","#7c37c0","#cc9fb1","#e65414","#8b6834",
-            "#248838","#2484c1","#0c6197","#4daa4b", "#90c469", "#daca61", "#e4a14b",
-            "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b",
-            "#b0ec44", "#a4a0c9","#322849","#86f71a","#d1c87f","#7d9058","#44b9b0","#7c37c0","#cc9fb1","#e65414","#8b6834",
-            "#248838"];
-        var content = [];
-        for (var i = 0; i < _x.CatList.length; i++) {
-            var Cat = _x.CatList[i];
-            if (Name == Cat.Name) {
-                for (var j = 0; j < Cat.StyleList.length; j++) {
-                    var c = {};
-                    c["label"] = Cat.StyleList[j].Name;
-                    c["value"] = Cat.StyleList[j].Num;
-                    c["color"] = color[j];
-                    content.push(c);
-                }
-                break;
-            }
-        }
-
-        var pie = new d3pie("pieChart", {
-            "footer": {
-                "color": "#999999",
-                "fontSize": 10,
-                "font": "open sans",
-                "location": "bottom-left"
-            },
-            "size": {
-                "canvasWidth": 500,
-                "canvasHeight": 350,
-                "pieOuterRadius": "70%"
-            },
-            "data": {
-                "sortOrder": "value-asc",
-                "content": content
-            },
-            "labels": {
-                "outer": {
-                    "pieDistance": 8
-                },
-                "inner": {
-                    "hideWhenLessThanPercentage": 3
-                },
-                "mainLabel": {
-                    "fontSize": 9
-                },
-                "percentage": {
-                    "color": "#ffffff",
-                    "decimalPlaces": 0
-                },
-                "value": {
-                    "color": "#adadad",
-                    "fontSize": 11
-                },
-                "lines": {
-                    "enabled": true
-                },
-                "truncation": {
-                    "enabled": true
-                }
-            },
-            "effects": {
-                "pullOutSegmentOnClick": {
-                    "effect": "linear",
-                    "speed": 400,
-                    "size": 8
-                }
-            },
-            "misc": {
-                "gradient": {
-                    "enabled": true,
-                    "percentage": 100
-                }
-            }
-        });
     };
 
     /**
@@ -458,7 +372,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         var winHeight = $("#mainContent").height();
         var winWidth = $("#mainContent").width();
-        var center = {y: winHeight / 2, x: winWidth / 2};
+        var center = { y: winHeight / 2, x: winWidth / 2 };
         var paddingToBody = 150;
         var percentOfWhiteSpace = 5;
 
@@ -488,13 +402,9 @@ var RadSet = (function (window, document, $, undefined) {
         var categoryEndAngles = {};
 
         var donut = d3.layout.pie()
-            .sort(function (a, b) {
-                return b.SortOrder < a.SortOrder ? -1 : b.SortOrder > a.SortOrder ? 1 : 0;
-            });
+            .sort(function (a, b) { return b.SortOrder < a.SortOrder ? -1 : b.SortOrder > a.SortOrder ? 1 : 0; });
         //donut.value(function (d) { return d.Count; });
-        donut.value(function (d) {
-            return 1;
-        });
+        donut.value(function (d) { return 1; });
         //if (_x.ScaleMode === _x.ScaleModes.Compact) {
         //    donut.value(function (d) { return d.MaxCountInHistogram(); });
         //} else if (_x.ScaleMode === _x.ScaleModes.SetSize) {
@@ -508,7 +418,7 @@ var RadSet = (function (window, document, $, undefined) {
         var arc = d3.svg.arc()
             .innerRadius(innerRadius)
             .outerRadius(function (d) {
-                return (r - innerRadius) * (d.data.Count / 2220) + innerRadius;
+                return  (r - innerRadius) * (d.data.Count / 2220) + innerRadius;
             })
             .startAngle(function (d) {
                 var cname = d.data.Name;
@@ -540,21 +450,15 @@ var RadSet = (function (window, document, $, undefined) {
         var arcs = vis.selectAll("g.arc")
             .data(donut)
             .enter().append("svg:g")
-            .attr("class", function (d, i) {
-                return "sector " + d.data.Name;
-            })
-            .attr("id", function (d, i) {
-                return "sector_" + d.data.Name;
-            })
+            .attr("class", function (d, i) { return "sector " + d.data.Name; })
+            .attr("id", function (d, i) { return "sector_" + d.data.Name; })
             .attr("transform", "translate(" + (center.x) + "," + (center.y) + ")");
 
         var sector_paths = arcs.append("svg:path")
             .on("click", function (d, i) {
                 _x.Select(d.data.Name, -1);
             })
-            .attr("class", function (d, i) {
-                return d.data.Name + " Hand Sector";
-            })
+            .attr("class", function (d, i) { return d.data.Name + " Hand Sector"; })
             .attr("fill", options.SectorColor)
             .attr("stroke", "black")
             .attr("stroke-width", "1")
@@ -589,6 +493,7 @@ var RadSet = (function (window, document, $, undefined) {
             });
 
 
+
         _x.log("begin draw Histograms function");
         //delete all selected histograms
         d3.selectAll("path.HistogramSelection").remove();
@@ -597,7 +502,7 @@ var RadSet = (function (window, document, $, undefined) {
         for (var cIdx = _x.CatList.length - 1; cIdx >= 0; cIdx--) {
             var c = _x.CatList[cIdx];
             var histos = c.Histograms;
-            var HCount = c.ConnectedCats;
+            var HCount= c.ConnectedCats;
             //var hCount =0;
             //for (var hIdx = 0; hIdx < histos.length; hIdx++) {
             //    var Count = histos[hIdx];}
@@ -633,28 +538,28 @@ var RadSet = (function (window, document, $, undefined) {
                 var diffAngleForHisto = divByCount * h.Count;
                 diffAngleForHisto = diffAngleForHisto / 2;
 
-                if (hIdx == 0) {
+                if(hIdx == 0){
+                    var data = {
+                    Name: c.Name,
+                    Degree: h.Degree,
+                    Count: _x.CatList[cIdx].Count,
+                    SelCount: 0,
+                    InnerRadius: (innerRadius),
+                    OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius),
+                    StartAngle: (cStartAngle+ middleAngle * (h.Degree-1) ),
+                    EndAngle: (cStartAngle + middleAngle * h.Degree)
+
+                };
+
+                }else{
                     var data = {
                         Name: c.Name,
                         Degree: h.Degree,
-                        Count: _x.CatList[cIdx].Count,
+                        Count: HCount[hIdx-1].Count,
                         SelCount: 0,
                         InnerRadius: (innerRadius),
-                        OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius),
-                        StartAngle: (cStartAngle + middleAngle * (h.Degree - 1) ),
-                        EndAngle: (cStartAngle + middleAngle * h.Degree)
-
-                    };
-
-                } else {
-                    var data = {
-                        Name: c.Name,
-                        Degree: h.Degree,
-                        Count: HCount[hIdx - 1].Count,
-                        SelCount: 0,
-                        InnerRadius: (innerRadius),
-                        OuterRadius: ((((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius) - innerRadius) * _x.CatList[cIdx].ConnectedCats[hIdx - 1].Count * 2 / _x.CatList[cIdx].Count + innerRadius),
-                        StartAngle: (cStartAngle + middleAngle * (h.Degree - 1) ),
+                        OuterRadius: ((((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius)-innerRadius)*_x.CatList[cIdx].ConnectedCats[hIdx-1].Count*2/_x.CatList[cIdx].Count+innerRadius),
+                        StartAngle: (cStartAngle+ middleAngle * (h.Degree-1) ),
                         EndAngle: (cStartAngle + middleAngle * h.Degree)
                     };
                     _data.push(data);
@@ -663,29 +568,29 @@ var RadSet = (function (window, document, $, undefined) {
 
 
                 //calculate Selection of Histogram
-                //if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
-                //    var selObj = selectionGrouped[c.Name][h.Degree];
-                //    if (selObj !== undefined) {
-                //        var sel = $.extend({}, data);
-                //        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
-                //
-                //        if (options.SelectionAlignHistogram === "center") {
-                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
-                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
-                //        } else if (options.SelectionAlignHistogram === "left") {
-                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
-                //            sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
-                //        } else if (options.SelectionAlignHistogram === "right") {
-                //            sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
-                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
-                //        }
-                //
-                //        data.SelCount = selObj.Count;
-                //        sel.SelCount = selObj.Count;
-                //
-                //        histoSelectionDrawObjs.push(sel);
-                //    }
-                //}
+                if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
+                    var selObj = selectionGrouped[c.Name][h.Degree];
+                    if (selObj !== undefined) {
+                        var sel = $.extend({}, data);
+                        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
+
+                        if (options.SelectionAlignHistogram === "center") {
+                            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
+                            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
+                        } else if (options.SelectionAlignHistogram === "left") {
+                            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
+                            sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
+                        } else if (options.SelectionAlignHistogram === "right") {
+                            sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
+                            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
+                        }
+
+                        data.SelCount = selObj.Count;
+                        sel.SelCount = selObj.Count;
+
+                        histoSelectionDrawObjs.push(sel);
+                    }
+                }
 
                 histoDrawObjs.push(data);
             }
@@ -693,18 +598,10 @@ var RadSet = (function (window, document, $, undefined) {
              * 矩形图
              */
             var HistArc = d3.svg.arc()
-                .innerRadius(function (d, i) {
-                    return d.InnerRadius;
-                })
-                .outerRadius(function (d, i) {
-                    return d.OuterRadius;
-                })
-                .startAngle(function (d, i) {
-                    return d.StartAngle;
-                })
-                .endAngle(function (d, i) {
-                    return d.EndAngle;
-                });
+                .innerRadius(function (d, i) { return d.InnerRadius; })
+                .outerRadius(function (d, i) { return d.OuterRadius; })
+                .startAngle(function (d, i) { return d.StartAngle; })
+                .endAngle(function (d, i) { return d.EndAngle; });
 
             var ele = document.getElementById("sector_" + c.Name);
             var histogramPaths = d3.select(ele)
@@ -718,9 +615,7 @@ var RadSet = (function (window, document, $, undefined) {
                 .attr("stroke", "black")
                 .attr("stroke-width", "1")
                 .attr("fill", options.HistoColor)
-                .attr("class", function (d, i) {
-                    return "Hand Histogram Degree-" + d.Degree;
-                })
+                .attr("class", function (d, i) { return "Hand Histogram Degree-" + d.Degree; })
                 .attr("d", HistArc);
 
             histogramPaths.append("svg:title")
@@ -739,9 +634,7 @@ var RadSet = (function (window, document, $, undefined) {
                     })
                     .attr("stroke", "black")
                     .attr("stroke-height", HistogramSelectionStrokeWidth)
-                    .attr("class", function (d, i) {
-                        return "Hand HistogramSelection Degree-" + d.Degree;
-                    })
+                    .attr("class", function (d, i) { return "Hand HistogramSelection Degree-" + d.Degree; })
                     .attr("d", HistArc);
 
                 selectedPaths.append("svg:title")
@@ -890,7 +783,7 @@ var RadSet = (function (window, document, $, undefined) {
                     }
                 }
                 var connection = null;
-                for (var i = 0; i < connected.length; i++) {
+                    for (var i = 0; i < connected.length; i++) {
                     if (connected[i].Name == c2.Name) {
                         connection = connected[i];
                         break;
@@ -899,14 +792,12 @@ var RadSet = (function (window, document, $, undefined) {
                 if (skipArc || connection === null) {
                     continue;
                 }
-                for (var i = 0; i < _data.length; i++) {
-                    if (c.Name == _data[i].Name && connection.Count == _data[i].Count) {
+                for(var i = 0 ; i<_data.length ; i++){
+                    if(c.Name == _data[i].Name && connection.Count == _data[i].Count){
 
-                        var th1 = (_data[i].StartAngle + 0.02);
-                    }//将关联的点连线，根据换分的柱状图的startangle
-                    if (c2.Name == _data[i].Name && connection.Count == _data[i].Count) {
-                        var th2 = (_data[i].StartAngle + 0.02);
-                    }
+                    var th1 = (_data[i].StartAngle+0.02);}//将关联的点连线，根据换分的柱状图的startangle
+                    if(c2.Name == _data[i].Name && connection.Count == _data[i].Count){
+                    var th2 = (_data[i].StartAngle +0.02) ;}
                 }
 
                 var midAngle = (th1 + th2) / 2;
@@ -945,28 +836,28 @@ var RadSet = (function (window, document, $, undefined) {
                 conArc.Count = connection.Count;
 
 
-                //if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
-                //    var selConArc = $.extend({}, conArc);
-                //    var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
-                //
-                //    conArc.SelCount = selCount;
-                //    selConArc.SelCount = selCount;
-                //
-                //    var selThickness = 6 * selCount / maxConnectedArcCount;
-                //    selThickness *= options.ConnectionArcMultiply;
-                //
-                //    if (options.SelectionAlignConnectionArc === "center") {
-                //        selConArc.innerRadius = (rad - (selThickness / 2));
-                //        selConArc.outerRadius = (rad + (selThickness / 2));
-                //    } else if (options.SelectionAlignConnectionArc === "left") {
-                //        selConArc.innerRadius = (rad - (thickness / 2));
-                //        selConArc.outerRadius = (rad - (thickness / 2) + selThickness);
-                //    } else if (options.SelectionAlignConnectionArc === "right") {
-                //        selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
-                //        selConArc.outerRadius = (rad + (thickness / 2));
-                //    }
-                //    selectedConnectedArcs.push(selConArc);
-                //}
+                if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
+                    var selConArc = $.extend({}, conArc);
+                    var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
+
+                    conArc.SelCount = selCount;
+                    selConArc.SelCount = selCount;
+
+                    var selThickness = 6 * selCount / maxConnectedArcCount;
+                    selThickness *= options.ConnectionArcMultiply;
+
+                    if (options.SelectionAlignConnectionArc === "center") {
+                        selConArc.innerRadius = (rad - (selThickness / 2));
+                        selConArc.outerRadius = (rad + (selThickness / 2));
+                    } else if (options.SelectionAlignConnectionArc === "left") {
+                        selConArc.innerRadius = (rad - (thickness / 2));
+                        selConArc.outerRadius = (rad - (thickness / 2) + selThickness);
+                    } else if (options.SelectionAlignConnectionArc === "right") {
+                        selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
+                        selConArc.outerRadius = (rad + (thickness / 2));
+                    }
+                    selectedConnectedArcs.push(selConArc);
+                }
 
                 connectedArcs.push(conArc);
             }
@@ -975,18 +866,10 @@ var RadSet = (function (window, document, $, undefined) {
 
         //draw arcs
         var arc = d3.svg.arc()
-            .innerRadius(function (d, i) {
-                return d.innerRadius;
-            })
-            .outerRadius(function (d, i) {
-                return d.outerRadius;
-            })
-            .startAngle(function (d, i) {
-                return d.startAngle;
-            })
-            .endAngle(function (d, i) {
-                return d.endAngle;
-            });
+            .innerRadius(function (d, i) { return d.innerRadius; })
+            .outerRadius(function (d, i) { return d.outerRadius; })
+            .startAngle(function (d, i) { return d.startAngle; })
+            .endAngle(function (d, i) { return d.endAngle; });
 
         vis.append("g")
             .attr("id", "ConnectionArcs")
@@ -1001,9 +884,7 @@ var RadSet = (function (window, document, $, undefined) {
             .attr("stroke", "black")
             .attr("stroke-width", "0")
             .attr("fill", options.ConnectionArcColor)
-            .attr("class", function (d, i) {
-                return "Hand ConnectionArc " + d.Name + " {0} {1}".format(d.Cat1, d.Cat2);
-            })
+            .attr("class", function (d, i) { return "Hand ConnectionArc " + d.Name + " {0} {1}".format(d.Cat1, d.Cat2); })
             .attr("transform", function (d, i) {
                 return "translate(" + (d.x) + "," + (d.y) + ")";
             })
@@ -1019,7 +900,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         ////Blurs chart if single selection is active
         var fillColor = options.HighlightColor;
-        if (_x.EntryRelationPreview !== null)
+        if(_x.EntryRelationPreview !== null)
             fillColor = options.BlurredHighlightColor;
 
         if (_x.CurrentSelection !== null) {
@@ -1031,9 +912,7 @@ var RadSet = (function (window, document, $, undefined) {
                 .attr("stroke", "black")
                 .attr("stroke-width", "0")
                 .attr("fill", fillColor)
-                .attr("class", function (d, i) {
-                    return "Hand SelectedConnectionArc " + d.Name + " {0} {1}".format(d.Cat1, d.Cat2);
-                })
+                .attr("class", function (d, i) { return "Hand SelectedConnectionArc " + d.Name + " {0} {1}".format(d.Cat1, d.Cat2); })
                 .attr("transform", function (d, i) {
                     return "translate(" + (d.x) + "," + (d.y) + ")";
                 })
@@ -1084,10 +963,10 @@ var RadSet = (function (window, document, $, undefined) {
                 .append("svg:line")
                 .attr("x1", center.x)
                 .attr("y1", center.y)
-                .attr("x2", function (d) {
+                .attr("x2", function(d) {
                     return center.x + lenght * Math.sin(d);
                 })
-                .attr("y2", function (d) {
+                .attr("y2",function(d) {
                     return center.y + lenght * Math.cos(d) * -1;
                 })
                 .style("stroke", strokeColor)
@@ -1097,10 +976,10 @@ var RadSet = (function (window, document, $, undefined) {
                 .data(selectionAngles)
                 .enter()
                 .append("svg:circle")
-                .attr("cx", function (d) {
+                .attr("cx", function(d) {
                     return center.x + lenght * Math.sin(d);
                 })
-                .attr("cy", function (d) {
+                .attr("cy", function(d) {
                     return center.y + lenght * Math.cos(d) * -1;
                 })
                 .attr("r", dotRadius)
@@ -1115,7 +994,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         _x.log("begin tuple table");
 
-        var selectedEntries = (_x.CurrentSelection !== null) ? _x.CurrentSelection.Entries : null;
+        var selectedEntries = (_x.CurrentSelection !== null)? _x.CurrentSelection.Entries : null;
         _x.ShowTupleHistogram(_x.options.TableItemSetsID, selectedEntries, maxConnectedArcCount);
 
         _x.log("end draw function");
@@ -1152,7 +1031,6 @@ var RadSet = (function (window, document, $, undefined) {
             b: parseInt(result[3], 16)
         } : null;
     }
-
     function rgbToHex(o) {
         return "#" + ((1 << 24) + (o.r << 16) + (o.g << 8) + o.b).toString(16).slice(1);
     }
@@ -1197,25 +1075,17 @@ var RadSet = (function (window, document, $, undefined) {
                 .data(data).enter()
                 .append("linearGradient")
                 .attr("class", "lingrad")
-                .attr("id", function (d, i) {
-                    return d.id;
-                })
+                .attr("id", function (d, i) { return d.id; })
                 //.attr("x1", function (d, i) { return d.x1; })
                 //.attr("y1", function (d, i) { return d.y1; })
                 //.attr("x2", function (d, i) { return d.x2; })
                 //.attr("y2", function (d, i) { return d.y2; })
                 //.attr("gradientTransform", "rotate(0)")
                 //.attr("spreadMethod", function (d, i) { return d.spreadMethod; })
-                .selectAll(".stops").data(function (d) {
-                    return d.stops
-                }).enter().append("stop")
+                .selectAll(".stops").data(function (d) { return d.stops }).enter().append("stop")
                 .attr("class", "stops")
-                .attr("offset", function (d, i) {
-                    return d.offset
-                })
-                .attr("stop-color", function (d, i) {
-                    return d.color
-                })
+                .attr("offset", function (d, i) { return d.offset })
+                .attr("stop-color", function (d, i) { return d.color })
                 .attr("stop-opacity", 1);
         }
         else if (gradientType === 1) {
@@ -1223,25 +1093,15 @@ var RadSet = (function (window, document, $, undefined) {
                 .data(data).enter()
                 .append("radialGradient")
                 .attr("class", "lingrad")
-                .attr("id", function (d, i) {
-                    return d.id;
-                })
+                .attr("id", function (d, i) { return d.id; })
                 .attr("fx", "5%")
                 .attr("fy", "5%")
                 .attr("r", "65%")
-                .attr("spreadMethod", function (d, i) {
-                    return d.spreadMethod;
-                })
-                .selectAll(".stops").data(function (d) {
-                    return d.stops
-                }).enter().append("stop")
+                .attr("spreadMethod", function (d, i) { return d.spreadMethod; })
+                .selectAll(".stops").data(function (d) { return d.stops }).enter().append("stop")
                 .attr("class", "stops")
-                .attr("offset", function (d, i) {
-                    return d.offset
-                })
-                .attr("stop-color", function (d, i) {
-                    return d.color
-                })
+                .attr("offset", function (d, i) { return d.offset })
+                .attr("stop-color", function (d, i) { return d.color })
                 .attr("stop-opacity", 1);
         }
     }
