@@ -773,29 +773,34 @@ var RadSet = (function (window, document, $, undefined) {
 
 
                 //calculate Selection of Histogram
-                //if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
-                //    var selObj = selectionGrouped[c.Name][h.Degree];
-                //    if (selObj !== undefined) {
-                //        var sel = $.extend({}, data);
-                //        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
-                //
-                //        if (options.SelectionAlignHistogram === "center") {
-                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
-                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
-                //        } else if (options.SelectionAlignHistogram === "left") {
-                //            sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
-                //            sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
-                //        } else if (options.SelectionAlignHistogram === "right") {
-                //            sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
-                //            sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
-                //        }
-                //
-                //        data.SelCount = selObj.Count;
-                //        sel.SelCount = selObj.Count;
-                //
-                //        histoSelectionDrawObjs.push(sel);
-                //    }
-                //}
+                if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
+                    var selObj = selectionGrouped[c.Name][h.Degree];
+                    if (selObj !== undefined) {
+                        var sel = $.extend({}, data);
+                        var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
+
+                        //if (options.SelectionAlignHistogram === "center") {
+                        //    sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
+                        //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
+                        //} else if (options.SelectionAlignHistogram === "left") {
+                        //    sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
+                        //    sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
+                        //} else if (options.SelectionAlignHistogram === "right") {
+                        //    sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
+                        //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
+                        //}
+                        for(var i =0 ;i<_data.length; i++){
+                            if(c.Name == _data[i].Name&& h.Degree == _data[i].Degree){
+                                sel.StartAngle = _data[i].StartAngle;
+                                sel.EndAngle = _data[i].EndAngle;
+                            }
+                        }
+                        data.SelCount = selObj.Count;
+                        sel.SelCount = selObj.Count;
+
+                        histoSelectionDrawObjs.push(sel);
+                    }
+                }
 
                 histoDrawObjs.push(data);
             }
@@ -822,6 +827,9 @@ var RadSet = (function (window, document, $, undefined) {
                 .data(histoDrawObjs)
                 .enter()
                 .append("path")
+            /***
+             * click 事件
+             */
                 .on("click", function (d, i) {
                     _x.Select(d.Name, d.Degree);
                 })
@@ -1055,28 +1063,34 @@ var RadSet = (function (window, document, $, undefined) {
                 conArc.Count = connection.Count;
 
 
-                //if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
-                //    var selConArc = $.extend({}, conArc);
-                //    var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
-                //
-                //    conArc.SelCount = selCount;
-                //    selConArc.SelCount = selCount;
-                //
-                //    var selThickness = 6 * selCount / maxConnectedArcCount;
-                //    selThickness *= options.ConnectionArcMultiply;
-                //
-                //    if (options.SelectionAlignConnectionArc === "center") {
-                //        selConArc.innerRadius = (rad - (selThickness / 2));
-                //        selConArc.outerRadius = (rad + (selThickness / 2));
-                //    } else if (options.SelectionAlignConnectionArc === "left") {
-                //        selConArc.innerRadius = (rad - (thickness / 2));
-                //        selConArc.outerRadius = (rad - (thickness / 2) + selThickness);
-                //    } else if (options.SelectionAlignConnectionArc === "right") {
-                //        selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
-                //        selConArc.outerRadius = (rad + (thickness / 2));
-                //    }
-                //    selectedConnectedArcs.push(selConArc);
-                //}
+                if (_x.CurrentSelection !== null && (_x.CurrentSelection.Category == conArc.Cat1 || _x.CurrentSelection.Category == conArc.Cat2)) {
+                    var selConArc = $.extend({}, conArc);
+                    var selCount = connection.GetNumberOfConnected(_x.CurrentSelection.Entries);
+
+                    conArc.SelCount = selCount;
+                    selConArc.SelCount = selCount;
+
+                    var selThickness = 6 * selCount / maxConnectedArcCount;
+                    selThickness *= options.ConnectionArcMultiply;
+
+                    //if (options.SelectionAlignConnectionArc === "center") {
+                    //    selConArc.innerRadius = (rad - (selThickness / 2));
+                    //    selConArc.outerRadius = (rad + (selThickness / 2));
+                    //} else if (options.SelectionAlignConnectionArc === "left") {
+                    //    selConArc.innerRadius = (rad - (thickness / 2));
+                    //    selConArc.outerRadius = (rad - (thickness / 2) + selThickness);
+                    //} else if (options.SelectionAlignConnectionArc === "right") {
+                    //    selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
+                    //    selConArc.outerRadius = (rad + (thickness / 2));
+                    //}
+                    for(var i =0 ;i<_data.length; i++){
+                        if(c.Name == _data[i].Name&& h.Degree == _data[i].Degree){
+                            selConArc.innerRadius = _data[i].innerRadius;
+                            selConArc.outerRadius = _data[i].outerRadius;
+                        }
+                    }
+                    selectedConnectedArcs.push(selConArc);
+                }
 
                 connectedArcs.push(conArc);
             }
