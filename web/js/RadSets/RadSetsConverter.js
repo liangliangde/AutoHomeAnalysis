@@ -187,6 +187,8 @@ var RadSet = (function (window, document, $, undefined) {
             return max;
         };
         this.StyleList = [];
+        this.AttrList = [];
+        this.Score = {};
     }
 
     /**
@@ -259,6 +261,11 @@ var RadSet = (function (window, document, $, undefined) {
         this.Name = Name;
         this.Num = parseInt(Num);
         this.attr = [];
+    }
+
+    function Attribution(attrName, attrValue) {
+        this.attrName = attrName;
+        this.attrValue = attrValue;
     }
 
     /**
@@ -437,7 +444,11 @@ var RadSet = (function (window, document, $, undefined) {
         });
     };
 
-    _x.QueryStyle = function QueryStyle(catList) {
+    /**
+     Method that query style list of series and series' general attribution
+     @param {Category} catList
+     **/
+    _x.QuerySeriesDetail = function QuerySeriesDetail(catList) {
         var queryStr = "seriesNames=";
         for (var i = 0; i < catList.length; i++) {
             queryStr += catList[i].Name;
@@ -445,41 +456,142 @@ var RadSet = (function (window, document, $, undefined) {
                 queryStr += ",";
             }
         }
-        var url = "detailsaleofseries?" + queryStr;
+        var url = "detailofseries?" + queryStr;
         if (window.XMLHttpRequest) {
             req = new XMLHttpRequest();
         } else if (window.ActiveXObject) {
             req = new ActiveXObject("Microsoft.XMLHttp");
         }
         req.open("POST", url, false);
-        req.onreadystatechange = FillStyleOfCategory;
+        //req.onreadystatechange = FillStyleOfCategory;
+        req.onreadystatechange = ProcessSeriesDetail;
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         req.send(null);
     };
 
-    function FillStyleOfCategory() {
+    function ProcessSeriesDetail() {
         if (req.readyState == 4) {
             if (req.status == 200) {
                 //alert(req.responseText);
-                var allTextLines = req.responseText.split(/\r\n|\n/);
-                var len = allTextLines.length;
-                for (var i = 0; i < len; i++) {
-                    var lineTxt = allTextLines[i];
-                    if (lineTxt === "") {
-                        continue;
-                    }
-                    var lineParts = lineTxt.split(",");
-                    var seriesName = lineParts[0];
-                    var styleId = lineParts[1]
-                    var styleName = lineParts[2];
-                    var styleNum = lineParts[3];
-                    var style = new Style(styleId, styleName, styleNum);
-                    var catNum = _x.CatList.length;
-                    for (var j = 0; j < catNum; j++) {
-                        if(_x.CatList[j].Name == seriesName){
-                            _x.CatList[j].StyleList.push(style);
+                var result = req.responseText.split("###");
+                var styleList = result[0];
+                var generalAttrListOfSeries = result[1];
+                var attrListOfStyleOfSeries = result[2];
+                var seriesScoreList = result[3];
+                FillStyleOfCategory(styleList);
+                FillGeneralAttrOfCategory(generalAttrListOfSeries);
+                FillAttrOfStyle(attrListOfStyleOfSeries);
+                FillSeriesScore(seriesScoreList);
+            }
+        }
+    }
+
+    function FillSeriesScore(seriesScoreList){
+        var allTextLines = seriesScoreList.split(/\r\n|\n/);
+        var len = allTextLines.length;
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt === "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var costPerform = lineParts[1];
+            var control = lineParts[2];
+            var space = lineParts[3];
+            var comfort = lineParts[4];
+            var interior = lineParts[5];
+            var oil = lineParts[6];
+            var appearance = lineParts[7];
+            var power = lineParts[8];
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if(_x.CatList[j].Name == seriesName){
+                    _x.CatList[j].Score["costPerform"] = parseFloat(costPerform);
+                    _x.CatList[j].Score["control"] = parseFloat(control);
+                    _x.CatList[j].Score["space"] = parseFloat(space);
+                    _x.CatList[j].Score["comfort"] = parseFloat(comfort);
+                    _x.CatList[j].Score["interior"] = parseFloat(interior);
+                    _x.CatList[j].Score["oil"] = parseFloat(oil);
+                    _x.CatList[j].Score["appearance"] = parseFloat(appearance);
+                    _x.CatList[j].Score["power"] = parseFloat(power);
+                }
+            }
+        }
+    }
+
+    function FillAttrOfStyle(attrListOfStyleOfSeries){
+        var allTextLines = attrListOfStyleOfSeries.split(/\r\n|\n/);
+        var len = allTextLines.length;
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt === "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var styleId = lineParts[1];
+            var styleAttr = lineParts[2];
+            var attr = styleAttr.split("]");
+            var attrName = attr[0].substring(1);
+            var attrValue = attr[1];
+            var attribution = new Attribution(attrName, attrValue);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if(_x.CatList[j].Name == seriesName){
+                    var Category = _x.CatList[j];
+                    var lenStyleList = Category.StyleList.length;
+                    for(var k=0;k<lenStyleList;k++){
+                        if(Category.StyleList[k].Id == styleId){
+                            Category.StyleList[k].attr.push(attribution);
                         }
                     }
+                }
+            }
+        }
+    }
+
+    function FillStyleOfCategory(styleList){
+        var allTextLines = styleList.split(/\r\n|\n/);
+        var len = allTextLines.length;
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt === "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var styleId = lineParts[1]
+            var styleName = lineParts[2];
+            var styleNum = lineParts[3];
+            var style = new Style(styleId, styleName, styleNum);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if(_x.CatList[j].Name == seriesName){
+                    _x.CatList[j].StyleList.push(style);
+                }
+            }
+        }
+    }
+
+    function FillGeneralAttrOfCategory(attrList){
+        var allTextLines = attrList.split(/\r\n|\n/);
+        var len = allTextLines.length;
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt === "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var attr = lineParts[1].split("]");
+            var attrName = attr[0].substring(1);
+            var attrValue = attr[1];
+            var attribution = new Attribution(attrName, attrValue);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if(_x.CatList[j].Name == seriesName){
+                    _x.CatList[j].AttrList.push(attribution);
                 }
             }
         }

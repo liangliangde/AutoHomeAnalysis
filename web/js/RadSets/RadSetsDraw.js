@@ -337,7 +337,7 @@ var RadSet = (function (window, document, $, undefined) {
                 "location": "bottom-left"
             },
             "size": {
-                "canvasWidth": 500,
+                "canvasWidth": 700,
                 "canvasHeight": 350,
                 "pieOuterRadius": "70%"
             },
