@@ -143,14 +143,14 @@ var RadSet = (function (window, document, $, undefined) {
     _x.FillSeriesComparison = function FillSeriesComparison(SeriesComparisonID, catgory1, catgory2) {
         var style1 = GetHotestStyle(catgory1);
         var style2 = GetHotestStyle(catgory2);
-        if(style1 == undefined || style2 == undefined) {
+        if (style1 == undefined || style2 == undefined) {
             return;
         }
-        var table$ = $("#"+SeriesComparisonID);
+        var table$ = $("#" + SeriesComparisonID);
         table$.empty();
         //header
         var header = "<thead><tr>";
-        header += "<th>属性</th>";
+        header += "<th>参数</th>";
         header += "<th>" + catgory1.Name + "<br>" + style1.Name + "</th>";
         header += "<th>" + catgory2.Name + "<br>" + style2.Name + "</th>";
         header += "</tr></thead>";
@@ -193,11 +193,11 @@ var RadSet = (function (window, document, $, undefined) {
     function GetHotestStyle(catgory) {
         var len = catgory.StyleList.length;
         var maxNum = 0;
-        var maxNumStyle;
+        var maxNumStyle = catgory.StyleList[0];
         for (var i = 0; i < len; i++) {
             if (catgory.StyleList[i].Num > maxNum) {
                 maxNumStyle = catgory.StyleList[i];
-                maxNum =catgory.StyleList[i].Num;
+                maxNum = catgory.StyleList[i].Num;
             }
         }
         return maxNumStyle;
@@ -373,9 +373,9 @@ var RadSet = (function (window, document, $, undefined) {
      **/
     _x.ShowScoreComparison = function ShowScoreComparison(catgory1, catgory2) {
         $(".radarChart").empty();
-        var data= [];
+        var data = [];
         var dataExist = false;
-        if(catgory1.Score["appearance"] >= 0){
+        if (catgory1.Score["appearance"] >= 0) {
             data.push([{axis: "外观", value: catgory1.Score["appearance"]},
                 {axis: "舒适度", value: catgory1.Score["comfort"]},
                 {axis: "操控", value: catgory1.Score["control"]},
@@ -386,7 +386,7 @@ var RadSet = (function (window, document, $, undefined) {
                 {axis: "空间", value: catgory1.Score["space"]}]);
             dataExist = true;
         }
-        if(catgory2.Score["appearance"] >= 0){
+        if (catgory2.Score["appearance"] >= 0) {
             data.push([{axis: "外观", value: catgory2.Score["appearance"]},
                 {axis: "舒适度", value: catgory2.Score["comfort"]},
                 {axis: "操控", value: catgory2.Score["control"]},
@@ -397,7 +397,7 @@ var RadSet = (function (window, document, $, undefined) {
                 {axis: "空间", value: catgory2.Score["space"]}]);
             dataExist = true;
         }
-        if(dataExist == false) return;
+        if (dataExist == false) return;
         var margin = {top: 50, right: 50, bottom: 50, left: 70},
             width = Math.min(400, window.innerWidth - 10) - margin.left - margin.right,
             height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
@@ -435,14 +435,18 @@ var RadSet = (function (window, document, $, undefined) {
         for (var i = 0; i < _x.CatList.length; i++) {
             var Cat = _x.CatList[i];
             if (Name == Cat.Name) {
-                if(Cat.StyleList.length == 0){
+                if (Cat.StyleList.length == 0) {
                     return;
                 }
+                var colorNum = 0;
                 for (var j = 0; j < Cat.StyleList.length; j++) {
+                    if(Cat.StyleList[j].Num == 0){
+                        continue;
+                    }
                     var c = {};
                     c["label"] = Cat.StyleList[j].Name;
                     c["value"] = Cat.StyleList[j].Num;
-                    c["color"] = color[j];
+                    c["color"] = color[colorNum++];
                     content.push(c);
                 }
                 break;
@@ -450,11 +454,12 @@ var RadSet = (function (window, document, $, undefined) {
         }
 
         var pie = new d3pie("pieChart", {
-            "footer": {
-                "color": "#999999",
-                "fontSize": 10,
-                "font": "open sans",
-                "location": "bottom-left"
+            "header": {
+                "title": {
+                    "text": Name,
+                    "fontSize": 18,
+                    "font": "open sans"
+                }
             },
             "size": {
                 "canvasWidth": 700,
@@ -463,17 +468,21 @@ var RadSet = (function (window, document, $, undefined) {
             },
             "data": {
                 "sortOrder": "value-asc",
-                "content": content
+                "content": content,
+                "smallSegmentGrouping": {
+                    "enabled": true,
+                    "value": 4
+                },
             },
             "labels": {
                 "outer": {
-                    "pieDistance": 8
+                    "pieDistance": 10
                 },
                 "inner": {
                     "hideWhenLessThanPercentage": 3
                 },
                 "mainLabel": {
-                    "fontSize": 9
+                    "fontSize": 13
                 },
                 "percentage": {
                     "color": "#ffffff",
@@ -481,7 +490,7 @@ var RadSet = (function (window, document, $, undefined) {
                 },
                 "value": {
                     "color": "#adadad",
-                    "fontSize": 11
+                    "fontSize": 13
                 },
                 "lines": {
                     "enabled": true
@@ -505,6 +514,51 @@ var RadSet = (function (window, document, $, undefined) {
             }
         });
     };
+
+    /**
+     Show cloud tags
+     @method ShowStylePie
+     @for RadSet
+     **/
+    _x.ShowCloudTag = function ShowCloudTag(Name) {
+        var catgory;
+        for (var i = 0; i < _x.CatList.length; i++) {
+            if (_x.CatList[i].Name == Name) {
+                catgory = _x.CatList[i];
+                break;
+            }
+        }
+        var attrList = getSpecialAttr(catgory);
+    }
+
+    function getSpecialAttr(catgory) {
+        var attrList = [];
+        var len = catgory.AttrList.length;
+        for (var i = 0; i < len; i++) {
+            var attr = catgory.AttrList[i];
+            for (var j = 0; j < _x.CatList.length; j++) {
+                if (_x.CatList[j] != catgory && checkAttrExist(_x.CatList[j].StyleList, attr)) {
+                    break;
+                }
+                if (j == _x.CatList.length - 1) {
+                    attrList.push(attr);
+                }
+            }
+        }
+        return attrList;
+    }
+
+    function checkAttrExist(attrList, attr) {
+        var attrName = attr.attrName;
+        var attrValue = attr.attrValue;
+        var len = attrList.length;
+        for (var i = 0; i < len; i++) {
+            if (attrList[i].attrName == attrName && attrList[i].attrValue == attrValue) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      Create Tooltip for Histogram
@@ -701,7 +755,6 @@ var RadSet = (function (window, document, $, undefined) {
 
         sector_paths.append("svg:title")
             .text(function (d, i) {
-
                 var tooltip = d.data.Name + "\n" + d.data.Count + " items \n";
                 if (selectionGrouped !== null) {
                     if (selectionGrouped[d.data.Name] !== undefined) {
@@ -803,8 +856,8 @@ var RadSet = (function (window, document, $, undefined) {
                         //    sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
                         //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
                         //}
-                        for(var i =0 ;i<_data.length; i++){
-                            if(c.Name == _data[i].Name&& h.Degree == _data[i].Degree){
+                        for (var i = 0; i < _data.length; i++) {
+                            if (c.Name == _data[i].Name && h.Degree == _data[i].Degree) {
                                 sel.StartAngle = _data[i].StartAngle;
                                 sel.EndAngle = _data[i].EndAngle;
                             }
@@ -1097,8 +1150,8 @@ var RadSet = (function (window, document, $, undefined) {
                     //    selConArc.innerRadius = (rad + (thickness / 2) - selThickness);
                     //    selConArc.outerRadius = (rad + (thickness / 2));
                     //}
-                    for(var i =0 ;i<_data.length; i++){
-                        if(c.Name == _data[i].Name&& h.Degree == _data[i].Degree){
+                    for (var i = 0; i < _data.length; i++) {
+                        if (c.Name == _data[i].Name && h.Degree == _data[i].Degree) {
                             selConArc.innerRadius = _data[i].innerRadius;
                             selConArc.outerRadius = _data[i].outerRadius;
                         }

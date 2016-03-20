@@ -460,18 +460,74 @@ public class QueryFromNeo4j {
         return styleAttrList;
     }
 
+//    public static List<String> queryDetailSaleOfSeries(String seriesNames[], GraphDatabaseService db) {
+//
+//        List<String> seriesStyleList = new ArrayList<>();
+//
+//        for (int i = 0; i < seriesNames.length; i++) {
+//            String seriesName = seriesNames[i];
+//            List<String> styleList = new ArrayList<>();
+//            try (Transaction ignored = db.beginTx();
+//                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style) " +
+//                         "return s.styleId+','+s.styleName")) {
+//                while (result.hasNext()) {
+//                    Map<String, Object> row = result.next();
+//                    for (Map.Entry<String, Object> column : row.entrySet()) {
+//                        String value = (String) column.getValue();
+//                        styleList.add(value);
+//                    }
+//                }
+//            }
+//            for (int j = 0; j < styleList.size(); j++) {
+//                String style = styleList.get(j);
+//                String styleId = style.split(",")[0];
+//                try (Transaction ignored = db.beginTx();
+//                     Result result = db.execute("match (s:Style{styleId:'" + styleId + "'})<-[:About]-(k:Koubei) with s, count(k) as num return num")) {
+//                    boolean hasRows = false;
+//                    while (result.hasNext()) {
+//                        hasRows = true;
+//                        Map<String, Object> row = result.next();
+//                        for (Map.Entry<String, Object> column : row.entrySet()) {
+//                            String value = column.getValue().toString();
+//                            seriesStyleList.add(seriesName + ',' + style + "," + value);
+//                        }
+//                    }
+//                    if (hasRows == false) {
+//                        seriesStyleList.add(seriesName + ',' + style + "," + 0);
+//                    }
+//                }
+//            }
+//        }
+//        return seriesStyleList;
+//    }
+
     public static List<String> queryDetailSaleOfSeries(String seriesNames[], GraphDatabaseService db) {
         List<String> style2SaleList = new ArrayList<>();
-        for(int i=0;i<seriesNames.length;i++) {
+        for (int i = 0; i < seriesNames.length; i++) {
             String seriesName = seriesNames[i];
+            boolean hasResult = false;
             try (Transaction ignored = db.beginTx();
                  Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
                          "with s, count(s) as num order by num desc return s.styleId+','+s.styleName+','+num")) {
                 while (result.hasNext()) {
+                    hasResult = true;
                     Map<String, Object> row = result.next();
                     for (Map.Entry<String, Object> column : row.entrySet()) {
                         String value = (String) column.getValue();
-                        style2SaleList.add(seriesName + "," +value);
+                        style2SaleList.add(seriesName + "," + value);
+                    }
+                }
+            }
+            if (hasResult == false) {
+                try (Transaction ignored = db.beginTx();
+                     Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style) " +
+                             "return s.styleId+','+s.styleName+',0'")) {
+                    while (result.hasNext()) {
+                        Map<String, Object> row = result.next();
+                        for (Map.Entry<String, Object> column : row.entrySet()) {
+                            String value = (String) column.getValue();
+                            style2SaleList.add(seriesName + "," + value);
+                        }
                     }
                 }
             }
@@ -497,7 +553,7 @@ public class QueryFromNeo4j {
 
     public static List<String> querySeriesScoreList(String[] seriesNames, GraphDatabaseService db) {
         List<String> seriesScoreList = new ArrayList<>();
-        for(int i=0;i<seriesNames.length;i++) {
+        for (int i = 0; i < seriesNames.length; i++) {
             String seriesName = seriesNames[i];
             try (Transaction ignored = db.beginTx();
                  Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
@@ -507,7 +563,7 @@ public class QueryFromNeo4j {
                     Map<String, Object> row = result.next();
                     for (Map.Entry<String, Object> column : row.entrySet()) {
                         String value = (String) column.getValue();
-                        seriesScoreList.add(seriesName + "," +value);
+                        seriesScoreList.add(seriesName + "," + value);
                     }
                 }
             }

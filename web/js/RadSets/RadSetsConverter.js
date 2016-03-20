@@ -491,30 +491,22 @@ var RadSet = (function (window, document, $, undefined) {
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
             var lineTxt = allTextLines[i];
-            if (lineTxt === "") {
+            if (lineTxt == "") {
                 continue;
             }
             var lineParts = lineTxt.split(",");
             var seriesName = lineParts[0];
-            var costPerform = lineParts[1];
-            var control = lineParts[2];
-            var space = lineParts[3];
-            var comfort = lineParts[4];
-            var interior = lineParts[5];
-            var oil = lineParts[6];
-            var appearance = lineParts[7];
-            var power = lineParts[8];
             var catNum = _x.CatList.length;
             for (var j = 0; j < catNum; j++) {
                 if(_x.CatList[j].Name == seriesName){
-                    _x.CatList[j].Score["costPerform"] = parseFloat(costPerform);
-                    _x.CatList[j].Score["control"] = parseFloat(control);
-                    _x.CatList[j].Score["space"] = parseFloat(space);
-                    _x.CatList[j].Score["comfort"] = parseFloat(comfort);
-                    _x.CatList[j].Score["interior"] = parseFloat(interior);
-                    _x.CatList[j].Score["oil"] = parseFloat(oil);
-                    _x.CatList[j].Score["appearance"] = parseFloat(appearance);
-                    _x.CatList[j].Score["power"] = parseFloat(power);
+                    _x.CatList[j].Score["costPerform"] = parseFloat(lineParts[1]);
+                    _x.CatList[j].Score["control"] = parseFloat(lineParts[2]);
+                    _x.CatList[j].Score["space"] = parseFloat(lineParts[3]);
+                    _x.CatList[j].Score["comfort"] = parseFloat(lineParts[4]);
+                    _x.CatList[j].Score["interior"] = parseFloat(lineParts[5]);
+                    _x.CatList[j].Score["oil"] = parseFloat(lineParts[6]);
+                    _x.CatList[j].Score["appearance"] = parseFloat(lineParts[7]);
+                    _x.CatList[j].Score["power"] = parseFloat(lineParts[8]);
                 }
             }
         }
@@ -525,7 +517,7 @@ var RadSet = (function (window, document, $, undefined) {
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
             var lineTxt = allTextLines[i];
-            if (lineTxt === "") {
+            if (lineTxt == "") {
                 continue;
             }
             var lineParts = lineTxt.split(",");
@@ -556,11 +548,14 @@ var RadSet = (function (window, document, $, undefined) {
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
             var lineTxt = allTextLines[i];
-            if (lineTxt === "") {
+            if (lineTxt == "") {
                 continue;
             }
             var lineParts = lineTxt.split(",");
             var seriesName = lineParts[0];
+            if(seriesName == "宝马3系"){
+                seriesName = "宝马3系";
+            }
             var styleId = lineParts[1]
             var styleName = lineParts[2];
             var styleNum = lineParts[3];
@@ -579,7 +574,7 @@ var RadSet = (function (window, document, $, undefined) {
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
             var lineTxt = allTextLines[i];
-            if (lineTxt === "") {
+            if (lineTxt == "") {
                 continue;
             }
             var lineParts = lineTxt.split(",");

@@ -70,7 +70,7 @@
         <div class="radarChart"></div>
     </div>
     <div class="ui-layout-south">
-        <div class="header">参数对比</div>
+        <div class="header">具体参数对比</div>
         <div class="content">
             <div> <label id="lblSelection"></label> </div>
             <div id="divSelEntities">

@@ -364,6 +364,7 @@ var RadSet = (function (window, document, $, undefined) {
         UpdateSelection(newSelection, _x.CurrentSelMode);
         ActiveSelection();
         _x.ShowStylePie(category);
+        _x.ShowCloudTag(category);
     };
 
     /**

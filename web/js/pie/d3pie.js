@@ -77,7 +77,7 @@
 				enabled: false,
 				value: 1,
 				valueType: "percentage",
-				label: "Other",
+				label: "其他",
 				color: "#cccccc"
 			},
 			content: []
