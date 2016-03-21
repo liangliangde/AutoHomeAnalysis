@@ -23,14 +23,15 @@ public class QueryFromNeo4j {
 
     public static void main(String args[]) throws IOException {
 //        String[] seriesIds = {"633", "639"};
-//        GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
+        GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
 //        List<String> attrList = QueryFromNeo4j.querySeriesAttrBySeriesIds(seriesIds, db);
 //        List<String> similarSeries = QueryFromNeo4j.querySeriesByAttr(seriesIds, attrList, db);
 //        int[][] comUsersMatrix = queryComUsersOfSimilarSeries(similarSeries, db);
 //        int candNum = 10;
 //        List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
 ////        System.out.print(list2String(candSeries));
-//        db.shutdown();
+        queryKoubeiDetailofSeries(new String[]{"奥迪A4L"}, "性价比", db);
+        db.shutdown();
     }
 
 
@@ -566,6 +567,84 @@ public class QueryFromNeo4j {
                         seriesScoreList.add(seriesName + "," + value);
                     }
                 }
+            }
+        }
+        return seriesScoreList;
+    }
+
+    public static List<String> queryKoubeiDetailofSeries(String[] seriesNames, String aspect, GraphDatabaseService db) {
+        Map<String, String> eng2ChiAspectMap = new HashMap<>();
+        eng2ChiAspectMap.put("外观", "appearence");
+        eng2ChiAspectMap.put("舒适度", "comfort");
+        eng2ChiAspectMap.put("操控", "control");
+        eng2ChiAspectMap.put("性价比", "costPerform");
+        eng2ChiAspectMap.put("内饰", "interior");
+        eng2ChiAspectMap.put("油耗", "oil");
+        eng2ChiAspectMap.put("动力", "power");
+        eng2ChiAspectMap.put("空间", "space");
+
+        List<String> koubeiDetailList = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
+                         "return k." + eng2ChiAspectMap.get(aspect) + "+','+k.koubeiText")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        int split = value.indexOf(",");
+                        String score = value.substring(0, split);
+                        String aspectContent = getAspectContent(value.substring(split + 1), '【' + aspect + '】');
+                        koubeiDetailList.add(aspectContent + "," + score);
+                        System.out.println(score + "," + aspectContent);
+                    }
+                }
+            }
+        }
+        return koubeiDetailList;
+    }
+
+    private static String getAspectContent(String value, String aspect) {
+        String result = "null";
+        int index = value.indexOf(aspect);
+        if (index > -1) {
+            int index_end = value.indexOf('【', index + 1);
+            if (index_end > -1) {
+                result = value.substring(index, index_end);
+            } else {
+                result = value.substring(index);
+            }
+        }
+        return result;
+    }
+
+    public static List<String> querySeriesAimList(String[] seriesNames, GraphDatabaseService db) {
+        List<String> seriesScoreList = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            Map<String, Integer> aimPropMap = new HashMap<>();
+            int koubeiNum = 0;
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) return k.aim")) {
+                while (result.hasNext()) {
+                    koubeiNum++;
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        String aims[] = value.split(" ");
+                        for (String aim : aims) {
+                            if (aimPropMap.containsKey(aim)) {
+                                aimPropMap.put(aim, 0);
+                            } else {
+                                aimPropMap.put(aim, aimPropMap.get(aim) + 1);
+                            }
+                        }
+                    }
+                }
+            }
+            for (Map.Entry<String, Integer> entry : aimPropMap.entrySet()) {
+                seriesScoreList.add(seriesName + ',' + entry.getKey() + ',' + (1.0 * entry.getValue()) / koubeiNum);
             }
         }
         return seriesScoreList;

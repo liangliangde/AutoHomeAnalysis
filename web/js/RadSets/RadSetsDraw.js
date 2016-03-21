@@ -440,7 +440,7 @@ var RadSet = (function (window, document, $, undefined) {
                 }
                 var colorNum = 0;
                 for (var j = 0; j < Cat.StyleList.length; j++) {
-                    if(Cat.StyleList[j].Num == 0){
+                    if (Cat.StyleList[j].Num == 0) {
                         continue;
                     }
                     var c = {};
@@ -548,13 +548,14 @@ var RadSet = (function (window, document, $, undefined) {
         return attrList;
     }
 
-    function checkAttrExist(attrList, attr) {
-        var attrName = attr.attrName;
-        var attrValue = attr.attrValue;
-        var len = attrList.length;
-        for (var i = 0; i < len; i++) {
-            if (attrList[i].attrName == attrName && attrList[i].attrValue == attrValue) {
-                return true;
+    function checkAttrExist(styleList, attr) {
+        for (var i = 0; i < styleList.length; i++) {
+            var style = styleList[i];
+            for (var j = 0; j < style.attr.length; j++) {
+                var attr2 = style.attr[j];
+                if (attr2.attrName === attr.attrName && attr2.attrValue === attr.attrValue) {
+                    return true;
+                }
             }
         }
         return false;
@@ -706,7 +707,6 @@ var RadSet = (function (window, document, $, undefined) {
         //    d3.select(svg[length-1]).remove();
         //}
 
-
         var vis = d3.select(radialset)
             .append("svg:svg")
             .data([_x.CatList])
@@ -770,10 +770,11 @@ var RadSet = (function (window, document, $, undefined) {
         //delete all selected histograms
         d3.selectAll("path.HistogramSelection").remove();
 
+        _data = [];
         //create histogram arcs
         for (var cIdx = _x.CatList.length - 1; cIdx >= 0; cIdx--) {
             var c = _x.CatList[cIdx];
-            var histos = c.Histograms;
+            //var histos = c.Histograms;
             var HCount = c.ConnectedCats;
             //var hCount =0;
             //for (var hIdx = 0; hIdx < histos.length; hIdx++) {
@@ -785,58 +786,59 @@ var RadSet = (function (window, document, $, undefined) {
             var cStartAngle = categoryStartAngles[c.Name];
             var cEndAngle = categoryEndAngles[c.Name];
             var cAngleDiff = cEndAngle - cStartAngle;
-            var middleAngle = cAngleDiff / _x.CatList.length; //middle of angle
+            var middleAngle = cAngleDiff / (_x.CatList.length - 1); //middle of angle
 
             _x.CatList[cIdx].StartAngle = cStartAngle;
             _x.CatList[cIdx].EndAngle = cEndAngle;
             _x.CatList[cIdx].MiddleAngle = cStartAngle + middleAngle;
 
-            var histos = histos.sort(function (a, b) {
-                return (a.Degree - b.Degree);
-            });
-            var histosSortByCounts = histos.sort(function (a, b) {
+            //var histos = histos.sort(function (a, b) {
+            //    return (a.Degree - b.Degree);
+            //});
+            var histosSortByCounts = c.ConnectedCats.sort(function (a, b) {
                 return (b.Count - a.Count);
             });
 
             var histoDrawObjs = [];
             var histoSelectionDrawObjs = [];
 
-            for (var hIdx = 0; hIdx < histos.length; hIdx++) {
-                var h = histos[hIdx];
-
+            for (var hIdx = 0; hIdx < c.ConnectedCats.length; hIdx++) {
+                var h = c.ConnectedCats[hIdx];
                 var maxHistoCounterInCat = histosSortByCounts[0].Count;
 
                 var divByCount = cAngleDiff / maxHistoCounterInCat;
                 var diffAngleForHisto = divByCount * h.Count;
                 diffAngleForHisto = diffAngleForHisto / 2;
 
-                if (hIdx == 0) {
-                    var data = {
-                        Name: c.Name,
-                        Degree: h.Degree,
-                        Count: _x.CatList[cIdx].Count,
-                        SelCount: 0,
-                        InnerRadius: (innerRadius),
-                        OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius),
-                        StartAngle: (cStartAngle + middleAngle * (h.Degree - 1) ),
-                        EndAngle: (cStartAngle + middleAngle * h.Degree)
+                //if (hIdx == 0) {
+                var data = {
+                    Name1: c.Name,
+                    Name2: c.ConnectedCats[hIdx].Name,
+                    //Degree: h.Degree,
+                    Count: _x.CatList[cIdx].ConnectedCats[hIdx].Count,
+                    //SelCount: 0,
+                    InnerRadius: (innerRadius),
+                    OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / 1000) + innerRadius),
+                    StartAngle: (cStartAngle + middleAngle * hIdx),
+                    EndAngle: (cStartAngle + middleAngle * (hIdx + 1))
+                };
+                _data.push(data);
 
-                    };
-
-                } else {
-                    var data = {
-                        Name: c.Name,
-                        Degree: h.Degree,
-                        Count: HCount[hIdx - 1].Count,
-                        SelCount: 0,
-                        InnerRadius: (innerRadius),
-                        OuterRadius: ((((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius) - innerRadius) * _x.CatList[cIdx].ConnectedCats[hIdx - 1].Count * 2 / _x.CatList[cIdx].Count + innerRadius),
-                        StartAngle: (cStartAngle + middleAngle * (h.Degree - 1) ),
-                        EndAngle: (cStartAngle + middleAngle * h.Degree)
-                    };
-                    _data.push(data);
-
-                }
+                //}
+                //else {
+                //    var data = {
+                //        Name: c.Name,
+                //        //Degree: h.Degree,
+                //        Count: HCount[hIdx - 1].Count,
+                //        //SelCount: 0,
+                //        InnerRadius: (innerRadius),
+                //        OuterRadius: ((((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius) - innerRadius) * _x.CatList[cIdx].ConnectedCats[hIdx - 1].Count * 2 / _x.CatList[cIdx].Count + innerRadius),
+                //        StartAngle: (cStartAngle + middleAngle * (h.Degree - 1) ),
+                //        EndAngle: (cStartAngle + middleAngle * h.Degree)
+                //    };
+                //    _data.push(data);
+                //
+                //}
 
 
                 //calculate Selection of Histogram
@@ -904,7 +906,8 @@ var RadSet = (function (window, document, $, undefined) {
                 .attr("stroke-width", "1")
                 .attr("fill", options.HistoColor)
                 .attr("class", function (d, i) {
-                    return "Hand Histogram Degree-" + d.Degree;
+                    //return "Hand Histogram Degree-" + d.Degree;
+                    return "Hand Histogram " + d.Name1 + ',' + d.Name2;
                 })
                 .attr("d", HistArc);
 
@@ -1084,13 +1087,19 @@ var RadSet = (function (window, document, $, undefined) {
                 if (skipArc || connection === null) {
                     continue;
                 }
+                var th1, th2;
                 for (var i = 0; i < _data.length; i++) {
-                    if (c.Name == _data[i].Name && connection.Count == _data[i].Count) {
-
-                        var th1 = (_data[i].StartAngle + 0.02);
-                    }//将关联的点连线，根据换分的柱状图的startangle
-                    if (c2.Name == _data[i].Name && connection.Count == _data[i].Count) {
-                        var th2 = (_data[i].StartAngle + 0.02);
+                    //if (c.Name == _data[i].Name && connection.Count == _data[i].Count) {
+                    //    var th1 = (_data[i].StartAngle + 0.02);
+                    //}//将关联的点连线，根据换分的柱状图的startangle
+                    //if (c2.Name == _data[i].Name && connection.Count == _data[i].Count) {
+                    //    var th2 = (_data[i].StartAngle + 0.02);
+                    //}
+                    if (c.Name == _data[i].Name1 && c2.Name == _data[i].Name2) {
+                        th1 = (_data[i].StartAngle + 0.05);
+                    }
+                    if (c2.Name == _data[i].Name1 && c.Name == _data[i].Name2) {
+                        th2 = (_data[i].StartAngle + 0.05);
                     }
                 }
 
