@@ -1,53 +1,35 @@
-package com.servlet;
+package com.data.process;
 
 import com.IO.IOProcess;
-import com.data.process.VariousMap;
 import com.data.query.QueryFromNeo4j;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by llei on 16-2-25.
+ * Created by llei on 16-3-22.
  */
-public class GetMainGraphDataServlet extends HttpServlet {
-
+public class CreateMainGraphData {
     private static String baseURL = "/home/llei/IdeaProjects/autohome/auto_home.db";
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
-        req.setCharacterEncoding("utf-8");
-        resp.setContentType("text/html;charset=UTF-8");
-
-//        String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
-        String[] seriesIds = {"364"};
+    public static void main(String[] args) throws IOException {
+        String[] seriesIds = {"66"};
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
         List<String> attrList = QueryFromNeo4j.querySeriesAttrBySeriesIds(seriesIds, db);
         List<String> similarSeries = QueryFromNeo4j.querySeriesByAttr(attrList, db);
         int[][] comUsersMatrix = queryComUsersOfSimilarSeries(similarSeries, db);
         int candNum = 7;
         List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
-//        int[][] comUsersMatrixOfCand = getComUsersMatrixOfCand(candSeries, comUsersMatrix, similarSeries);
+        //        int[][] comUsersMatrixOfCand = getComUsersMatrixOfCand(candSeries, comUsersMatrix, similarSeries);
         Map<String, int[]> users = QueryFromNeo4j.queryUserBySeriesId(candSeries.toArray(), db);
         Map<String, String> seriesId2DetailMap = VariousMap.seriesId2Detail();
         createUsersCSV(candSeries, users, seriesId2DetailMap);
-//        PrintWriter toClient = resp.getWriter();
-//        StringBuffer kmeansResult = new StringBuffer();
-//        kmeansResult.append(seriesInfo).append("###").append(clusterInfo).append("###").append(collectDetailInfo);
-//        toClient.print(kmeansResult.toString());
         db.shutdown();
     }
-
-    private void createUsersCSV(List<String> candSeries, Map<String, int[]> users, Map<String, String> seriesId2DetailMap) throws IOException {
+    private static void createUsersCSV(List<String> candSeries, Map<String, int[]> users, Map<String, String> seriesId2DetailMap) throws IOException {
         StringBuffer str = new StringBuffer();
         str.append("userId,userName,gender,location,birthday,verfied,");
         int len = candSeries.size();
@@ -70,13 +52,8 @@ public class GetMainGraphDataServlet extends HttpServlet {
             }
             str.append("\n");
         }
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/web/data/users_new.csv", str.toString());
+        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/web/data/users.csv", str.toString());
         System.out.println("Create Users.csv finished!");
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req, resp);
     }
 
     private int[][] getComUsersMatrixOfCand(List<String> candSeries, int[][] comUsersMatrix, List<String> similarSeries) {

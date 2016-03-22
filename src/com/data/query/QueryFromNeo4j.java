@@ -634,7 +634,7 @@ public class QueryFromNeo4j {
                         String value = (String) column.getValue();
                         String aims[] = value.split(" ");
                         for (String aim : aims) {
-                            if (aimPropMap.containsKey(aim)) {
+                            if (!aimPropMap.containsKey(aim)) {
                                 aimPropMap.put(aim, 0);
                             } else {
                                 aimPropMap.put(aim, aimPropMap.get(aim) + 1);

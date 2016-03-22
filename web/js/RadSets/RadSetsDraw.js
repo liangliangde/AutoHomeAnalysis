@@ -795,22 +795,21 @@ var RadSet = (function (window, document, $, undefined) {
             //var histos = histos.sort(function (a, b) {
             //    return (a.Degree - b.Degree);
             //});
-            var histosSortByCounts = c.ConnectedCats.sort(function (a, b) {
-                return (b.Count - a.Count);
-            });
+            //var histosSortByCounts = c.ConnectedCats.sort(function (a, b) {
+            //    return (b.Count - a.Count);
+            //});
 
             var histoDrawObjs = [];
             var histoSelectionDrawObjs = [];
 
             for (var hIdx = 0; hIdx < c.ConnectedCats.length; hIdx++) {
                 var h = c.ConnectedCats[hIdx];
-                var maxHistoCounterInCat = histosSortByCounts[0].Count;
+                var maxHistoCounterInCat = GetMaxConnectedArcCount;
 
                 var divByCount = cAngleDiff / maxHistoCounterInCat;
                 var diffAngleForHisto = divByCount * h.Count;
                 diffAngleForHisto = diffAngleForHisto / 2;
 
-                //if (hIdx == 0) {
                 var data = {
                     Name1: c.Name,
                     Name2: c.ConnectedCats[hIdx].Name,
@@ -823,23 +822,6 @@ var RadSet = (function (window, document, $, undefined) {
                     EndAngle: (cStartAngle + middleAngle * (hIdx + 1))
                 };
                 _data.push(data);
-
-                //}
-                //else {
-                //    var data = {
-                //        Name: c.Name,
-                //        //Degree: h.Degree,
-                //        Count: HCount[hIdx - 1].Count,
-                //        //SelCount: 0,
-                //        InnerRadius: (innerRadius),
-                //        OuterRadius: ((((r - innerRadius) * (_x.CatList[cIdx].Count / 2220) + innerRadius) - innerRadius) * _x.CatList[cIdx].ConnectedCats[hIdx - 1].Count * 2 / _x.CatList[cIdx].Count + innerRadius),
-                //        StartAngle: (cStartAngle + middleAngle * (h.Degree - 1) ),
-                //        EndAngle: (cStartAngle + middleAngle * h.Degree)
-                //    };
-                //    _data.push(data);
-                //
-                //}
-
 
                 //calculate Selection of Histogram
                 if (selectionGrouped !== null && selectionGrouped[c.Name] !== undefined && selectionGrouped[c.Name][h.Degree] !== undefined) {
@@ -1089,12 +1071,6 @@ var RadSet = (function (window, document, $, undefined) {
                 }
                 var th1, th2;
                 for (var i = 0; i < _data.length; i++) {
-                    //if (c.Name == _data[i].Name && connection.Count == _data[i].Count) {
-                    //    var th1 = (_data[i].StartAngle + 0.02);
-                    //}//将关联的点连线，根据换分的柱状图的startangle
-                    //if (c2.Name == _data[i].Name && connection.Count == _data[i].Count) {
-                    //    var th2 = (_data[i].StartAngle + 0.02);
-                    //}
                     if (c.Name == _data[i].Name1 && c2.Name == _data[i].Name2) {
                         th1 = (_data[i].StartAngle + 0.05);
                     }
@@ -1106,9 +1082,12 @@ var RadSet = (function (window, document, $, undefined) {
                 var midAngle = (th1 + th2) / 2;
                 var startAngle = th2 + (Math.PI / 2);
                 var endAngle = th1 + (3 * Math.PI / 2);
+                //if (Math.abs(startAngle - endAngle) < 0.01) {
+                //    endAngle *= 0.99;
+                //}
                 var range = th2 - th1;
-                if (range === Math.PI) {
-                    range *= 0.99;
+                if (Math.abs(range - Math.PI) < 0.01) {
+                    range *= 0.9;
                 }
                 if (range > Math.PI) {
                     startAngle -= Math.PI;
@@ -1127,7 +1106,7 @@ var RadSet = (function (window, document, $, undefined) {
                 var tr = Math.tan(range / 2) * (innerRadius + shift);
                 var rad = Math.sqrt((tr * tr) + (shift * shift));
                 var rho = (innerRadius + shift) / Math.cos(range / 2);
-                var thickness = 6 * connection.Count / maxConnectedArcCount;
+                var thickness = 8 * connection.Count / maxConnectedArcCount;
                 thickness *= options.ConnectionArcMultiply;
 
                 var x = (rho * Math.sin(midAngle));

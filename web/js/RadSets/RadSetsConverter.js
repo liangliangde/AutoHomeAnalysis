@@ -413,8 +413,24 @@ var RadSet = (function (window, document, $, undefined) {
                     var con = tmpConnectedCats[cat.Name][kcc];
                     connected.push(con);
                 }
-                _x.CatList[c].ConnectedCats = connected;
+                //_x.CatList[c].ConnectedCats = connected;
             }
+            var connectedSortByPos = [];
+            for (var i = c + 1; i < _x.CatList.length; i++) {
+                for (var j = 0; j < connected.length; j++) {
+                    if (connected[j].Name == _x.CatList[i].Name) {
+                        connectedSortByPos.push(connected[j]);
+                    }
+                }
+            }
+            for (var i = 0; i < c; i++) {
+                for (var j = 0; j < connected.length; j++) {
+                    if (connected[j].Name == _x.CatList[i].Name) {
+                        connectedSortByPos.push(connected[j]);
+                    }
+                }
+            }
+            _x.CatList[c].ConnectedCats = connectedSortByPos;
         }
 
         _x.log("created historgrams data.");
@@ -486,7 +502,7 @@ var RadSet = (function (window, document, $, undefined) {
         }
     }
 
-    function FillSeriesScore(seriesScoreList){
+    function FillSeriesScore(seriesScoreList) {
         var allTextLines = seriesScoreList.split(/\r\n|\n/);
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
@@ -498,7 +514,7 @@ var RadSet = (function (window, document, $, undefined) {
             var seriesName = lineParts[0];
             var catNum = _x.CatList.length;
             for (var j = 0; j < catNum; j++) {
-                if(_x.CatList[j].Name == seriesName){
+                if (_x.CatList[j].Name == seriesName) {
                     _x.CatList[j].Score["costPerform"] = parseFloat(lineParts[1]);
                     _x.CatList[j].Score["control"] = parseFloat(lineParts[2]);
                     _x.CatList[j].Score["space"] = parseFloat(lineParts[3]);
@@ -512,7 +528,7 @@ var RadSet = (function (window, document, $, undefined) {
         }
     }
 
-    function FillAttrOfStyle(attrListOfStyleOfSeries){
+    function FillAttrOfStyle(attrListOfStyleOfSeries) {
         var allTextLines = attrListOfStyleOfSeries.split(/\r\n|\n/);
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
@@ -530,11 +546,11 @@ var RadSet = (function (window, document, $, undefined) {
             var attribution = new Attribution(attrName, attrValue);
             var catNum = _x.CatList.length;
             for (var j = 0; j < catNum; j++) {
-                if(_x.CatList[j].Name == seriesName){
+                if (_x.CatList[j].Name == seriesName) {
                     var Category = _x.CatList[j];
                     var lenStyleList = Category.StyleList.length;
-                    for(var k=0;k<lenStyleList;k++){
-                        if(Category.StyleList[k].Id == styleId){
+                    for (var k = 0; k < lenStyleList; k++) {
+                        if (Category.StyleList[k].Id == styleId) {
                             Category.StyleList[k].attr.push(attribution);
                         }
                     }
@@ -543,7 +559,7 @@ var RadSet = (function (window, document, $, undefined) {
         }
     }
 
-    function FillStyleOfCategory(styleList){
+    function FillStyleOfCategory(styleList) {
         var allTextLines = styleList.split(/\r\n|\n/);
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
@@ -553,7 +569,7 @@ var RadSet = (function (window, document, $, undefined) {
             }
             var lineParts = lineTxt.split(",");
             var seriesName = lineParts[0];
-            if(seriesName == "宝马3系"){
+            if (seriesName == "宝马3系") {
                 seriesName = "宝马3系";
             }
             var styleId = lineParts[1]
@@ -562,14 +578,14 @@ var RadSet = (function (window, document, $, undefined) {
             var style = new Style(styleId, styleName, styleNum);
             var catNum = _x.CatList.length;
             for (var j = 0; j < catNum; j++) {
-                if(_x.CatList[j].Name == seriesName){
+                if (_x.CatList[j].Name == seriesName) {
                     _x.CatList[j].StyleList.push(style);
                 }
             }
         }
     }
 
-    function FillGeneralAttrOfCategory(attrList){
+    function FillGeneralAttrOfCategory(attrList) {
         var allTextLines = attrList.split(/\r\n|\n/);
         var len = allTextLines.length;
         for (var i = 0; i < len; i++) {
@@ -585,7 +601,7 @@ var RadSet = (function (window, document, $, undefined) {
             var attribution = new Attribution(attrName, attrValue);
             var catNum = _x.CatList.length;
             for (var j = 0; j < catNum; j++) {
-                if(_x.CatList[j].Name == seriesName){
+                if (_x.CatList[j].Name == seriesName) {
                     _x.CatList[j].AttrList.push(attribution);
                 }
             }
