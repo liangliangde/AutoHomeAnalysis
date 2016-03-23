@@ -133,6 +133,7 @@ var RadSet = (function (window, document, $, undefined) {
         table$.append(header);
         table$.append(body);
 
+
         _x.log("inserted Selected Elements list ");
     };
 
@@ -162,13 +163,14 @@ var RadSet = (function (window, document, $, undefined) {
         var selectedAttr = [];
         for (var i = 0; i < len1; i++) {
             var attrName1 = style1.attr[i].attrName;
-            var attrValue1 = style1.attr[i].attrValue;
+            var attrValue1 = checkShouldHightLight(attrName1, style1.attr[i].attrValue, catgory1);
             body += "<tr class='ShowEntry'><td>" + attrName1 + "</td>";
             body += "<td>" + attrValue1 + "</td>";
             selectedAttr.push(attrName1);
             for (var j = 0; j < len2; j++) {
                 if (attrName1 == style2.attr[j].attrName) {
-                    body += "<td>" + style2.attr[j].attrValue + "</td></tr>";
+                    var attrValue2 = checkShouldHightLight(attrName1, style2.attr[j].attrValue, catgory2);
+                    body += "<td>" + attrValue2 + "</td></tr>";
                     break;
                 }
                 if (j == len2 - 1) {
@@ -179,8 +181,9 @@ var RadSet = (function (window, document, $, undefined) {
         for (var i = 0; i < len2; i++) {
             var attrName2 = style2.attr[i].attrName;
             if (selectedAttr.indexOf(attrName2) < 0) {
+                var attrValue2 = checkShouldHightLight(attrName2, style2.attr[i].attrValue, catgory2);
                 body += "<tr class='ShowEntry'><td>" + attrName2 + "</td><td>-</td>";
-                body += "<td>" + style2.attr[i].attrValue + "</td></tr>";
+                body += "<td>" + attrValue2 + "</td></tr>";
             }
         }
         body += "</tbody>";
@@ -188,6 +191,16 @@ var RadSet = (function (window, document, $, undefined) {
         table$.append(body);
 
         _x.log("inserted Selected Elements list ");
+    }
+
+    function checkShouldHightLight(attrName, attrValue, catgory) {
+        var attrValue_new = attrValue;
+        for (var j = 0; j < catgory.SpecialAttrList.length; j++) {
+            if (attrName == catgory.SpecialAttrList[j].attrName && attrValue == catgory.SpecialAttrList[j].attrValue) {
+                attrValue_new = "<font color='red'>" + attrValue + "</font>";
+            }
+        }
+        return attrValue_new;
     }
 
     function GetHotestStyle(catgory) {
@@ -521,45 +534,9 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowCloudTag = function ShowCloudTag(Name) {
-        var catgory;
-        for (var i = 0; i < _x.CatList.length; i++) {
-            if (_x.CatList[i].Name == Name) {
-                catgory = _x.CatList[i];
-                break;
-            }
-        }
-        var attrList = getSpecialAttr(catgory);
+
     }
 
-    function getSpecialAttr(catgory) {
-        var attrList = [];
-        var len = catgory.AttrList.length;
-        for (var i = 0; i < len; i++) {
-            var attr = catgory.AttrList[i];
-            for (var j = 0; j < _x.CatList.length; j++) {
-                if (_x.CatList[j] != catgory && checkAttrExist(_x.CatList[j].StyleList, attr)) {
-                    break;
-                }
-                if (j == _x.CatList.length - 1) {
-                    attrList.push(attr);
-                }
-            }
-        }
-        return attrList;
-    }
-
-    function checkAttrExist(styleList, attr) {
-        for (var i = 0; i < styleList.length; i++) {
-            var style = styleList[i];
-            for (var j = 0; j < style.attr.length; j++) {
-                var attr2 = style.attr[j];
-                if (attr2.attrName === attr.attrName && attr2.attrValue === attr.attrValue) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     /**
      Create Tooltip for Histogram

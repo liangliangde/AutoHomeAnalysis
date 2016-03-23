@@ -27,4 +27,18 @@ public class IOProcess {
         bufferedReader.close();
         return list;
     }
+
+    public static List<String> readFileWithoutSplit(String path) throws IOException {
+        File brandFile = new File(path);
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(brandFile), "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt;
+        List<String> list = new ArrayList<>();
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            list.add(lineTxt);
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return list;
+    }
 }

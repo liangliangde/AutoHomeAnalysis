@@ -30,7 +30,7 @@ public class QueryFromNeo4j {
 //        int candNum = 10;
 //        List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
 ////        System.out.print(list2String(candSeries));
-        queryKoubeiDetailofSeries(new String[]{"奥迪A4L"}, "性价比", db);
+        queryKoubeiDetailofSeries(new String[]{"奥迪A4L"}, "外观", db);
         db.shutdown();
     }
 
@@ -461,47 +461,6 @@ public class QueryFromNeo4j {
         return styleAttrList;
     }
 
-//    public static List<String> queryDetailSaleOfSeries(String seriesNames[], GraphDatabaseService db) {
-//
-//        List<String> seriesStyleList = new ArrayList<>();
-//
-//        for (int i = 0; i < seriesNames.length; i++) {
-//            String seriesName = seriesNames[i];
-//            List<String> styleList = new ArrayList<>();
-//            try (Transaction ignored = db.beginTx();
-//                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style) " +
-//                         "return s.styleId+','+s.styleName")) {
-//                while (result.hasNext()) {
-//                    Map<String, Object> row = result.next();
-//                    for (Map.Entry<String, Object> column : row.entrySet()) {
-//                        String value = (String) column.getValue();
-//                        styleList.add(value);
-//                    }
-//                }
-//            }
-//            for (int j = 0; j < styleList.size(); j++) {
-//                String style = styleList.get(j);
-//                String styleId = style.split(",")[0];
-//                try (Transaction ignored = db.beginTx();
-//                     Result result = db.execute("match (s:Style{styleId:'" + styleId + "'})<-[:About]-(k:Koubei) with s, count(k) as num return num")) {
-//                    boolean hasRows = false;
-//                    while (result.hasNext()) {
-//                        hasRows = true;
-//                        Map<String, Object> row = result.next();
-//                        for (Map.Entry<String, Object> column : row.entrySet()) {
-//                            String value = column.getValue().toString();
-//                            seriesStyleList.add(seriesName + ',' + style + "," + value);
-//                        }
-//                    }
-//                    if (hasRows == false) {
-//                        seriesStyleList.add(seriesName + ',' + style + "," + 0);
-//                    }
-//                }
-//            }
-//        }
-//        return seriesStyleList;
-//    }
-
     public static List<String> queryDetailSaleOfSeries(String seriesNames[], GraphDatabaseService db) {
         List<String> style2SaleList = new ArrayList<>();
         for (int i = 0; i < seriesNames.length; i++) {
@@ -605,6 +564,28 @@ public class QueryFromNeo4j {
         return koubeiDetailList;
     }
 
+    public static List<String> queryKoubeiBestOrWorstofSeries(String[] seriesNames, String aspect, GraphDatabaseService db) {
+
+        List<String> koubeiDetailList = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
+                         "return k.koubeiText")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        String aspectContent = getAspectContent(value, "【"+aspect+"】");
+                        koubeiDetailList.add(aspectContent);
+                        System.out.println(aspectContent);
+                    }
+                }
+            }
+        }
+        return koubeiDetailList;
+    }
+
     private static String getAspectContent(String value, String aspect) {
         String result = "null";
         int index = value.indexOf(aspect);
@@ -635,7 +616,7 @@ public class QueryFromNeo4j {
                         String aims[] = value.split(" ");
                         for (String aim : aims) {
                             if (!aimPropMap.containsKey(aim)) {
-                                aimPropMap.put(aim, 0);
+                                aimPropMap.put(aim, 1);
                             } else {
                                 aimPropMap.put(aim, aimPropMap.get(aim) + 1);
                             }

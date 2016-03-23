@@ -188,7 +188,9 @@ var RadSet = (function (window, document, $, undefined) {
         };
         this.StyleList = [];
         this.AttrList = [];
+        this.SpecialAttrList = [];
         this.Score = {};
+        this.AimList = [];
     }
 
     /**
@@ -266,6 +268,11 @@ var RadSet = (function (window, document, $, undefined) {
     function Attribution(attrName, attrValue) {
         this.attrName = attrName;
         this.attrValue = attrValue;
+    }
+
+    function Aim(aimName, aimProp) {
+        this.aimName = aimName;
+        this.aimProp = aimProp;
     }
 
     /**
@@ -488,16 +495,74 @@ var RadSet = (function (window, document, $, undefined) {
     function ProcessSeriesDetail() {
         if (req.readyState == 4) {
             if (req.status == 200) {
-                //alert(req.responseText);
                 var result = req.responseText.split("###");
                 var styleList = result[0];
                 var generalAttrListOfSeries = result[1];
                 var attrListOfStyleOfSeries = result[2];
                 var seriesScoreList = result[3];
+                var seriesAimList = result[4];
                 FillStyleOfCategory(styleList);
                 FillGeneralAttrOfCategory(generalAttrListOfSeries);
                 FillAttrOfStyle(attrListOfStyleOfSeries);
+                FillSpecialAttrOfCategory();
                 FillSeriesScore(seriesScoreList);
+                FillSeriesAim(seriesAimList);
+            }
+        }
+    }
+
+    function FillSpecialAttrOfCategory() {
+        for(var i=0;i<_x.CatList.length;i++){
+            _x.CatList[i].SpecialAttrList = getSpecialAttr(_x.CatList[i]);
+        }
+    }
+
+    function getSpecialAttr(catgory) {
+        var attrList = [];
+        var len = catgory.AttrList.length;
+        for (var i = 0; i < len; i++) {
+            var attr = catgory.AttrList[i];
+            for (var j = 0; j < _x.CatList.length; j++) {
+                if (_x.CatList[j] != catgory && checkAttrExist(_x.CatList[j].StyleList, attr)) {
+                    break;
+                }
+                if (j == _x.CatList.length - 1) {
+                    attrList.push(attr);
+                }
+            }
+        }
+        return attrList;
+    }
+
+    function checkAttrExist(styleList, attr) {
+        for (var i = 0; i < styleList.length; i++) {
+            var style = styleList[i];
+            for (var j = 0; j < style.attr.length; j++) {
+                var attr2 = style.attr[j];
+                if (attr2.attrName === attr.attrName && attr2.attrValue === attr.attrValue) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function FillSeriesAim(seriesAimList) {
+        var allTextLines = seriesAimList.split(/\r\n|\n/);
+        var len = allTextLines.length;
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt == "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var aim = new Aim(lineParts[1], lineParts[2]);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if (_x.CatList[j].Name == seriesName) {
+                    _x.CatList[j].AimList.push(aim);
+                }
             }
         }
     }
