@@ -45,7 +45,7 @@ public class ExtractKeywordFromKoubei {
             }
             str.append("\n");
         }
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/web/data/word2vector.csv", str.toString());
+        IOProcess.writeFile("auto_data/word2vector.csv", str.toString());
     }
 
     private static Double getMaxProp(Double[] value) {

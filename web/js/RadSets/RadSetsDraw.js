@@ -663,7 +663,7 @@ var RadSet = (function (window, document, $, undefined) {
         var arc = d3.svg.arc()
             .innerRadius(innerRadius)
             .outerRadius(function (d) {
-                return (r - innerRadius) * (d.data.Count / 2220) + innerRadius;
+                return (r - innerRadius) * (d.data.Count / _x.options.SectorHeightTuner) + innerRadius;
             })
             .startAngle(function (d) {
                 var cname = d.data.Name;
@@ -794,7 +794,7 @@ var RadSet = (function (window, document, $, undefined) {
                     Count: _x.CatList[cIdx].ConnectedCats[hIdx].Count,
                     //SelCount: 0,
                     InnerRadius: (innerRadius),
-                    OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / 1000) + innerRadius),
+                    OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / _x.options.InnerSectorHeightTuner) + innerRadius),
                     StartAngle: (cStartAngle + middleAngle * hIdx),
                     EndAngle: (cStartAngle + middleAngle * (hIdx + 1))
                 };
@@ -1049,10 +1049,10 @@ var RadSet = (function (window, document, $, undefined) {
                 var th1, th2;
                 for (var i = 0; i < _data.length; i++) {
                     if (c.Name == _data[i].Name1 && c2.Name == _data[i].Name2) {
-                        th1 = (_data[i].StartAngle + 0.05);
+                        th1 = (_data[i].StartAngle + 0.07);
                     }
                     if (c2.Name == _data[i].Name1 && c.Name == _data[i].Name2) {
-                        th2 = (_data[i].StartAngle + 0.05);
+                        th2 = (_data[i].StartAngle + 0.07);
                     }
                 }
 

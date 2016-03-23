@@ -216,7 +216,18 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          @default "false"
          */
-        SearchCaseSensitiv: false
+        SearchCaseSensitiv: false,
+
+        /**
+         control height of sector
+         @property SectorHeightTuner
+         @type bool
+         @for Options
+         @default "4000"
+         */
+        SectorHeightTuner: 4000,
+
+        InnerSectorHeightTuner: 3000
     };
 
 

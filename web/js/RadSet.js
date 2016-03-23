@@ -28,7 +28,7 @@ $(function () {
 
     var options = {
         File: "data/users.csv",
-        EntryLimit: 20000,
+        EntryLimit: 30000,
         TableSelectedEntitiesID: "tabSelEntities",
         DivSetOfCardinalityID: "setOfCardinality",
         DivElementsByDegreeID: "elementsByDegree",
