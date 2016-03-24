@@ -194,8 +194,8 @@ public class QueryFromNeo4j {
         List<String[]> seriesPairs = new ArrayList<>();
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
         try (Transaction ignored = db.beginTx();
-             Result result = db.execute("match (s1:Series)<-[:Like]-(u:User)-[:Like]->(s2:Series) with s1,s2, count(u) as num " +
-                     "where s1.seriesId > s2.seriesId and num>=" + num + " return s1.seriesId+','+s2.seriesId")) {
+             Result result = db.execute("match (s1:Series)-[r:Colike]-(s2:Series) " +
+                     "where s1.seriesId > s2.seriesId and r.userNum>=" + num + " return s1.seriesId+','+s2.seriesId")) {
             while (result.hasNext()) {
                 Map<String, Object> row = result.next();
                 for (Map.Entry<String, Object> column : row.entrySet()) {

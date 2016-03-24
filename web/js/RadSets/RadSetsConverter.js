@@ -191,6 +191,8 @@ var RadSet = (function (window, document, $, undefined) {
         this.SpecialAttrList = [];
         this.Score = {};
         this.AimList = [];
+        this.avgAge = 0;
+        this.ageVariance = 0;
     }
 
     /**

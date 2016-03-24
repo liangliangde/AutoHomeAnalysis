@@ -54,12 +54,17 @@
 <script src="js/main.js"></script>
 <script src="js/jquery.layout-latest.js"></script>
 <script src="js/d3.v3.js"></script>
+<script type="text/javascript" src="js/queue.v1.min.js"></script>
 <script src="js/jquery.arrayUtilities.min.js"></script>
 <!--<script src="js/bit-array.js"></script>-->
 <script src="js/vendor/jquery.tablesorter.min.js"></script>
 <div class="ui-layout-west">
     <div class="ui-layout-center">
-
+        <div id="chinaMap"></div>
+        <div id="tooltip" class="hidden box">
+            <div><br/>人数:<span class="dataHolder" name="total"></span>
+            </div>
+        </div>
     </div>
     <div class="ui-layout-south">
         <div id="pieChart"></div>
@@ -126,7 +131,7 @@
             , fxSettings_close: {easing: "easeOutQuint"}
         }
         , west: {
-            size: 400
+            size: 800
             , spacing_closed: 21      // wider space when closed
             , togglerLength_closed: 21      // make toggler 'square' - 21x21
             , togglerAlign_closed: "top"   // align to top of resizer
@@ -218,5 +223,6 @@
 <script src="js/RadSet.js"></script>
 <script src="js/radarChart/radarChart.js"></script>
 <script src="js/pie/d3pie.js"></script>
+<script src="js/chinaMap/map.js"></script>
 </body>
 </html>

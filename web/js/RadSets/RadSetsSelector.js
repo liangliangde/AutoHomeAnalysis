@@ -363,8 +363,18 @@ var RadSet = (function (window, document, $, undefined) {
 
         UpdateSelection(newSelection, _x.CurrentSelMode);
         ActiveSelection();
+
+        var cat;
+        for (var i = 0; i < _x.CatList.length; i++) {
+            if (category == _x.CatList[i].Name) {
+                cat = _x.CatList[i];
+                break;
+            }
+        }
+
         _x.ShowStylePie(category);
         _x.ShowCloudTag(category);
+        showChinaMap(cat, _x);
     };
 
     /**

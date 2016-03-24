@@ -257,36 +257,60 @@ var RadSet = (function (window, document, $, undefined) {
         _x.QuerySeriesDetail(_x.CatList);
         _x.ElementsByCardinality = _x.FillCardinality(_x.options.DivSetOfCardinalityID, _x.CatList);
         _x.ElementsByDegree = _x.FillElementsByDegree(_x.options.DivElementsByDegreeID, _x.Entries);
+        _x.FillAgeOfSeries(_x.Entries);
         _x.BindKeyListeners();
         _x.BindSearchTextbox(_x.options.SearchTextBox);
         _x.CreateStyleTag();
-        //for (var sch in _x.Schemas) {
-        //    var file = _x.Schemas[sch].file;
-        //    var order = _x.Schemas[sch].order;
-        //    _x.CreateColorSchemaFromCSV(sch, file, order);
-        //    $('#schemas').append($('<option>', {
-        //        value: sch,
-        //        text: sch
-        //    }));
-        //}
-        //for (var sch in _x.Legend) {
-        //    var file = _x.Legend[sch].file;
-        //    _x.ReadLegendCSV(sch, file);
-        //}
-
-        //if (_x.Schemas !== undefined) {
-        //    $("#schemas").change(function () {
-        //        var v = $("#schemas").val();
-        //        RadSet.ActivateSchema(v);
-        //    });
-        //}
-
-        //if (_x.ActiveSchema !== null) {
-        //    _x.ActivateSchema(_x.ActiveSchema);
-        //}
 
         _x.Draw();
     };
+
+    function SeriesAge(age) {
+        this.ageList = [age];
+        this.avgAge = 0;
+        this.variance = 0;
+    }
+
+    _x.FillAgeOfSeries = function FillAgeOfSeries(Entries) {
+        var seriesAgeMap = {};
+        for (var i = 0; i < Entries.length; i++) {
+            if (Entries[i].birthday == "null") {
+                continue;
+            }
+            var birthyear = parseInt(Entries[i].birthday.substr(0, 4));
+            var age = new Date().getFullYear() - birthyear;
+            if (age < 10) {
+                continue;
+            }
+            for (var j = 0; j < Entries[i].Cats.length; j++) {
+                var catName = Entries[i].Cats[j];
+                if (seriesAgeMap[catName] == undefined) {
+                    seriesAgeMap[catName] = new SeriesAge(age);
+                } else {
+                    seriesAgeMap[catName].ageList.push(age);
+                }
+            }
+        }
+        for (var cat in seriesAgeMap) {
+            var catgory = seriesAgeMap[cat];
+            var sumAge = 0;
+            for (var i = 0; i < catgory.ageList.length; i++) {
+                sumAge += catgory.ageList[i];
+            }
+            seriesAgeMap[cat].avgAge = (1.0 * sumAge) / catgory.ageList.length;
+            var sumDiff = 0;
+            for (var i = 0; i < catgory.ageList.length; i++) {
+                sumDiff += Math.pow(catgory.ageList[i] - seriesAgeMap[cat].avgAge, 2);
+            }
+            seriesAgeMap[cat].variance = sumDiff / catgory.ageList.length;
+            for(var i = 0;i<_x.CatList.length;i++){
+                if(_x.CatList[i].Name === cat){
+                    _x.CatList[i].avgAge = parseFloat(seriesAgeMap[cat].avgAge.toFixed(2));
+                    _x.CatList[i].ageVariance = parseFloat(seriesAgeMap[cat].variance.toFixed(2));
+                }
+            }
+        }
+    }
 
     /**
      Internal Log Function
