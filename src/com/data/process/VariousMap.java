@@ -176,4 +176,22 @@ public class VariousMap {
         bufferedReader.close();
         return chinese2ScoreMap;
     }
+
+    public static Map<String,String> city2ProvinceMap() throws IOException{
+        Map<String, String> city2ProvinceMap = new HashMap<>();
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/city2Province.csv");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null){
+            String province = lineTxt.split(":")[0];
+            String[] cities = lineTxt.split(":")[1].split("　");
+            for(String city:cities){
+                city2ProvinceMap.put(city.trim(), province);
+            }
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return city2ProvinceMap;
+    }
 }

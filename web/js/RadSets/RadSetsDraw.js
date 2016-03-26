@@ -385,6 +385,7 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowScoreComparison = function ShowScoreComparison(catgory1, catgory2) {
+        $("#radarHeader").text(catgory1.Name +" vs "+catgory2.Name);
         $(".radarChart").empty();
         var data = [];
         var dataExist = false;
@@ -436,6 +437,7 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowStylePie = function ShowStylePie(Name) {
+        $("#styleHeader").text(Name + "具体车型");
         $("#pieChart").empty();
         var color = ["#2484c1", "#0c6197", "#4daa4b", "#90c469", "#daca61", "#e4a14b",
             "#e98125", "#cb2121", "#830909", "#923e99", "#ae83d5", "#bf273e", "#ce2aeb", "#bca44a", "#618d1b", "#1ee67b",
@@ -452,6 +454,7 @@ var RadSet = (function (window, document, $, undefined) {
                     return;
                 }
                 var colorNum = 0;
+                var hasNumData = false;
                 for (var j = 0; j < Cat.StyleList.length; j++) {
                     if (Cat.StyleList[j].Num == 0) {
                         continue;
@@ -461,19 +464,16 @@ var RadSet = (function (window, document, $, undefined) {
                     c["value"] = Cat.StyleList[j].Num;
                     c["color"] = color[colorNum++];
                     content.push(c);
+                    hasNumData = true;
+                }
+                if(hasNumData == false){
+                    return;
                 }
                 break;
             }
         }
 
         var pie = new d3pie("pieChart", {
-            "header": {
-                "title": {
-                    "text": Name,
-                    "fontSize": 18,
-                    "font": "open sans"
-                }
-            },
             "size": {
                 "canvasWidth": 700,
                 "canvasHeight": 350,

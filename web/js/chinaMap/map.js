@@ -5,8 +5,7 @@ var container,
 var mouseDuration = 250,        //鼠标移动动画时长
     duration = 1000;
 
-var chinaG                      //包含中国地图的group
-    ;
+var chinaG;                      //包含中国地图的group
 var setting = {
     countryColor: d3.scale.linear()
         .domain([1, 34])
@@ -29,7 +28,7 @@ var path = d3.geo.path().projection(projection);
 //画出中国地图
 function drawChina(ds) {
     if (!chinaG)
-        chinaG = container.append("g");
+        chinaG = container.append("g").attr("id", "province");
     chinaG.selectAll("path")
         .data(ds.features)
         .enter()
@@ -60,7 +59,10 @@ function px(v) {
  * 创建svg
  */
 function createSVG(id, w, h) {
-    d3.select("#chinaMap").append("svg")
+    if ($("#chinaMap").children("svg").length > 0) {
+        return;
+    }
+    d3.select("#chinaMap").append("svg:svg")
         .attr("id", id)
         .attr("width", w)
         .attr("height", h)
@@ -69,9 +71,9 @@ function createSVG(id, w, h) {
 }
 
 //显示标题
-function showTitle(gkData){
+function showTitle(gkData) {
     container.append("text")
-        .attr("x", width/2)
+        .attr("x", width / 2)
         .attr("y", 100)
         .attr("text-anchor", "middle")
         .attr("font-family", "sans-serif")
@@ -95,8 +97,8 @@ function sortByTotal(gkData) {
     //创建过度颜色,注意上一步的排序是从大到小，那么颜色应该是从深到浅
     var rateColors = d3.scale.linear()
         .domain([1, 340])
-        .range([d3.rgb(75, 108, 156),d3.rgb(211, 229, 255)]);
-        //.range([d3.rgb(20, 120, 140), d3.rgb(180, 230, 255)]);
+        .range([d3.rgb(75, 108, 156), d3.rgb(211, 229, 255)]);
+    //.range([d3.rgb(20, 120, 140), d3.rgb(180, 230, 255)]);
     /*
      遍历上一步得到是数组
      forEach 参数中的 d 就是遍历到的某个数据， i 就是该对象的下标序号，从0开始
@@ -113,51 +115,21 @@ function sortByTotal(gkData) {
     });
 
     buildTip(data);
-    //showOnTable(data);
 }
 
-/**
- * 创建提示条
- * 提示的创建大致有3种方式
- * 1： 给svg元素里面增加一个title元素，
- *     var t = d3.select(id).append("title").text("我是提示条");
- *      这种方法效果不大理想，而且提示单调
- *
- * 2： 给需要提示的元素添加mouseover， mouseout 事件，当鼠标在该元素上移动时，就显示提示条（动态创建的svg元素），如：
- *      var t = d3.select(id);
- *      t.on('mouseover',function(){
-     *          //创建提示条
-                svg.append("text")
-                  .attr("id", "tooltip")
-                  .attr("x", d3.event.x)
-                  .attr("y", d3.event.y)
-                  .attr("text-anchor", "middle")
-                  .attr("font-family", "sans-serif")
-                  .attr("font-size", "11px")
-                  .attr("font-weight", "bold")
-                  .attr("ﬁll", "black")
-                  .text("我是svg的提示条");
-                })
- *      });
- *
- * 3： 类似方法2，但是提示条不是svg元素，而是普通的html元素（如div），动态修改提示框里面的内容跟提示框的x，y坐标
- *      达到提示的效果，总体来说这个方法较好，较为灵活，而且可以使用css3，同时不用担心提示框超出svg范围的问题
- *
- *      所以，在教程中，都是使用这个方法
- */
-function buildTip(data){
+function buildTip(data) {
     var t = "#tooltip";
     chinaG.selectAll("path")
-        .data(data, function(d){
+        .data(data, function (d) {
             return d.id;
         })
-        .on("mouseover",function(d){
+        .on("mouseover", function (d) {
             d3.select(t)
                 .style("left", d3.event.x + "px")
                 .style("top", d3.event.y + "px")
                 .classed("hidden", false)
                 .selectAll(".dataHolder")[0]
-                .forEach(function(h){
+                .forEach(function (h) {
                     h = d3.select(h);
                     h.html(d[h.attr('name')]);
                 })
@@ -165,7 +137,7 @@ function buildTip(data){
             d3.select(this)
                 .attr("opacity", 0.8);
         })
-        .on("mouseout",function(){
+        .on("mouseout", function () {
             d3.select(t).classed("hidden", true);
             d3.select(this)
                 .attr("opacity", 1);
@@ -179,7 +151,7 @@ function getMapData(category, _x) {
     mapData["datas"] = [];
     for (var i = 0; i < _x.Entries.length; i++) {
         var location = _x.Entries[i].location;
-        if (location ==="其它" || _x.Entries[i].Cats.indexOf(category.Name) == -1) {
+        if (location === "其它" || _x.Entries[i].Cats.indexOf(category.Name) == -1) {
             continue;
         }
         var findLocation = false;
@@ -196,6 +168,104 @@ function getMapData(category, _x) {
     }
     return mapData;
 }
+
+function extractCity(china) {
+    var cityData = [];
+    for (var i = 0; i < china.features.length; i++) {
+        var province = {};
+        province["g"] = parseFloat(china.features[i].X);
+        province["l"] = parseFloat(china.features[i].Y);
+        province["name"] = china.features[i].id;
+        cityData.push(province);
+    }
+    return cityData;
+}
+
+function drawCircle(cityData, boughtLineList) {
+
+    var countByCity = {},
+        locationByCity = {},
+        positions = [],
+        linksByOrigin = {};
+
+    $("#container").children("#cells").remove();
+    $("#container").children("#circles").remove();
+
+    var circles = d3.select("#container").append("svg:g")
+        .attr("id", "circles");
+
+    var cells = d3.select("#container").append("svg:g")
+        .attr("id", "cells");
+
+    var arc = d3.geo.greatArc()
+        .source(function (d) {
+            return locationByCity[d.source];
+        })
+        .target(function (d) {
+            return locationByCity[d.target];
+        });
+
+    boughtLineList.forEach(function (boughtLine) {
+        var boughtSite = boughtLine.boughtSite,
+            userLoc = boughtLine.userLoc,
+            links = linksByOrigin[boughtSite] || (linksByOrigin[boughtSite] = []);
+        links.push({source: boughtSite, target: userLoc, num: boughtLine.num});
+        countByCity[boughtSite] = (countByCity[boughtSite] || 0) + 1;
+        countByCity[userLoc] = (countByCity[userLoc] || 1);
+    });
+
+    cityData = cityData.filter(function (city) {
+        if (countByCity[city.name]) {
+            var location = [+city.g, +city.l];
+            locationByCity[city.name] = location;
+            positions.push(projection(location));
+            return true;
+        }
+    });
+
+
+    var polygons = d3.geom.voronoi(positions);
+
+    var g = cells.selectAll("g")
+        .data(cityData)
+        .enter().append("svg:g");
+
+    g.append("svg:path")
+        .attr("class", "cell")
+        .attr("d", function (d, i) {
+            return "M" + polygons[i].join("L") + "Z";
+        })
+        .on("mouseover", function (d, i) {
+            d3.select("h2 span").text(d.name);
+        });
+
+    g.selectAll("path.arc")
+        .data(function (d) {
+            return linksByOrigin[d.name] || [];
+        })
+        .enter().append("svg:path")
+        .attr("class", "arc")
+        .attr("stroke-width", function (d){
+            return d.num;
+        })
+        .attr("d", function (d) {
+            return path(arc(d));
+        });
+
+    circles.selectAll("circle")
+        .data(cityData)
+        .enter().append("svg:circle")
+        .attr("cx", function (d, i) {
+            return positions[i][0];
+        })
+        .attr("cy", function (d, i) {
+            return positions[i][1];
+        })
+        .attr("r", function (d, i) {
+            return Math.sqrt(countByCity[d.name]) * 2;
+        });
+}
+
 function showChinaMap(category, _x) {
     var gkData;
     //同时生成随机的颜色值
@@ -210,7 +280,6 @@ function showChinaMap(category, _x) {
 
     queue()
         .defer(d3.json, "data/china.json")
-        //.defer(d3.json, "data/2013GKLQL.json")
         .await(function (error, china) {
             if (error) {
                 alert("加载数据出错！" + error);
@@ -221,8 +290,13 @@ function showChinaMap(category, _x) {
             gkData = getMapData(category, _x);
             if (gkData) {
                 //showTitle(gkData);
+                $("#mapHeader").text(gkData._title + "地域分布图");
                 sortByTotal(gkData);
             }
+
+            var citydata = extractCity(china);
+
+            drawCircle(citydata, category.BoughtLineList);
         });
 }
 /**

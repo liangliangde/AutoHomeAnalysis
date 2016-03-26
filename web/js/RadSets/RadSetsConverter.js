@@ -193,6 +193,7 @@ var RadSet = (function (window, document, $, undefined) {
         this.AimList = [];
         this.avgAge = 0;
         this.ageVariance = 0;
+        this.BoughtLineList = [];
     }
 
     /**
@@ -275,6 +276,12 @@ var RadSet = (function (window, document, $, undefined) {
     function Aim(aimName, aimProp) {
         this.aimName = aimName;
         this.aimProp = aimProp;
+    }
+
+    function BoughtLine(userLoc, boughtSite, num) {
+        this.userLoc = userLoc;
+        this.boughtSite = boughtSite;
+        this.num = num;
     }
 
     /**
@@ -488,7 +495,6 @@ var RadSet = (function (window, document, $, undefined) {
             req = new ActiveXObject("Microsoft.XMLHttp");
         }
         req.open("POST", url, false);
-        //req.onreadystatechange = FillStyleOfCategory;
         req.onreadystatechange = ProcessSeriesDetail;
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         req.send(null);
@@ -503,18 +509,43 @@ var RadSet = (function (window, document, $, undefined) {
                 var attrListOfStyleOfSeries = result[2];
                 var seriesScoreList = result[3];
                 var seriesAimList = result[4];
+                var seriesBoughtLine = result[5];
                 FillStyleOfCategory(styleList);
                 FillGeneralAttrOfCategory(generalAttrListOfSeries);
                 FillAttrOfStyle(attrListOfStyleOfSeries);
                 FillSpecialAttrOfCategory();
                 FillSeriesScore(seriesScoreList);
                 FillSeriesAim(seriesAimList);
+                FillSeriesBoughtLine(seriesBoughtLine);
             }
         }
     }
 
+    function FillSeriesBoughtLine(seriesBoughtLine) {
+        var allTextLines = seriesBoughtLine.split(/\r\n|\n/);
+        var len = allTextLines.length;
+
+
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt == "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var boughtline = new BoughtLine(lineParts[1], lineParts[2], lineParts[3]);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if (_x.CatList[j].Name == seriesName) {
+                    _x.CatList[j].BoughtLineList.push(boughtline);
+                }
+            }
+        }
+    }
+
+
     function FillSpecialAttrOfCategory() {
-        for(var i=0;i<_x.CatList.length;i++){
+        for (var i = 0; i < _x.CatList.length; i++) {
             _x.CatList[i].SpecialAttrList = getSpecialAttr(_x.CatList[i]);
         }
     }

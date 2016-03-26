@@ -39,6 +39,32 @@
             stroke-width: .5px;
         }
 
+        path.arc {
+            pointer-events: none;
+            fill: none;
+            stroke: #000;
+            display: none;
+        }
+
+        path.cell {
+            fill: none;
+            pointer-events: all;
+        }
+
+        circle {
+            fill: red;
+            fill-opacity: .8;
+            stroke: #fff;
+        }
+
+        #cells.voronoi path.cell {
+            stroke: brown;
+        }
+
+        #cells g:hover path.arc {
+            display: inherit;
+        }
+
     </style>
 </head>
 <body>
@@ -60,18 +86,27 @@
 <script src="js/vendor/jquery.tablesorter.min.js"></script>
 <div class="ui-layout-west">
     <div class="ui-layout-center">
+        <div id="mapHeader" class="header">地域分布图</div>
         <div id="chinaMap"></div>
         <div id="tooltip" class="hidden box">
-            <div><br/>人数:<span class="dataHolder" name="total"></span>
+            <div>
+                省份:<span class="dataHolder" name="id"></span>
+                <br/>
+                人数:<span class="dataHolder" name="total"></span>
             </div>
         </div>
+        <h2>
+            <span></span>
+        </h2>
     </div>
     <div class="ui-layout-south">
+        <div id="styleHeader" class="header">具体车型</div>
         <div id="pieChart"></div>
     </div>
 </div>
 <div class="ui-layout-east">
     <div class="ui-layout-center">
+        <div id="radarHeader" class="header">评分对比</div>
         <div class="radarChart"></div>
     </div>
     <div class="ui-layout-south">
@@ -125,7 +160,7 @@
             , resizerTip: "Resize This Pane"
             //  effect defaults - overridden on some panes
             , fxName: "slide"   // none, slide, drop, scale
-            , fxSpeed_open: 750
+            , fxSpeed_open: 700
             , fxSpeed_close: 1500
             , fxSettings_open: {easing: "easeInQuint"}
             , fxSettings_close: {easing: "easeOutQuint"}
@@ -168,7 +203,7 @@
             , fxSettings: {easing: ""} // nullify default easing
             , childOptions: {
                 south: {
-                    size: 450
+                    size: 650
                 }
             }
         }

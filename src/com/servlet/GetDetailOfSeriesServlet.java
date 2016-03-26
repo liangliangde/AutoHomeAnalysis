@@ -32,6 +32,7 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         List<String> styleAttrList = QueryFromNeo4j.queryStyleAttrListOfSeries(seriesNames, db);// query styles' attribution of series
         List<String> seriesScoreList = QueryFromNeo4j.querySeriesScoreList(seriesNames, db);//query series' score
         List<String> seriesAimList = QueryFromNeo4j.querySeriesAimList(seriesNames, db);//query series' aim
+        List<String> seriesBoughtInfo = QueryFromNeo4j.querySeriesBoughtInfo(seriesNames, db);//query series' boughtsite and user's location
 
         db.shutdown();
 
@@ -59,6 +60,10 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         result.append("###");// use "###" to split
         for(String seriesAim:seriesAimList){
             result.append(seriesAim).append("\n");
+        }
+        result.append("###");// use "###" to split
+        for(String boughtInfo:seriesBoughtInfo){
+            result.append(boughtInfo).append("\n");
         }
         toClient.print(result.toString());
         System.out.println("get series detail ready!");

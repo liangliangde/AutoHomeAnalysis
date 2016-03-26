@@ -1,6 +1,7 @@
 package com.data.query;
 
 import com.algorithm.Kmeans.KmeansFor01Vec;
+import com.data.process.VariousMap;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 import org.neo4j.graphdb.Transaction;
@@ -30,7 +31,7 @@ public class QueryFromNeo4j {
 //        int candNum = 10;
 //        List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
 ////        System.out.print(list2String(candSeries));
-        queryKoubeiDetailofSeries(new String[]{"奥迪A4L"}, "外观", db);
+        querySeriesBoughtInfo(new String[]{"奥迪A4L"}, db);
         db.shutdown();
     }
 
@@ -576,7 +577,7 @@ public class QueryFromNeo4j {
                     Map<String, Object> row = result.next();
                     for (Map.Entry<String, Object> column : row.entrySet()) {
                         String value = (String) column.getValue();
-                        String aspectContent = getAspectContent(value, "【"+aspect+"】");
+                        String aspectContent = getAspectContent(value, "【" + aspect + "】");
                         koubeiDetailList.add(aspectContent);
                         System.out.println(aspectContent);
                     }
@@ -629,5 +630,46 @@ public class QueryFromNeo4j {
             }
         }
         return seriesScoreList;
+    }
+
+    public static List<String> querySeriesBoughtInfo(String[] seriesNames, GraphDatabaseService db) throws IOException {
+        Map<String, String> city2ProvinceMap = VariousMap.city2ProvinceMap();
+
+        List<String> seriesBoughtInfo = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            Map<String, Integer> seriesBoughtInfoMap = new HashMap<>();
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei)<-[:Release]-(u:User) " +
+                         "return se.seriesName+','+u.location+','+k.boughtSite")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        if (value == null || value.equals("null"))
+                            continue;
+                        String[] info = value.split(",");
+                        String boughtSite = info[2].trim();
+                        String userLoc = info[1].trim();
+                        if (boughtSite.equals("其他") || boughtSite.equals("其它") || userLoc.equals("其他") || userLoc.equals("其它"))
+                            continue;
+                        if (!city2ProvinceMap.containsKey(boughtSite)) {
+                            System.out.println(boughtSite);
+                            continue;
+                        }
+                        String value2 = info[0] + "," + userLoc + "," + city2ProvinceMap.get(boughtSite);
+                        if (!seriesBoughtInfoMap.containsKey(value2)) {
+                            seriesBoughtInfoMap.put(value2, 1);
+                        } else {
+                            seriesBoughtInfoMap.put(value2, seriesBoughtInfoMap.get(value2) + 1);
+                        }
+                    }
+                }
+            }
+            for (Map.Entry<String, Integer> entry : seriesBoughtInfoMap.entrySet()) {
+                seriesBoughtInfo.add(entry.getKey() + ',' + entry.getValue());
+            }
+        }
+        return seriesBoughtInfo;
     }
 }
