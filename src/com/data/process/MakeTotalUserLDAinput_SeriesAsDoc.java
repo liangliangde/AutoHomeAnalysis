@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class MakeTotalUserLDAinput_SeriesAsDoc {
     public static void main(String args[]) throws IOException {
-        File file = new File("auto_data/user_series.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user_series.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         FileOutputStream outSeries = new FileOutputStream("ldaresult/series_doc/LDAinput_all.txt");
