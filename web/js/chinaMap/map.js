@@ -117,6 +117,34 @@ function sortByTotal(gkData) {
     buildTip(data);
 }
 
+function fillColorOfProvince(gkData) {
+    var maxTotal = 0;
+    for (var i = 0; i < gkData.datas.length; i++) {
+        maxTotal = gkData.datas[i].total > maxTotal ? gkData.datas[i].total : maxTotal;
+    }
+    var rangeCount = 7;
+    var rateColors = d3.scale.linear()
+        .domain([1, rangeCount])
+        .range([d3.rgb(205, 223, 251), d3.rgb(75, 108, 156)]);
+    //.range([d3.rgb(211, 229, 255), d3.rgb(75, 108, 156)]);
+    /*
+     遍历上一步得到是数组
+     forEach 参数中的 d 就是遍历到的某个数据， i 就是该对象的下标序号，从0开始
+     */
+    gkData.datas.forEach(function (d, i) {
+        //d.sort = i + 1;
+        //通过d.id 来获取中国地图上对应的省份，因为地图中的省份块是根据省份拼音命名的
+        d3.select("#" + d.id)
+            .transition()
+            .duration(duration)
+            .delay(10 * i)
+            .attr("fill", rateColors(Math.ceil(d.total / 100)))
+        ;
+    });
+
+    buildTip(gkData.datas);
+}
+
 function buildTip(data) {
     var t = "#tooltip";
     chinaG.selectAll("path")
@@ -245,8 +273,11 @@ function drawCircle(cityData, boughtLineList) {
         })
         .enter().append("svg:path")
         .attr("class", "arc")
-        .attr("stroke-width", function (d){
-            return d.num;
+        .attr("stroke-width", function (d) {
+            if (d.num > 2) {
+                return d.num;
+            }
+            return 0;
         })
         .attr("d", function (d) {
             return path(arc(d));
@@ -264,6 +295,25 @@ function drawCircle(cityData, boughtLineList) {
         .attr("r", function (d, i) {
             return Math.sqrt(countByCity[d.name]) * 2;
         });
+    //circles.append("svg:text")
+    //    .data(cityData)
+    //    .attr("transform", function (d) {
+    //        var c = arc.centroid(d),
+    //            x = c[0],
+    //            y = c[1],
+    //            h = Math.sqrt(x * x + y * y);
+    //        return "translate(" + (x / h * labelr) + ',' +
+    //            (y / h * labelr) + ")";
+    //    })
+    //    .attr("dy", ".35em")
+    //    .attr("text-anchor", function (d) {
+    //        //return (d.endAngle + d.startAngle) / 2 > Math.PI ?
+    //        //    "end" : "start";
+    //        return "middle";
+    //    })
+    //    .text(function (d, i) {
+    //        return countByCity[d.name];
+    //    });
 }
 
 function showChinaMap(category, _x) {
@@ -291,7 +341,8 @@ function showChinaMap(category, _x) {
             if (gkData) {
                 //showTitle(gkData);
                 $("#mapHeader").text(gkData._title + "地域分布图");
-                sortByTotal(gkData);
+                //sortByTotal(gkData);
+                fillColorOfProvince(gkData);
             }
 
             var citydata = extractCity(china);

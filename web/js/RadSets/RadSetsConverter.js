@@ -194,6 +194,7 @@ var RadSet = (function (window, document, $, undefined) {
         this.avgAge = 0;
         this.ageVariance = 0;
         this.BoughtLineList = [];
+        this.AVGPriceOfProvince = [];
     }
 
     /**
@@ -282,6 +283,12 @@ var RadSet = (function (window, document, $, undefined) {
         this.userLoc = userLoc;
         this.boughtSite = boughtSite;
         this.num = num;
+    }
+
+    function BoughtPriceOfProvince(province, avgPrice, boughtNum) {
+        this.province = province;
+        this.avgPrice = avgPrice;
+        this.boughtNum = boughtNum;
     }
 
     /**
@@ -510,6 +517,7 @@ var RadSet = (function (window, document, $, undefined) {
                 var seriesScoreList = result[3];
                 var seriesAimList = result[4];
                 var seriesBoughtLine = result[5];
+                var seriesBoughtPriceOfProvince = result[6];
                 FillStyleOfCategory(styleList);
                 FillGeneralAttrOfCategory(generalAttrListOfSeries);
                 FillAttrOfStyle(attrListOfStyleOfSeries);
@@ -517,6 +525,28 @@ var RadSet = (function (window, document, $, undefined) {
                 FillSeriesScore(seriesScoreList);
                 FillSeriesAim(seriesAimList);
                 FillSeriesBoughtLine(seriesBoughtLine);
+                FillSeriesBoughtPriceOfProvince(seriesBoughtPriceOfProvince);
+            }
+        }
+    }
+
+    function FillSeriesBoughtPriceOfProvince(seriesBoughtPriceOfProvince) {
+        var allTextLines = seriesBoughtPriceOfProvince.split(/\r\n|\n/);
+        var len = allTextLines.length;
+
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt == "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var boughtPriceOfProvince = new BoughtPriceOfProvince(lineParts[1], lineParts[2], lineParts[3]);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if (_x.CatList[j].Name == seriesName) {
+                    _x.CatList[j].AVGPriceOfProvince.push(boughtPriceOfProvince);
+                }
             }
         }
     }

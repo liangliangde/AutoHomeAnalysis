@@ -671,10 +671,10 @@ public class QueryFromNeo4j {
         List<String> seriesBoughtInfo = new ArrayList<>();
         for (int i = 0; i < seriesNames.length; i++) {
             String seriesName = seriesNames[i];
-            Map<String, Integer> seriesBoughtInfoMap = new HashMap<>();
             try (Transaction ignored = db.beginTx();
-                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei)<-[:Release]-(u:User) " +
-                         "return se.seriesName+','+u.location+','+k.boughtSite")) {
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName +
+                         "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei)<-[:Release]-(u:User) " +
+                         "return se.seriesName+','+u.location+','+k.boughtSite+','+k.price")) {
                 while (result.hasNext()) {
                     Map<String, Object> row = result.next();
                     for (Map.Entry<String, Object> column : row.entrySet()) {
@@ -690,17 +690,11 @@ public class QueryFromNeo4j {
                             System.out.println(boughtSite);
                             continue;
                         }
-                        String value2 = info[0] + "," + userLoc + "," + city2ProvinceMap.get(boughtSite);
-                        if (!seriesBoughtInfoMap.containsKey(value2)) {
-                            seriesBoughtInfoMap.put(value2, 1);
-                        } else {
-                            seriesBoughtInfoMap.put(value2, seriesBoughtInfoMap.get(value2) + 1);
-                        }
+                        String price = info[3].substring(0, info[3].indexOf(" "));
+                        String value2 = info[0] + "," + userLoc + "," + city2ProvinceMap.get(boughtSite) + "," + price;
+                        seriesBoughtInfo.add(value2);
                     }
                 }
-            }
-            for (Map.Entry<String, Integer> entry : seriesBoughtInfoMap.entrySet()) {
-                seriesBoughtInfo.add(entry.getKey() + ',' + entry.getValue());
             }
         }
         return seriesBoughtInfo;
@@ -727,7 +721,7 @@ public class QueryFromNeo4j {
     public static Map<String, Double> querySimSeries(String[] seriesNames, GraphDatabaseService db, Double lowBound) {
         Map<String, Double> seriesSimMap = new HashMap<>();
         List<String> seriesList = new ArrayList<>();
-        for(String name : seriesNames){
+        for (String name : seriesNames) {
             seriesList.add(name);
         }
         for (String seriesName : seriesNames) {
@@ -754,7 +748,7 @@ public class QueryFromNeo4j {
                             for (Map.Entry<String, Object> column : row.entrySet()) {
                                 String value = ((String) column.getValue());
                                 String strs[] = value.split(",");
-                                seriesSimMap.put(strs[0]+","+strs[1], Double.parseDouble(strs[2]));
+                                seriesSimMap.put(strs[0] + "," + strs[1], Double.parseDouble(strs[2]));
                                 seriesSimMap.put(strs[1] + "," + strs[0], Double.parseDouble(strs[2]));
                             }
                         }

@@ -150,14 +150,16 @@ var RadSet = (function (window, document, $, undefined) {
         var table$ = $("#" + SeriesComparisonID);
         table$.empty();
         //header
-        var header = "<thead><tr>";
-        header += "<th>参数</th>";
-        header += "<th>" + catgory1.Name + "<br>" + style1.Name + "</th>";
-        header += "<th>" + catgory2.Name + "<br>" + style2.Name + "</th>";
-        header += "</tr></thead>";
+        var header = "<thead text-align='right'><tr>";
+        header += "<th rowspan='2'>参数</th>";
+        header += "<th>" + catgory1.Name + "</th>";
+        header += "<th>" + catgory2.Name + "</th></tr>";
+        header += "<th><select><option value='"+style1.Name+"'>" + style1.Name.substring(0,13) + "</option></th>";
+        header += "<th><select><option value='"+style2.Name+"'>" + style2.Name.substring(0,13) + "</option></th></tr>";
+        header += "</thead>";
 
         //body
-        var body = "<tbody>";
+        var body = "<tbody align='center'>";
         var len1 = style1.attr.length;
         var len2 = style2.attr.length;
         var selectedAttr = [];

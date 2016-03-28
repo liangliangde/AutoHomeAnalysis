@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +35,8 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         List<String> seriesScoreList = QueryFromNeo4j.querySeriesScoreList(seriesNames, db);//query series' score
         List<String> seriesAimList = QueryFromNeo4j.querySeriesAimList(seriesNames, db);//query series' aim
         List<String> seriesBoughtInfo = QueryFromNeo4j.querySeriesBoughtInfo(seriesNames, db);//query series' boughtsite and user's location
+        String seriesBoughtLine = getSeriesBoughtLine(seriesBoughtInfo);
+        String seriesBoughtPriceOfProvince = getSeriesBoughtPriceOfProvince(seriesBoughtInfo);
 
         db.shutdown();
 
@@ -45,28 +49,75 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         for (Map.Entry<String, List<String>> entry : generalAttrMap.entrySet()) {
             String seriesName = entry.getKey();
             List<String> attrList = entry.getValue();
-            for(String attr : attrList){
+            for (String attr : attrList) {
                 result.append(seriesName).append(",").append(attr).append("\n");
             }
         }
         result.append("###");// use "###" to split
-        for(String attr:styleAttrList){
+        for (String attr : styleAttrList) {
             result.append(attr).append("\n");
         }
         result.append("###");// use "###" to split
-        for(String seriesScore:seriesScoreList){
+        for (String seriesScore : seriesScoreList) {
             result.append(seriesScore).append("\n");
         }
         result.append("###");// use "###" to split
-        for(String seriesAim:seriesAimList){
+        for (String seriesAim : seriesAimList) {
             result.append(seriesAim).append("\n");
         }
         result.append("###");// use "###" to split
-        for(String boughtInfo:seriesBoughtInfo){
-            result.append(boughtInfo).append("\n");
-        }
+        result.append(seriesBoughtLine).append("###").append(seriesBoughtPriceOfProvince).append("###");
         toClient.print(result.toString());
         System.out.println("get series detail ready!");
+    }
+
+    private String getSeriesBoughtPriceOfProvince(List<String> seriesBoughtInfo) {
+        Map<String, Double> seriesBoughtPriceMap = new HashMap<>();
+        Map<String, Integer> seriesBoughtNumMap = new HashMap<>();
+        for (String boughtInfo : seriesBoughtInfo) {
+            String boughtInfoArr[] = boughtInfo.split(",");
+            String seriesName = boughtInfoArr[0];
+            String boughtSite = boughtInfoArr[2];
+            String price = boughtInfoArr[3];
+            String key = seriesName + "," + boughtSite;
+            if (!seriesBoughtPriceMap.containsKey(key)) {
+                seriesBoughtNumMap.put(key, 1);
+                seriesBoughtPriceMap.put(key, Double.parseDouble(price));
+            } else {
+                seriesBoughtNumMap.put(key, seriesBoughtNumMap.get(key) + 1);
+                seriesBoughtPriceMap.put(key, seriesBoughtPriceMap.get(key) + Double.parseDouble(price));
+            }
+        }
+        DecimalFormat df=new DecimalFormat(".##");
+        StringBuffer str = new StringBuffer();
+        for (Map.Entry<String, Double> entry : seriesBoughtPriceMap.entrySet()) {
+            int num = seriesBoughtNumMap.get(entry.getKey());
+            String avgPrice = df.format(entry.getValue()/num);
+            str.append(entry.getKey()).append(",").append(avgPrice).append(",").append(num).append("\n");
+        }
+        return str.toString();
+    }
+
+    private String getSeriesBoughtLine(List<String> seriesBoughtInfo) {
+        //seriesName, userLoc, boughtSite, price
+        Map<String, Integer> seriesBoughtNumMap = new HashMap<>();
+        for (String boughtInfo : seriesBoughtInfo) {
+            String boughtInfoArr[] = boughtInfo.split(",");
+            String seriesName = boughtInfoArr[0];
+            String userLoc = boughtInfoArr[1];
+            String boughtSite = boughtInfoArr[2];
+            String key = seriesName + "," + userLoc + "," + boughtSite;
+            if (!seriesBoughtNumMap.containsKey(key)) {
+                seriesBoughtNumMap.put(key, 1);
+            } else {
+                seriesBoughtNumMap.put(key, seriesBoughtNumMap.get(key) + 1);
+            }
+        }
+        StringBuffer str = new StringBuffer();
+        for (Map.Entry<String, Integer> entry : seriesBoughtNumMap.entrySet()) {
+            str.append(entry.getKey()).append(",").append(entry.getValue()).append("\n");
+        }
+        return str.toString();
     }
 
     @Override

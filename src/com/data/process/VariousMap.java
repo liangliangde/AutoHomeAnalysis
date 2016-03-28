@@ -193,6 +193,21 @@ public class VariousMap {
         return chinese2ScoreMap;
     }
 
+    public static Map<String, String> userMap() throws IOException {
+        Map<String, String> userMap = new HashMap<>();
+        File file = new File("auto_data/user.csv");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GB2312");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            int split = lineTxt.indexOf(",");
+            userMap.put(lineTxt.substring(0, split), lineTxt.substring(split + 1));
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return userMap;
+    }
+
     public static Map<String, String> city2ProvinceMap() throws IOException {
         Map<String, String> city2ProvinceMap = new HashMap<>();
         File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/city2Province.csv");

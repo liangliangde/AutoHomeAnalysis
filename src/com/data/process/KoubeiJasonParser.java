@@ -14,6 +14,9 @@ public class KoubeiJasonParser {
         File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/koubei");
         File[] files = dist.listFiles();
         for(File file : files){
+            System.out.println(file.getName());
+            if(file.getName().equals("user_id") || file.getName().equals("user_id_crawling"))
+                continue;
             InputStreamReader read = new InputStreamReader(new FileInputStream(file), "UTF-8");
             BufferedReader bufferedReader = new BufferedReader(read);
             String lineTxt = null;
@@ -25,7 +28,7 @@ public class KoubeiJasonParser {
     }
 
     private static void getJSONContent(String JSONText) throws IOException {
-        FileOutputStream out = new FileOutputStream("auto_data/koubei.csv", true);
+        FileOutputStream out = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/koubei.csv", true);
         JSONTokener jsonTokener = new JSONTokener(JSONText);
         JSONObject JSONObject;
         try {
