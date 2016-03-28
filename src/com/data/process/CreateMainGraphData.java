@@ -14,6 +14,8 @@ import java.util.Map;
  * Created by llei on 16-3-22.
  */
 public class CreateMainGraphData {
+    //select candidate series only by common users
+
     private static String baseURL = "/home/llei/IdeaProjects/autohome/auto_home.db";
     public static void main(String[] args) throws IOException {
         String[] seriesIds = {"66"};

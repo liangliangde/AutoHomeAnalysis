@@ -35,6 +35,9 @@ public class QueryFromNeo4j {
         db.shutdown();
     }
 
+    public static String getBaseURL() {
+        return baseURL;
+    }
 
     public static int queryComUsersOf2Series(String s1, String s2, GraphDatabaseService db) {
         int comUser = 0;
@@ -182,6 +185,36 @@ public class QueryFromNeo4j {
                         userSeriesIdMap.put(userId, featureArr);
                     } else {
                         userSeriesIdMap.get(userId)[seriesIds2Num.get(seriesId)] = 1;
+                    }
+                }
+            }
+        }
+        System.out.println("Query users of candidate series finished!");
+        return userSeriesIdMap;
+    }
+
+    public static Map<String, int[]> queryUserBySeriesName(Object[] seriesNames, GraphDatabaseService db) {
+        Map<String, int[]> userSeriesIdMap = new HashMap<>();
+        Map<Object, Integer> seriesNames2Num = new HashMap<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            seriesNames2Num.put(seriesNames[i], i);
+        }
+
+        try (Transaction ignored = db.beginTx();
+             Result result = db.execute("MATCH (u)-[r:Like]->(s:Series) where s.seriesName in " + array2String(seriesNames)
+                     + " RETURN s.seriesName + ',' + u.userId + ',' + u.userName + ',' + u.gender + ',' + u.location + ',' + u.birthday + ',' + u.verified")) {
+            while (result.hasNext()) {
+                Map<String, Object> row = result.next();
+                for (Map.Entry<String, Object> column : row.entrySet()) {
+                    String record = (String) column.getValue();
+                    String seriesName = record.substring(0, record.indexOf(','));
+                    String userId = record.substring(record.indexOf(',') + 1);
+                    if (!userSeriesIdMap.containsKey(userId)) {
+                        int[] featureArr = new int[seriesNames.length];
+                        featureArr[seriesNames2Num.get(seriesName)] = 1;
+                        userSeriesIdMap.put(userId, featureArr);
+                    } else {
+                        userSeriesIdMap.get(userId)[seriesNames2Num.get(seriesName)] = 1;
                     }
                 }
             }
@@ -671,5 +704,64 @@ public class QueryFromNeo4j {
             }
         }
         return seriesBoughtInfo;
+    }
+
+    public static String queryUsersOfType(String[] types, GraphDatabaseService db) {
+        StringBuffer str = new StringBuffer();
+        for (String type : types) {
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesType:'" + type + "'})-[:Like]-(u:User) return distinct u.userId")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        str.append(value).append(" ");
+                    }
+                }
+            }
+            str.append("\n");
+        }
+        return str.toString();
+    }
+
+    public static Map<String, Double> querySimSeries(String[] seriesNames, GraphDatabaseService db, Double lowBound) {
+        Map<String, Double> seriesSimMap = new HashMap<>();
+        List<String> seriesList = new ArrayList<>();
+        for(String name : seriesNames){
+            seriesList.add(name);
+        }
+        for (String seriesName : seriesNames) {
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (a:Series{seriesName:'" + seriesName + "'})-[s:Similarity]-(b:Series) where toFloat(s.similarity) > "
+                         + lowBound + " return b.seriesName")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = ((String) column.getValue());
+                        seriesList.add(value);
+                    }
+                }
+            }
+        }
+        for (String s1 : seriesList) {
+            for (String s2 : seriesList) {
+                if (s1.compareTo(s2) > 0) {
+                    try (Transaction ignored = db.beginTx();
+                         Result result = db.execute("match (a:Series{seriesName:'" + s1 + "'})-[s:Similarity]-(b:Series{seriesName:'" + s2
+                                 + "'}) return a.seriesName+','+b.seriesName+','+s.similarity")) {
+                        while (result.hasNext()) {
+                            Map<String, Object> row = result.next();
+                            for (Map.Entry<String, Object> column : row.entrySet()) {
+                                String value = ((String) column.getValue());
+                                String strs[] = value.split(",");
+                                seriesSimMap.put(strs[0]+","+strs[1], Double.parseDouble(strs[2]));
+                                seriesSimMap.put(strs[1] + "," + strs[0], Double.parseDouble(strs[2]));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return seriesSimMap;
     }
 }

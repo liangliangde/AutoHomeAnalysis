@@ -31,6 +31,7 @@ package com.algorithm.LDA;
 import org.kohsuke.args4j.*;
 
 public class LDA {
+	//-est -niters 2000 -savestep 1000 -dir /home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/ldaresult/series_doc  -dfile LDAinput_all.txt
 
 	public static void main(String args[]){
 		LDACmdOption option = new LDACmdOption();

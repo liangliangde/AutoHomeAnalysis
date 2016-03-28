@@ -663,7 +663,7 @@ var RadSet = (function (window, document, $, undefined) {
         var arc = d3.svg.arc()
             .innerRadius(innerRadius)
             .outerRadius(function (d) {
-                return (r - innerRadius) * (d.data.Count / _x.options.SectorHeightTuner) + innerRadius;
+                return (r - innerRadius) * ((d.data.Count + _x.options.SmoothCard)/ _x.options.SectorHeightTuner) + innerRadius;
             })
             .startAngle(function (d) {
                 var cname = d.data.Name;
@@ -794,7 +794,8 @@ var RadSet = (function (window, document, $, undefined) {
                     Count: _x.CatList[cIdx].ConnectedCats[hIdx].Count,
                     //SelCount: 0,
                     InnerRadius: (innerRadius),
-                    OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / _x.options.InnerSectorHeightTuner) + innerRadius),
+                    //OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / _x.options.InnerSectorHeightTuner) + innerRadius),
+                    OuterRadius: (r - innerRadius) * ((_x.CatList[cIdx].ConnectedCats[hIdx].Count + _x.options.SmoothCard*(_x.CatList[cIdx].ConnectedCats[hIdx].Count/_x.CatList[cIdx].Count))/ _x.options.InnerSectorHeightTuner) + innerRadius,
                     StartAngle: (cStartAngle + middleAngle * hIdx),
                     EndAngle: (cStartAngle + middleAngle * (hIdx + 1))
                 };
