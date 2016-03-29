@@ -23,6 +23,26 @@ public class VariousMap {
         return seriesId2DetailMap;
     }
 
+    public static Map<String, Double[]> keyword2Vector() throws IOException {
+        Map<String, Double[]> map = new HashMap<>();
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/word2vector.csv");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            String word = lineTxt.split(":")[0];
+            String vec[] = lineTxt.split(":")[1].split(" ");
+            Double vec2[] = new Double[8];
+            for(int i=0;i<8;i++){
+                vec2[i] = Double.parseDouble(vec[i]);
+            }
+            map.put(word, vec2);
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return map;
+    }
+
     public static Map<String, String> seriesName2Detail() throws IOException {
         //return price, type, oilcost
         Map<String, String> seriesId2DetailMap = new HashMap<>();

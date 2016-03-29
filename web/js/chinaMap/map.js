@@ -122,7 +122,7 @@ function fillColorOfProvince(gkData) {
     for (var i = 0; i < gkData.datas.length; i++) {
         maxTotal = gkData.datas[i].total > maxTotal ? gkData.datas[i].total : maxTotal;
     }
-    var rangeCount = 7;
+    var rangeCount = 10;
     var rateColors = d3.scale.linear()
         .domain([1, rangeCount])
         .range([d3.rgb(205, 223, 251), d3.rgb(75, 108, 156)]);
@@ -209,7 +209,7 @@ function extractCity(china) {
     return cityData;
 }
 
-function drawCircle(cityData, boughtLineList) {
+function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
 
     var countByCity = {},
         locationByCity = {},
@@ -238,7 +238,7 @@ function drawCircle(cityData, boughtLineList) {
             userLoc = boughtLine.userLoc,
             links = linksByOrigin[boughtSite] || (linksByOrigin[boughtSite] = []);
         links.push({source: boughtSite, target: userLoc, num: boughtLine.num});
-        countByCity[boughtSite] = (countByCity[boughtSite] || 0) + 1;
+        countByCity[boughtSite] = (countByCity[boughtSite] || 0) + boughtLine.num;
         countByCity[userLoc] = (countByCity[userLoc] || 1);
     });
 
@@ -247,6 +247,12 @@ function drawCircle(cityData, boughtLineList) {
             var location = [+city.g, +city.l];
             locationByCity[city.name] = location;
             positions.push(projection(location));
+            for (var i = 0; i < AVGPriceofProvince.length; i++) {
+                if (AVGPriceofProvince[i].province === city.name) {
+                    city.avgPrice = AVGPriceofProvince[i].avgPrice;
+                    city.boughtNum = AVGPriceofProvince[i].boughtNum;
+                }
+            }
             return true;
         }
     });
@@ -274,18 +280,26 @@ function drawCircle(cityData, boughtLineList) {
         .enter().append("svg:path")
         .attr("class", "arc")
         .attr("stroke-width", function (d) {
-            if (d.num > 2) {
+            if (d.num > 3) {
                 return d.num;
             }
             return 0;
         })
         .attr("d", function (d) {
-            return path(arc(d));
+            //console.log(d)
+            if(!(d.target == "澳门" || d.source=="澳门"))
+                return path(arc(d));
         });
 
     circles.selectAll("circle")
         .data(cityData)
-        .enter().append("svg:circle")
+        .enter();
+
+    var g2 = circles.selectAll("g")
+        .data(cityData)
+        .enter().append("svg:g");
+
+    g2.append("svg:circle")
         .attr("cx", function (d, i) {
             return positions[i][0];
         })
@@ -293,27 +307,23 @@ function drawCircle(cityData, boughtLineList) {
             return positions[i][1];
         })
         .attr("r", function (d, i) {
-            return Math.sqrt(countByCity[d.name]) * 2;
+            return Math.sqrt(countByCity[d.name])/2;
         });
-    //circles.append("svg:text")
-    //    .data(cityData)
-    //    .attr("transform", function (d) {
-    //        var c = arc.centroid(d),
-    //            x = c[0],
-    //            y = c[1],
-    //            h = Math.sqrt(x * x + y * y);
-    //        return "translate(" + (x / h * labelr) + ',' +
-    //            (y / h * labelr) + ")";
-    //    })
-    //    .attr("dy", ".35em")
-    //    .attr("text-anchor", function (d) {
-    //        //return (d.endAngle + d.startAngle) / 2 > Math.PI ?
-    //        //    "end" : "start";
-    //        return "middle";
-    //    })
-    //    .text(function (d, i) {
-    //        return countByCity[d.name];
-    //    });
+
+    g2.append("svg:text")
+        //.data(cityData)
+        .attr("transform", function (d, i) {
+            return "translate(" + (positions[i][0]) + ',' + (positions[i][1] - 8) + ")";
+        })
+        .attr("dy", ".35em")
+        .attr("text-anchor", function (d) {
+            return "middle";
+        })
+        .text(function (d, i) {
+            if (d.boughtNum > 20) {
+                return d.avgPrice + "(" + d.boughtNum + ")";
+            }
+        });
 }
 
 function showChinaMap(category, _x) {
@@ -347,7 +357,7 @@ function showChinaMap(category, _x) {
 
             var citydata = extractCity(china);
 
-            drawCircle(citydata, category.BoughtLineList);
+            drawCircle(citydata, category.BoughtLineList, category.AVGPriceOfProvince);
         });
 }
 /**

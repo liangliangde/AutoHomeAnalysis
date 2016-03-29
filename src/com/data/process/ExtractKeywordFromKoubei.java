@@ -2,7 +2,6 @@ package com.data.process;
 
 import com.IO.IOProcess;
 import org.ansj.domain.Term;
-import org.ansj.splitWord.analysis.NlpAnalysis;
 import org.ansj.splitWord.analysis.ToAnalysis;
 
 import java.io.*;
@@ -26,8 +25,6 @@ public class ExtractKeywordFromKoubei {
         keywordCountMap = new HashMap<>();
         keywordCountMap_filtered = new HashMap<>();
         Map<String, Map<String, Integer>> map = readFileWithoutSplit("auto_data/koubei.csv");
-//        List<Term> parse = ToAnalysis.parse("前后排空间都不错，横向纵向都不错，但是后备箱空间没有想象中大。但也完全满足了日常使用。（之前开毕加索）");
-//        System.out.println(parse);
         filterKeywords();
         Map<String, Double[]> wordVector = getWordVector(map);
         showWordVector(wordVector);
@@ -151,7 +148,7 @@ public class ExtractKeywordFromKoubei {
     private static String extractAspect(String value, String aspect) {
         String content = "";
         StringBuffer result = new StringBuffer();
-        int index = value.indexOf(aspect) + aspect.length();
+        int index = value.indexOf(aspect) + 1;
         if (index > aspect.length() - 1) {
             int index_end = value.indexOf('【', index);
             if (index_end > -1) {
@@ -167,7 +164,7 @@ public class ExtractKeywordFromKoubei {
                     continue;
                 }
                 String str = term.toString();
-                if (str.indexOf("/") > -1 && (str.substring(str.indexOf("/")).equals("/n")||str.substring(str.indexOf("/")).equals("/v"))) {
+                if (str.indexOf("/") > -1 && (str.substring(str.indexOf("/")).equals("/n") || str.substring(str.indexOf("/")).equals("/v"))) {
                     result.append(term.getName()).append(" ");
                     if (!keywordCountMap.containsKey(term.getName())) {
                         keywordCountMap.put(term.getName(), 1);

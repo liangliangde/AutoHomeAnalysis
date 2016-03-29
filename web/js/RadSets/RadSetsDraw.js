@@ -154,8 +154,8 @@ var RadSet = (function (window, document, $, undefined) {
         header += "<th rowspan='2'>参数</th>";
         header += "<th>" + catgory1.Name + "</th>";
         header += "<th>" + catgory2.Name + "</th></tr>";
-        header += "<th><select><option value='"+style1.Name+"'>" + style1.Name.substring(0,13) + "</option></th>";
-        header += "<th><select><option value='"+style2.Name+"'>" + style2.Name.substring(0,13) + "</option></th></tr>";
+        header += "<th><select><option value='" + style1.Name + "'>" + style1.Name.substring(0, 13) + "</option></th>";
+        header += "<th><select><option value='" + style2.Name + "'>" + style2.Name.substring(0, 13) + "</option></th></tr>";
         header += "</thead>";
 
         //body
@@ -387,7 +387,7 @@ var RadSet = (function (window, document, $, undefined) {
      @for RadSet
      **/
     _x.ShowScoreComparison = function ShowScoreComparison(catgory1, catgory2) {
-        $("#radarHeader").text(catgory1.Name +" vs "+catgory2.Name);
+        $("#radarHeader").text(catgory1.Name + " vs " + catgory2.Name);
         $(".radarChart").empty();
         var data = [];
         var dataExist = false;
@@ -468,7 +468,7 @@ var RadSet = (function (window, document, $, undefined) {
                     content.push(c);
                     hasNumData = true;
                 }
-                if(hasNumData == false){
+                if (hasNumData == false) {
                     return;
                 }
                 break;
@@ -630,8 +630,10 @@ var RadSet = (function (window, document, $, undefined) {
         var labelr = r + 10; // radius for label anchor
 
         var maxDegreeNumbers = _x.ElementsByDegree.length - 1;
-        var innerRadius = r * 0.8;
-        var outerRadius = r;
+        var innerRadius = r * 0.5;
+        var outerRadius = r * 0.7;
+        var innerRadius2 = r * 0.8;
+        var outerRadius2 = r;
         var radialRingSize = outerRadius - innerRadius;
 
         var histoRadSize = radialRingSize / maxDegreeNumbers;
@@ -652,20 +654,13 @@ var RadSet = (function (window, document, $, undefined) {
         donut.value(function (d) {
             return 1;
         });
-        //if (_x.ScaleMode === _x.ScaleModes.Compact) {
-        //    donut.value(function (d) { return d.MaxCountInHistogram(); });
-        //} else if (_x.ScaleMode === _x.ScaleModes.SetSize) {
-        //    donut.value(function (d) { return d.Count; });
-        //} else {
-        //    donut.value(function (d) { return d.Count; });
-        //}
         /**
          * circle picture
          */
         var arc = d3.svg.arc()
             .innerRadius(innerRadius)
             .outerRadius(function (d) {
-                return (r - innerRadius) * ((d.data.Count + _x.options.SmoothCard)/ _x.options.SectorHeightTuner) + innerRadius;
+                return (outerRadius - innerRadius) * ((d.data.Count + _x.options.SmoothCard) / _x.options.SectorHeightTuner) + innerRadius;
             })
             .startAngle(function (d) {
                 var cname = d.data.Name;
@@ -705,6 +700,7 @@ var RadSet = (function (window, document, $, undefined) {
             })
             .attr("transform", "translate(" + (center.x) + "," + (center.y) + ")");
 
+
         var sector_paths = arcs.append("svg:path")
             .on("click", function (d, i) {
                 _x.Select(d.data.Name, -1);
@@ -716,6 +712,34 @@ var RadSet = (function (window, document, $, undefined) {
             .attr("stroke", "black")
             .attr("stroke-width", "1")
             .attr("d", arc);
+
+        //begin lianglei 3.29 add
+        //draw big outer circle
+        var arcFocus = d3.svg.arc()
+            .innerRadius(innerRadius2)
+            .outerRadius(outerRadius2)
+            .startAngle(function (d) {
+                var cname = d.data.Name;
+                var x = d.startAngle + whiteSpaceSize;
+                categoryStartAngles[cname] = x;
+                return x;
+            })
+            .endAngle(function (d) {
+                var cname = d.data.Name;
+                var x = d.endAngle - whiteSpaceSize;
+                categoryEndAngles[cname] = x;
+                return x;
+            });
+
+        arcs.append("svg:path")
+            .attr("class", function (d, i) {
+                return d.data.Name + " Focus Sector";
+            })
+            .attr("fill", options.SectorColor)
+            .attr("stroke", "black")
+            .attr("stroke-width", "1")
+            .attr("d", arcFocus);
+        //end lianglei 3.29 add
 
         if (options.EnableHover) {
             sector_paths.on("mouseover", function (d, i) {
@@ -753,11 +777,6 @@ var RadSet = (function (window, document, $, undefined) {
         //create histogram arcs
         for (var cIdx = _x.CatList.length - 1; cIdx >= 0; cIdx--) {
             var c = _x.CatList[cIdx];
-            //var histos = c.Histograms;
-            var HCount = c.ConnectedCats;
-            //var hCount =0;
-            //for (var hIdx = 0; hIdx < histos.length; hIdx++) {
-            //    var Count = histos[hIdx];}
             if (categoryStartAngles[c.Name] === undefined) {
                 continue;
             }
@@ -770,13 +789,6 @@ var RadSet = (function (window, document, $, undefined) {
             _x.CatList[cIdx].StartAngle = cStartAngle;
             _x.CatList[cIdx].EndAngle = cEndAngle;
             _x.CatList[cIdx].MiddleAngle = cStartAngle + middleAngle;
-
-            //var histos = histos.sort(function (a, b) {
-            //    return (a.Degree - b.Degree);
-            //});
-            //var histosSortByCounts = c.ConnectedCats.sort(function (a, b) {
-            //    return (b.Count - a.Count);
-            //});
 
             var histoDrawObjs = [];
             var histoSelectionDrawObjs = [];
@@ -792,12 +804,9 @@ var RadSet = (function (window, document, $, undefined) {
                 var data = {
                     Name1: c.Name,
                     Name2: c.ConnectedCats[hIdx].Name,
-                    //Degree: h.Degree,
                     Count: _x.CatList[cIdx].ConnectedCats[hIdx].Count,
-                    //SelCount: 0,
                     InnerRadius: (innerRadius),
-                    //OuterRadius: ((r - innerRadius) * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / _x.options.InnerSectorHeightTuner) + innerRadius),
-                    OuterRadius: (r - innerRadius) * ((_x.CatList[cIdx].ConnectedCats[hIdx].Count + _x.options.SmoothCard*(_x.CatList[cIdx].ConnectedCats[hIdx].Count/_x.CatList[cIdx].Count))/ _x.options.InnerSectorHeightTuner) + innerRadius,
+                    OuterRadius: (outerRadius - innerRadius) * ((_x.CatList[cIdx].ConnectedCats[hIdx].Count + _x.options.SmoothCard * (_x.CatList[cIdx].ConnectedCats[hIdx].Count / _x.CatList[cIdx].Count)) / _x.options.InnerSectorHeightTuner) + innerRadius,
                     StartAngle: (cStartAngle + middleAngle * hIdx),
                     EndAngle: (cStartAngle + middleAngle * (hIdx + 1))
                 };
@@ -809,17 +818,6 @@ var RadSet = (function (window, document, $, undefined) {
                     if (selObj !== undefined) {
                         var sel = $.extend({}, data);
                         var diffAngleForHistoSelection = diffAngleForHisto / h.Count * selObj.Count;
-
-                        //if (options.SelectionAlignHistogram === "center") {
-                        //    sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHistoSelection);
-                        //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHistoSelection);
-                        //} else if (options.SelectionAlignHistogram === "left") {
-                        //    sel.StartAngle = (cStartAngle + middleAngle - diffAngleForHisto);
-                        //    sel.EndAngle = (cStartAngle + middleAngle - diffAngleForHisto + (diffAngleForHistoSelection * 2));
-                        //} else if (options.SelectionAlignHistogram === "right") {
-                        //    sel.StartAngle = (cStartAngle + middleAngle + diffAngleForHisto - (diffAngleForHistoSelection * 2));
-                        //    sel.EndAngle = (cStartAngle + middleAngle + diffAngleForHisto);
-                        //}
                         for (var i = 0; i < _data.length; i++) {
                             if (c.Name == _data[i].Name && h.Degree == _data[i].Degree) {
                                 sel.StartAngle = _data[i].StartAngle;
@@ -835,6 +833,7 @@ var RadSet = (function (window, document, $, undefined) {
 
                 histoDrawObjs.push(data);
             }
+
             /**
              * 矩形图
              */
@@ -858,17 +857,13 @@ var RadSet = (function (window, document, $, undefined) {
                 .data(histoDrawObjs)
                 .enter()
                 .append("path")
-            /***
-             * click 事件
-             */
                 .on("click", function (d, i) {
-                    _x.Select(d.Name, d.Degree);
+                    _x.Select(d.Name);
                 })
                 .attr("stroke", "black")
                 .attr("stroke-width", "1")
                 .attr("fill", options.HistoColor)
                 .attr("class", function (d, i) {
-                    //return "Hand Histogram Degree-" + d.Degree;
                     return "Hand Histogram " + d.Name1 + ',' + d.Name2;
                 })
                 .attr("d", HistArc);
@@ -877,6 +872,69 @@ var RadSet = (function (window, document, $, undefined) {
                 .text(function (d, i) {
                     return CreateTooltipForHistogram(d.Degree, d.Count, d.SelCount);
                 });
+
+            //begin lianglei 3.29 add
+            //draw small outer circle
+            var histoDrawObjs_Focus = [];
+            var totalFocus = 0;
+            for (var aspect in c.Focus) {
+                totalFocus += c.Focus[aspect];
+            }
+
+            var curAngle = cStartAngle;
+            for (var aspect in c.Focus) {
+                var data = {
+                    Name: c.Name,
+                    aspect: aspect,
+                    Score: c.Score[aspect].toFixed(2),
+                    Focus: c.Focus[aspect],
+                    InnerRadius: (innerRadius2),
+                    OuterRadius: (outerRadius2 - innerRadius2) * c.Score[aspect] / 5 + innerRadius2,
+                    StartAngle: (curAngle),
+                    EndAngle: (curAngle + cAngleDiff * c.Focus[aspect] / totalFocus)
+                };
+                curAngle += (cAngleDiff * c.Focus[aspect] / totalFocus);
+                //_data.push(data);
+
+                histoDrawObjs_Focus.push(data);
+            }
+
+            var FocusArc = d3.svg.arc()
+                .innerRadius(function (d, i) {
+                    return d.InnerRadius;
+                })
+                .outerRadius(function (d, i) {
+                    return d.OuterRadius;
+                })
+                .startAngle(function (d, i) {
+                    return d.StartAngle;
+                })
+                .endAngle(function (d, i) {
+                    return d.EndAngle;
+                });
+
+            var ele = document.getElementById("sector_" + c.Name);
+            d3.select(ele)
+                .selectAll("path.Focus2")
+                .data(histoDrawObjs_Focus)
+                .enter()
+                .append("path")
+                .on("click", function (d, i) {
+                    _x.Select(d.Name);
+                })
+                .on("mouseover", function (d) {
+
+                })
+                .attr("stroke", "black")
+                .attr("stroke-width", "0.5")
+                .attr("fill", function (d, i) {
+                    return options.FocusColor[d.aspect];
+                })
+                .attr("class", function (d, i) {
+                    return "Hand Histogram Focus " + d.Name + "_" + d.aspect;
+                })
+                .attr("d", FocusArc);
+            //end lianglei 3.29 add
 
             if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {
                 var selectedPaths = d3.select(ele)

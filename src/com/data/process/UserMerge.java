@@ -13,18 +13,13 @@ import java.util.*;
 public class UserMerge {
     public static void main(String args[]) throws IOException {
         Map<String,String> userMap = getExistUsers("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user.csv");
-        FileOutputStream outUserInfo = new FileOutputStream("auto_data/user.csv", true);
-        FileOutputStream outUser_style = new FileOutputStream("auto_data/user_style.csv", true);
-        FileOutputStream outUser_series = new FileOutputStream("auto_data/user_series.csv", true);
+        FileOutputStream outUserInfo = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user.csv", true);
+        FileOutputStream outUser_style = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user_style.csv", true);
+        FileOutputStream outUser_series = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user_series.csv", true);
 
         Set<String> seriesOfUserSet;
-        File[] dists = new File[6];
-        dists[0] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user/user_1_50000");
-        dists[1] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user/user_50001_100000");
-        dists[2] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user/user_100001_150000");
-        dists[3] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user/user_150001_250000");
-        dists[4] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user/user_250001_350000");
-        dists[5] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user/user_350001_end");
+        File[] dists = new File[1];
+        dists[0] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user_1");
         List<File> files_all = new ArrayList<>();
         for (File dist : dists) {
             File[] files = dist.listFiles();
@@ -36,6 +31,7 @@ public class UserMerge {
             if (userMap.containsKey(file.getName())) {
                 continue;
             }
+            System.out.println(file.getName());
             seriesOfUserSet = new HashSet<>();
             InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);

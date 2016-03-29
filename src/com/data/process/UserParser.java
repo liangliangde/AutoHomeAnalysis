@@ -14,11 +14,11 @@ import java.util.Set;
  */
 public class UserParser {
     public static void main(String args[]) throws IOException {
-        FileOutputStream outUserInfo = new FileOutputStream("user.csv");
-        FileOutputStream outUser_user = new FileOutputStream("user_followedBy_user.csv");
-        FileOutputStream outUser_style = new FileOutputStream("user_style.csv");
-        FileOutputStream outUser_series = new FileOutputStream("user_series.csv");
-        File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/user");
+        FileOutputStream outUserInfo = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user.csv");
+        FileOutputStream outUser_user = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user_followedBy_user.csv");
+        FileOutputStream outUser_style = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user_style.csv");
+        FileOutputStream outUser_series = new FileOutputStream("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user_series.csv");
+        File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/user_1");
         Set<String> seriesOfUserSet;
         File[] files = dist.listFiles();
         for(File file : files){

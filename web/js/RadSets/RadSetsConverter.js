@@ -195,6 +195,7 @@ var RadSet = (function (window, document, $, undefined) {
         this.ageVariance = 0;
         this.BoughtLineList = [];
         this.AVGPriceOfProvince = [];
+        this.Focus = {};
     }
 
     /**
@@ -282,7 +283,7 @@ var RadSet = (function (window, document, $, undefined) {
     function BoughtLine(userLoc, boughtSite, num) {
         this.userLoc = userLoc;
         this.boughtSite = boughtSite;
-        this.num = num;
+        this.num = parseFloat(num);
     }
 
     function BoughtPriceOfProvince(province, avgPrice, boughtNum) {
@@ -518,6 +519,7 @@ var RadSet = (function (window, document, $, undefined) {
                 var seriesAimList = result[4];
                 var seriesBoughtLine = result[5];
                 var seriesBoughtPriceOfProvince = result[6];
+                var seriesFocus = result[7];
                 FillStyleOfCategory(styleList);
                 FillGeneralAttrOfCategory(generalAttrListOfSeries);
                 FillAttrOfStyle(attrListOfStyleOfSeries);
@@ -526,6 +528,29 @@ var RadSet = (function (window, document, $, undefined) {
                 FillSeriesAim(seriesAimList);
                 FillSeriesBoughtLine(seriesBoughtLine);
                 FillSeriesBoughtPriceOfProvince(seriesBoughtPriceOfProvince);
+                FillSeriesFocus(seriesFocus);
+            }
+        }
+    }
+
+    function FillSeriesFocus(seriesFocus) {
+        var allTextLines = seriesFocus.split(/\r\n|\n/);
+        var len = allTextLines.length;
+
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt == "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var aspect = lineParts[1];
+            var degree = lineParts[2];
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if (_x.CatList[j].Name == seriesName) {
+                    _x.CatList[j].Focus[aspect] = parseFloat(degree);
+                }
             }
         }
     }

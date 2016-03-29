@@ -201,7 +201,7 @@ public class QueryFromNeo4j {
         }
 
         try (Transaction ignored = db.beginTx();
-             Result result = db.execute("MATCH (u)-[r:Like]->(s:Series) where s.seriesName in " + array2String(seriesNames)
+             Result result = db.execute("MATCH (u)-[r:Like]->(s:Series) where u.location <> '澳门' and s.seriesName in " + array2String(seriesNames)
                      + " RETURN s.seriesName + ',' + u.userId + ',' + u.userName + ',' + u.gender + ',' + u.location + ',' + u.birthday + ',' + u.verified")) {
             while (result.hasNext()) {
                 Map<String, Object> row = result.next();
@@ -684,7 +684,8 @@ public class QueryFromNeo4j {
                         String[] info = value.split(",");
                         String boughtSite = info[2].trim();
                         String userLoc = info[1].trim();
-                        if (boughtSite.equals("其他") || boughtSite.equals("其它") || userLoc.equals("其他") || userLoc.equals("其它"))
+                        if (boughtSite.equals("其他") || boughtSite.equals("其它") || userLoc.equals("其他") || userLoc.equals("其它")
+                                || userLoc.equals("澳门") || userLoc.equals("澳门"))
                             continue;
                         if (!city2ProvinceMap.containsKey(boughtSite)) {
                             System.out.println(boughtSite);
@@ -757,5 +758,24 @@ public class QueryFromNeo4j {
             }
         }
         return seriesSimMap;
+    }
+
+    public static List<String> getFocusOfSeries(String[] seriesNames, GraphDatabaseService db) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (:Series{seriesName:'" + seriesName + "'})-[f:Focus]-(a:Aspect) " +
+                         "return a.name+','+f.degree")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        list.add(seriesName+","+value);
+                    }
+                }
+            }
+        }
+        return list;
     }
 }

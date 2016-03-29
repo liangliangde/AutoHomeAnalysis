@@ -37,6 +37,7 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         List<String> seriesBoughtInfo = QueryFromNeo4j.querySeriesBoughtInfo(seriesNames, db);//query series' boughtsite and user's location
         String seriesBoughtLine = getSeriesBoughtLine(seriesBoughtInfo);
         String seriesBoughtPriceOfProvince = getSeriesBoughtPriceOfProvince(seriesBoughtInfo);
+        List<String> seriesFocusList = QueryFromNeo4j.getFocusOfSeries(seriesNames, db);
 
         db.shutdown();
 
@@ -67,6 +68,9 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         }
         result.append("###");// use "###" to split
         result.append(seriesBoughtLine).append("###").append(seriesBoughtPriceOfProvince).append("###");
+        for (String seriesFocus : seriesFocusList) {
+            result.append(seriesFocus).append("\n");
+        }
         toClient.print(result.toString());
         System.out.println("get series detail ready!");
     }
@@ -88,7 +92,7 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
                 seriesBoughtPriceMap.put(key, seriesBoughtPriceMap.get(key) + Double.parseDouble(price));
             }
         }
-        DecimalFormat df=new DecimalFormat(".##");
+        DecimalFormat df=new DecimalFormat(".#");
         StringBuffer str = new StringBuffer();
         for (Map.Entry<String, Double> entry : seriesBoughtPriceMap.entrySet()) {
             int num = seriesBoughtNumMap.get(entry.getKey());

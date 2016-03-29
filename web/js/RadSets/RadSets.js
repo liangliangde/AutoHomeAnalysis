@@ -31,7 +31,7 @@ var RadSet = (function (window, document, $, undefined) {
          @default 5000
          @for Options
          **/
-        EntryLimit: 20000,
+        EntryLimit: 50000,
         /**
          Idicates if the selected entities will be writen in the log
          @property LogSelectionEntries
@@ -121,6 +121,22 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          */
         HistoColor: "grey",
+        /**
+         Default Histogram color when no other colors are defined in "HistoColors"
+         @property HistoColor
+         @type String
+         @default "grey"
+         @for Options
+         */
+        FocusColor: {
+            "appearance":"#3366CC",
+            "comfort":"#DC3912",
+            "control":"#FF9900",
+            "costPerform":"#109618",
+            "interior":"#990099",
+            "oil":"#0099C6",
+            "power":"rgb(227, 119, 194)",
+            "space":"rgb(140, 86, 75)"},
         /**
          Color of the connection arcs
          @property ConnectionArcColor
@@ -225,11 +241,11 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          @default "4000"
          */
-        SectorHeightTuner: 5000,
+        SectorHeightTuner: 8500,
 
-        InnerSectorHeightTuner: 4000,
+        InnerSectorHeightTuner: 6500,
 
-        SmoothCard: 1500
+        SmoothCard: 2000
     };
 
 
