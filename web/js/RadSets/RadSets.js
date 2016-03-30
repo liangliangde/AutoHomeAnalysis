@@ -129,14 +129,14 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          */
         FocusColor: {
-            "appearance":"#3366CC",
-            "comfort":"#DC3912",
-            "control":"#FF9900",
-            "costPerform":"#109618",
-            "interior":"#990099",
-            "oil":"#0099C6",
-            "power":"rgb(227, 119, 194)",
-            "space":"rgb(140, 86, 75)"},
+            "appearance":"#EFB605",
+            "comfort":"#E3690B",
+            "control":"#CF003E",
+            "costPerform":"#991C71",
+            "space":"rgb(174, 199, 232)",
+            "interior":"#4F54A8",
+            "oil":"#07997E",
+            "power":"#7EB852"},
         /**
          Color of the connection arcs
          @property ConnectionArcColor
@@ -245,7 +245,9 @@ var RadSet = (function (window, document, $, undefined) {
 
         InnerSectorHeightTuner: 6500,
 
-        SmoothCard: 2000
+        SmoothCard: 2000,
+
+        selectedCategory: null
     };
 
 
@@ -279,8 +281,11 @@ var RadSet = (function (window, document, $, undefined) {
         _x.BindKeyListeners();
         _x.BindSearchTextbox(_x.options.SearchTextBox);
         _x.CreateStyleTag();
-
         _x.Draw();
+
+        $("#chooseAspect").change(function () {
+            RadSet.ShowStylePie(_x.options.selectedCategory, $(this).val());
+        });
     };
 
     function SeriesAge(age) {

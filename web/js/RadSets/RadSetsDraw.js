@@ -438,7 +438,7 @@ var RadSet = (function (window, document, $, undefined) {
      @method ShowStylePie
      @for RadSet
      **/
-    _x.ShowStylePie = function ShowStylePie(Name) {
+    _x.ShowStylePie = function ShowStylePie(Name, aspect) {
         $("#styleHeader").text(Name + "具体车型");
         $("#pieChart").empty();
         var color = ["#2484c1", "#0c6197", "#4daa4b", "#90c469", "#daca61", "#e4a14b",
@@ -465,6 +465,7 @@ var RadSet = (function (window, document, $, undefined) {
                     c["label"] = Cat.StyleList[j].Name;
                     c["value"] = Cat.StyleList[j].Num;
                     c["color"] = color[colorNum++];
+                    c["score"] = Cat.StyleList[j].Score[aspect];
                     content.push(c);
                     hasNumData = true;
                 }
@@ -633,7 +634,7 @@ var RadSet = (function (window, document, $, undefined) {
         var innerRadius = r * 0.5;
         var outerRadius = r * 0.7;
         var innerRadius2 = r * 0.8;
-        var outerRadius2 = r;
+        var outerRadius2 = r * 0.9;
         var radialRingSize = outerRadius - innerRadius;
 
         var histoRadSize = radialRingSize / maxDegreeNumbers;
@@ -703,6 +704,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         var sector_paths = arcs.append("svg:path")
             .on("click", function (d, i) {
+                _x.options.selectedCategory = d.data.Name;
                 _x.Select(d.data.Name, -1);
             })
             .attr("class", function (d, i) {
@@ -858,6 +860,7 @@ var RadSet = (function (window, document, $, undefined) {
                 .enter()
                 .append("path")
                 .on("click", function (d, i) {
+                    _x.options.selectedCategory = d.Name;
                     _x.Select(d.Name);
                 })
                 .attr("stroke", "black")
@@ -889,7 +892,7 @@ var RadSet = (function (window, document, $, undefined) {
                     Score: c.Score[aspect].toFixed(2),
                     Focus: c.Focus[aspect],
                     InnerRadius: (innerRadius2),
-                    OuterRadius: (outerRadius2 - innerRadius2) * c.Score[aspect] / 5 + innerRadius2,
+                    OuterRadius: (outerRadius2 - innerRadius2) * (5 - (5 - c.Score[aspect]) * 1.3) / 5 + innerRadius2,
                     StartAngle: (curAngle),
                     EndAngle: (curAngle + cAngleDiff * c.Focus[aspect] / totalFocus)
                 };
@@ -898,6 +901,10 @@ var RadSet = (function (window, document, $, undefined) {
 
                 histoDrawObjs_Focus.push(data);
             }
+
+            var histoDrawObjs_Focus_Sorted = histoDrawObjs_Focus.sort(function (a, b) {
+                return a.aspect > b.aspect;
+            });
 
             var FocusArc = d3.svg.arc()
                 .innerRadius(function (d, i) {
@@ -916,10 +923,11 @@ var RadSet = (function (window, document, $, undefined) {
             var ele = document.getElementById("sector_" + c.Name);
             d3.select(ele)
                 .selectAll("path.Focus2")
-                .data(histoDrawObjs_Focus)
+                .data(histoDrawObjs_Focus_Sorted)
                 .enter()
                 .append("path")
                 .on("click", function (d, i) {
+                    _x.options.selectedCategory = d.Name;
                     _x.Select(d.Name);
                 })
                 .on("mouseover", function (d) {
@@ -927,13 +935,18 @@ var RadSet = (function (window, document, $, undefined) {
                 })
                 .attr("stroke", "black")
                 .attr("stroke-width", "0.5")
-                .attr("fill", function (d, i) {
-                    return options.FocusColor[d.aspect];
-                })
+                //.attr("fill", function (d, i) {
+                //    console.log(d.aspect);
+                //    return options.FocusColor[d.aspect];
+                //})
+                .attr("fill", options.HistoColor)
                 .attr("class", function (d, i) {
-                    return "Hand Histogram Focus " + d.Name + "_" + d.aspect;
+                    return "Hand Histogram " + d.Name + "_" + d.aspect;
                 })
                 .attr("d", FocusArc);
+            //.sort(function (a, b) {
+            //    return b.Focus < a.Focus ? -1 : b.Focus > a.Focus ? 1 : 0;
+            //});
             //end lianglei 3.29 add
 
             if (selectionGrouped !== null && histoSelectionDrawObjs.length > 0) {

@@ -38,6 +38,7 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         String seriesBoughtLine = getSeriesBoughtLine(seriesBoughtInfo);
         String seriesBoughtPriceOfProvince = getSeriesBoughtPriceOfProvince(seriesBoughtInfo);
         List<String> seriesFocusList = QueryFromNeo4j.getFocusOfSeries(seriesNames, db);
+        List<String> seriesStyleScoreList = QueryFromNeo4j.querySeriesStyleScoreList(seriesNames, db);//query style' score
 
         db.shutdown();
 
@@ -70,6 +71,10 @@ public class GetDetailOfSeriesServlet extends HttpServlet {
         result.append(seriesBoughtLine).append("###").append(seriesBoughtPriceOfProvince).append("###");
         for (String seriesFocus : seriesFocusList) {
             result.append(seriesFocus).append("\n");
+        }
+        result.append("###");// use "###" to split
+        for (String seriesStyleScore : seriesStyleScoreList) {
+            result.append(seriesStyleScore).append("\n");
         }
         toClient.print(result.toString());
         System.out.println("get series detail ready!");

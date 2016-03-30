@@ -268,6 +268,7 @@ var RadSet = (function (window, document, $, undefined) {
         this.Name = Name;
         this.Num = parseInt(Num);
         this.attr = [];
+        this.Score = {};
     }
 
     function Attribution(attrName, attrValue) {
@@ -520,6 +521,7 @@ var RadSet = (function (window, document, $, undefined) {
                 var seriesBoughtLine = result[5];
                 var seriesBoughtPriceOfProvince = result[6];
                 var seriesFocus = result[7];
+                var styleScoreList = result[8];
                 FillStyleOfCategory(styleList);
                 FillGeneralAttrOfCategory(generalAttrListOfSeries);
                 FillAttrOfStyle(attrListOfStyleOfSeries);
@@ -529,6 +531,38 @@ var RadSet = (function (window, document, $, undefined) {
                 FillSeriesBoughtLine(seriesBoughtLine);
                 FillSeriesBoughtPriceOfProvince(seriesBoughtPriceOfProvince);
                 FillSeriesFocus(seriesFocus);
+                FillStyleScore(styleScoreList);
+            }
+        }
+    }
+
+    function FillStyleScore(styleScoreList) {
+        var allTextLines = styleScoreList.split(/\r\n|\n/);
+        var len = allTextLines.length;
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt == "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var styleId = lineParts[1];
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if (_x.CatList[j].Name == seriesName) {
+                    for (var k = 0; k < _x.CatList[j].StyleList.length; k++) {
+                        if (_x.CatList[j].StyleList[k].Id === styleId) {
+                            _x.CatList[j].StyleList[k].Score["costPerform"] = parseFloat(lineParts[2]);
+                            _x.CatList[j].StyleList[k].Score["control"] = parseFloat(lineParts[3]);
+                            _x.CatList[j].StyleList[k].Score["space"] = parseFloat(lineParts[4]);
+                            _x.CatList[j].StyleList[k].Score["comfort"] = parseFloat(lineParts[5]);
+                            _x.CatList[j].StyleList[k].Score["interior"] = parseFloat(lineParts[6]);
+                            _x.CatList[j].StyleList[k].Score["oil"] = parseFloat(lineParts[7]);
+                            _x.CatList[j].StyleList[k].Score["appearance"] = parseFloat(lineParts[8]);
+                            _x.CatList[j].StyleList[k].Score["power"] = parseFloat(lineParts[9]);
+                        }
+                    }
+                }
             }
         }
     }

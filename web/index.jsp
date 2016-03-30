@@ -101,6 +101,19 @@
     </div>
     <div class="ui-layout-south">
         <div id="styleHeader" class="header">具体车型</div>
+        <div align="right" style="margin-top: 5px;margin-right: 5px;">
+            对比：
+            <select id="chooseAspect">
+                <option value="costPerform">性价比</option>
+                <option value="control">操控</option>
+                <option value="space">空间</option>
+                <option value="comfort">舒适度</option>
+                <option value="interior">内饰</option>
+                <option value="oil">油耗</option>
+                <option value="appearance">外观</option>
+                <option value="power">动力</option>
+            </select>
+        </div>
         <div id="pieChart"></div>
     </div>
 </div>
@@ -112,7 +125,7 @@
     <div class="ui-layout-south">
         <div class="header">具体参数对比</div>
         <div class="content">
-            <div> <label id="lblSelection"></label> </div>
+            <div><label id="lblSelection"></label></div>
             <div id="divSelEntities">
                 <table id="seriesComparison" class="Entities" border="1">
                 </table>
@@ -181,7 +194,7 @@
             , fxSettings_open: {easing: ""}
             , childOptions: {
                 south: {
-                    size: 360
+                    size: 400
                 }
             }
         }

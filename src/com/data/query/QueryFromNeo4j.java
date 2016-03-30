@@ -565,6 +565,26 @@ public class QueryFromNeo4j {
         return seriesScoreList;
     }
 
+    public static List<String> querySeriesStyleScoreList(String[] seriesNames, GraphDatabaseService db) {
+        List<String> seriesScoreList = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
+                         "return se.seriesName+','+s.styleId+','+avg(toInt(k.costPerform))+','+avg(toInt(k.control))+','+avg(toInt(k.space))+','+avg(toInt(k.comfort))" +
+                         "+','+avg(toInt(k.interior))+','+avg(toInt(k.oil))+','+avg(toInt(k.appearence))+','+avg(toInt(k.power))")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        seriesScoreList.add(value);
+                    }
+                }
+            }
+        }
+        return seriesScoreList;
+    }
+
     public static List<String> queryKoubeiDetailofSeries(String[] seriesNames, String aspect, GraphDatabaseService db) {
         Map<String, String> eng2ChiAspectMap = new HashMap<>();
         eng2ChiAspectMap.put("外观", "appearence");

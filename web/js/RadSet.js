@@ -26,8 +26,6 @@ $(function () {
         }
     });
 
-
-
     var options = {
         File: "data/users.csv",
         EntryLimit: 30000,

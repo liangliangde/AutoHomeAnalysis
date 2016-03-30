@@ -372,7 +372,7 @@ var RadSet = (function (window, document, $, undefined) {
             }
         }
 
-        _x.ShowStylePie(category);
+        _x.ShowStylePie(category, "costPerform");
         _x.ShowCloudTag(category);
         showChinaMap(cat, _x);
     };
