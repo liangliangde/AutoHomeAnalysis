@@ -8,10 +8,8 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 
 import static com.IO.IOProcess.writeFile;
 
@@ -529,6 +527,48 @@ public class QueryFromNeo4j {
         return style2SaleList;
     }
 
+    public static List<String> queryBoughtTimeOfStyle(String seriesNames[], GraphDatabaseService db) {
+        List<String> list = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("0.00");
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            Map<String, Double> totalPriceMap = new HashMap<>();
+            Map<String, Integer> totalNumMap = new HashMap<>();
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (se:Series{seriesName:'" + seriesName + "'})-[:Has]->(s:Style)<-[:About]-(k:Koubei) " +
+                         "return s.styleId+','+k.boughtTime+','+k.price")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        String[] valueArr = value.split(",");
+                        String styleId = valueArr[0];
+                        String boughtTime = valueArr[1];
+                        Double price = Double.parseDouble(valueArr[2].substring(0, valueArr[2].indexOf(" ")));
+                        int year = Integer.parseInt(boughtTime.substring(0, 4));
+                        if (year < 2015)
+                            continue;
+                        int month = Integer.parseInt(boughtTime.substring(boughtTime.indexOf("年") + 1, boughtTime.indexOf("月")));
+                        int time2Num = (year - 2015) * 12 + month;
+                        String key = styleId + "," + time2Num;
+                        if (!totalNumMap.containsKey(key)) {
+                            totalNumMap.put(key, 1);
+                            totalPriceMap.put(key, price);
+                        } else {
+                            totalNumMap.put(key, totalNumMap.get(key) + 1);
+                            totalPriceMap.put(key, totalPriceMap.get(key) + price);
+                        }
+                    }
+                }
+            }
+            for (Map.Entry<String, Double> entry : totalPriceMap.entrySet()) {
+                list.add(seriesName + "," + entry.getKey() + "," + df.format(entry.getValue() / totalNumMap.get(entry.getKey()))
+                        + "," + totalNumMap.get(entry.getKey()));
+            }
+        }
+        return list;
+    }
+
     public static List<String> queryAttrOfStyle(String styleId, GraphDatabaseService db) {
         List<String> attrList = new ArrayList<>();
         try (Transaction ignored = db.beginTx();
@@ -791,7 +831,7 @@ public class QueryFromNeo4j {
                     Map<String, Object> row = result.next();
                     for (Map.Entry<String, Object> column : row.entrySet()) {
                         String value = (String) column.getValue();
-                        list.add(seriesName+","+value);
+                        list.add(seriesName + "," + value);
                     }
                 }
             }

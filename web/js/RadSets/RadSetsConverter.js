@@ -266,9 +266,16 @@ var RadSet = (function (window, document, $, undefined) {
     function Style(Id, Name, Num) {
         this.Id = Id;
         this.Name = Name;
-        this.Num = parseInt(Num);
+        this.Num = parseInt(Num);//total sale num
         this.attr = [];
         this.Score = {};
+        this.Sale = [];
+    }
+
+    function SaleNumAndTime(num, boughtTime, avgPrice){
+        this.SaleNum = num;
+        this.boughtTime = parseInt(boughtTime);
+        this.avgPrice = avgPrice;
     }
 
     function Attribution(attrName, attrValue) {
@@ -522,6 +529,7 @@ var RadSet = (function (window, document, $, undefined) {
                 var seriesBoughtPriceOfProvince = result[6];
                 var seriesFocus = result[7];
                 var styleScoreList = result[8];
+                var styleBoughtTimePriceList = result[9];
                 FillStyleOfCategory(styleList);
                 FillGeneralAttrOfCategory(generalAttrListOfSeries);
                 FillAttrOfStyle(attrListOfStyleOfSeries);
@@ -532,6 +540,35 @@ var RadSet = (function (window, document, $, undefined) {
                 FillSeriesBoughtPriceOfProvince(seriesBoughtPriceOfProvince);
                 FillSeriesFocus(seriesFocus);
                 FillStyleScore(styleScoreList);
+                FillStyleBoughtTimePriceList(styleBoughtTimePriceList);
+            }
+        }
+    }
+
+    function FillStyleBoughtTimePriceList(styleBoughtTimePriceList) {
+        var allTextLines = styleBoughtTimePriceList.split(/\r\n|\n/);
+        var len = allTextLines.length;
+
+        for (var i = 0; i < len; i++) {
+            var lineTxt = allTextLines[i];
+            if (lineTxt == "") {
+                continue;
+            }
+            var lineParts = lineTxt.split(",");
+            var seriesName = lineParts[0];
+            var styleId = lineParts[1];
+            var boughtTime = lineParts[2];
+            var avgPrice = parseFloat(lineParts[3]);
+            var saleNum = parseInt(lineParts[4]);
+            var catNum = _x.CatList.length;
+            for (var j = 0; j < catNum; j++) {
+                if (_x.CatList[j].Name == seriesName) {
+                    for(var k=0;k<_x.CatList[j].StyleList.length;k++){
+                        if(_x.CatList[j].StyleList[k].Id === styleId){
+                            _x.CatList[j].StyleList[k].Sale.push(new SaleNumAndTime(saleNum, boughtTime, avgPrice));
+                        }
+                    }
+                }
             }
         }
     }

@@ -100,6 +100,14 @@
         </h2>
     </div>
     <div class="ui-layout-south">
+        <div id="timeBarHeader" class="header">销量图</div>
+        <div id="seriesTimeBar"></div>
+    </div>
+</div>
+<div class="ui-layout-east">
+    <div class="ui-layout-center">
+        <%--<div id="radarHeader" class="header">评分对比</div>--%>
+        <%--<div class="radarChart"></div>--%>
         <div id="styleHeader" class="header">具体车型</div>
         <div align="right" style="margin-top: 5px;margin-right: 5px;">
             对比：
@@ -116,12 +124,6 @@
         </div>
         <div id="pieChart"></div>
     </div>
-</div>
-<div class="ui-layout-east">
-    <div class="ui-layout-center">
-        <div id="radarHeader" class="header">评分对比</div>
-        <div class="radarChart"></div>
-    </div>
     <div class="ui-layout-south">
         <div class="header">具体参数对比</div>
         <div class="content">
@@ -137,10 +139,7 @@
 
 </div>
 <div id="mainContent">
-    <div class="content"><a id="reload" href="#">Reload</a>&nbsp;&nbsp; <a
-            id="clearSel" href="#"><b><font color="#d64741">Clear Selection</font></b></a>
-        <span class="float-right"> <label>Search:</label>
-                    <input id="txtSearch" value="" type="text"> </span>
+    <div class="content"><a id="reload" href="#">刷新</a>
 
         <div id="radialset">
             <svg></svg>
@@ -194,7 +193,7 @@
             , fxSettings_open: {easing: ""}
             , childOptions: {
                 south: {
-                    size: 400
+                    size: 600
                 }
             }
         }
@@ -272,5 +271,6 @@
 <script src="js/radarChart/radarChart.js"></script>
 <script src="js/pie/d3pie.js"></script>
 <script src="js/chinaMap/map.js"></script>
+<script src="js/timeBar/seriesTimeBar.js"></script>
 </body>
 </html>

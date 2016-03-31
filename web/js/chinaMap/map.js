@@ -1,6 +1,6 @@
 var container,
-    width = 800,
-    height = 600,
+    width = 750,
+    height = 550,
     colors;
 var mouseDuration = 250,        //鼠标移动动画时长
     duration = 1000;
@@ -269,9 +269,9 @@ function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
         .attr("d", function (d, i) {
             return "M" + polygons[i].join("L") + "Z";
         })
-        .on("mouseover", function (d, i) {
-            d3.select("h2 span").text(d.name);
-        });
+        //.on("mouseover", function (d, i) {
+        //    d3.select("h2 span").text(d.name);
+        //});
 
     g.selectAll("path.arc")
         .data(function (d) {

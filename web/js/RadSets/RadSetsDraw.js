@@ -478,9 +478,9 @@ var RadSet = (function (window, document, $, undefined) {
 
         var pie = new d3pie("pieChart", {
             "size": {
-                "canvasWidth": 700,
-                "canvasHeight": 350,
-                "pieOuterRadius": "70%"
+                "canvasWidth": 500,
+                "canvasHeight": 300,
+                "pieOuterRadius": "80%"
             },
             "data": {
                 "sortOrder": "value-asc",

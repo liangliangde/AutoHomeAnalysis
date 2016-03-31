@@ -282,6 +282,7 @@ var RadSet = (function (window, document, $, undefined) {
         _x.BindSearchTextbox(_x.options.SearchTextBox);
         _x.CreateStyleTag();
         _x.Draw();
+        showSeriesTimeBar(_x.CatList[_x.CatList.length-1]);
 
         $("#chooseAspect").change(function () {
             RadSet.ShowStylePie(_x.options.selectedCategory, $(this).val());

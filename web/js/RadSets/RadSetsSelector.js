@@ -374,6 +374,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         _x.ShowStylePie(category, "costPerform");
         _x.ShowCloudTag(category);
+        showSeriesTimeBar(cat);
         showChinaMap(cat, _x);
     };
 
