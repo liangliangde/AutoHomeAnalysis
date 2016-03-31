@@ -1,9 +1,10 @@
 function showSeriesTimeBar(category) {
     $("#seriesTimeBar").empty();
-    var width = 850;	//SVG绘制区域的宽度
-    var height = 500;	//SVG绘制区域的高度
+    var width = 800;	//SVG绘制区域的宽度
+    var height = 300;	//SVG绘制区域的高度
+    var monthlimit = 13;
     //外边框
-    var padding = {left: 50, right: 280, top: 30, bottom: 200};
+    var padding = {left: 50, right: 280, top: 30, bottom: 50};
 
     var svg = d3.select("#seriesTimeBar")			//选择<body>
         .append("svg")			//在<body>中添加<svg>
@@ -30,7 +31,7 @@ function showSeriesTimeBar(category) {
         data["sales"] = [];
         var Sale = category.StyleList[i].Sale;
         var curTimeNum = 1;
-        while (curTimeNum < 16) {
+        while (curTimeNum <= monthlimit) {
             var year, month;
             if (curTimeNum > 12) {
                 year = 2016;
@@ -148,7 +149,8 @@ function showSeriesTimeBar(category) {
     svg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(" + padding.left + "," + (height - padding.bottom) + ")")
-        .call(xAxis).selectAll("text")
+        .call(xAxis)
+        .selectAll("text")
         .attr("dy", ".35em")
         .attr("transform", "rotate(45)")
         .style("text-anchor", "start");
@@ -163,19 +165,29 @@ function showSeriesTimeBar(category) {
     var labRadius = 10;
 
     var labelCircle = groups.append("rect")
-        .attr("x",function(d){ return width - padding.right*0.98; })
-        .attr("y",function(d,i){ return padding.top *2 + (labHeight+8) * i; })
+        .attr("x", function (d) {
+            return width - padding.right * 0.9;
+        })
+        .attr("y", function (d, i) {
+            return padding.top * 2 + (labHeight + 8) * i;
+        })
         .attr("width", labHeight)
         .attr("height", labHeight);
-        //.attr("cx",function(d){ return width - padding.right*0.98; })
-        //.attr("cy",function(d,i){ return padding.top * 2 + labHeight * i; })
-        //.attr("r",labRadius);
+    //.attr("cx",function(d){ return width - padding.right*0.98; })
+    //.attr("cy",function(d,i){ return padding.top * 2 + labHeight * i; })
+    //.attr("r",labRadius);
 
     var labelText = groups.append("text")
-        .attr("x",function(d){ return width - padding.right*0.98 + labHeight * 1.2; })
-        .attr("y",function(d,i){ return padding.top *2 + (labHeight+8) * i + labHeight/2; })
-        .attr("dy",labRadius/2)
+        .attr("x", function (d) {
+            return width - padding.right * 0.9 + labHeight * 1.2;
+        })
+        .attr("y", function (d, i) {
+            return padding.top * 2 + (labHeight + 8) * i + labHeight / 2;
+        })
+        .attr("dy", labRadius / 2)
         .attr("fill", "black")
-        .text(function(d){ return d.name; });
+        .text(function (d) {
+            return d.name;
+        });
 
 }

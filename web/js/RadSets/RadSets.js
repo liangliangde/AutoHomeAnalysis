@@ -283,7 +283,7 @@ var RadSet = (function (window, document, $, undefined) {
         _x.CreateStyleTag();
         _x.Draw();
         showSeriesTimeBar(_x.CatList[_x.CatList.length-1]);
-
+        showStreamArea(_x.CatList);
         $("#chooseAspect").change(function () {
             RadSet.ShowStylePie(_x.options.selectedCategory, $(this).val());
         });

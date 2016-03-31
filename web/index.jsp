@@ -65,6 +65,38 @@
             display: inherit;
         }
 
+        #vis {
+            padding-top: 15px;
+        }
+
+        /*svg {*/
+            /*display: block;*/
+            /*/!*margin: auto;*!/*/
+        /*}*/
+
+        .line {
+            fill: none;
+            stroke: #000;
+            stroke-width: 2px;
+        }
+
+        .axis {
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis line {
+            stroke: #ddd;
+            stroke-opacity: 0.6;
+        }
+
+        .x.axis path {
+            display: none;
+        }
+
+        footer p {
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -102,6 +134,8 @@
     <div class="ui-layout-south">
         <div id="timeBarHeader" class="header">销量图</div>
         <div id="seriesTimeBar"></div>
+        <div id="seriesTimeBarDown"></div>
+        <%--<div id="legend"></div>--%>
     </div>
 </div>
 <div class="ui-layout-east">
@@ -272,5 +306,6 @@
 <script src="js/pie/d3pie.js"></script>
 <script src="js/chinaMap/map.js"></script>
 <script src="js/timeBar/seriesTimeBar.js"></script>
+<script src="js/timeBar/streamArea.js"></script>
 </body>
 </html>
