@@ -9,7 +9,10 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.IO.IOProcess.writeFile;
 
@@ -29,7 +32,10 @@ public class QueryFromNeo4j {
 //        int candNum = 10;
 //        List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
 ////        System.out.print(list2String(candSeries));
-        querySeriesBoughtInfo(new String[]{"奥迪A4L"}, db);
+        List<String> list = querySeriesAimList(new String[]{"宝马3系","奥迪A4L","奔驰C级","凯迪拉克ATS-L","英菲尼迪Q50L","沃尔沃S60L","沃尔沃V60"}, db);
+        for(String str : list){
+            System.out.println(str);
+        }
         db.shutdown();
     }
 
@@ -835,6 +841,31 @@ public class QueryFromNeo4j {
                     }
                 }
             }
+        }
+        return list;
+    }
+
+    public static List<String> getAvgAgeOfBoughtUsersOfSeries(String[] seriesNames, GraphDatabaseService db) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < seriesNames.length; i++) {
+            String seriesName = seriesNames[i];
+            int totalAge = 0;
+            int count = 0;
+            try (Transaction ignored = db.beginTx();
+                 Result result = db.execute("match (:Series{seriesName:'" + seriesName + "'})-[:Has]-(:Style)-[:About]-(Koubei)-[:Release]-(u:User) " +
+                         "return u.birthday")) {
+                while (result.hasNext()) {
+                    Map<String, Object> row = result.next();
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String value = (String) column.getValue();
+                        if (!value.equals("null")) {
+                            totalAge += (2016 - Integer.parseInt(value.substring(0, 4)));
+                            count++;
+                        }
+                    }
+                }
+            }
+            System.out.println(seriesName + ", " + 1.0 * totalAge / count);
         }
         return list;
     }

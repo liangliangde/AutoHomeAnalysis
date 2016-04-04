@@ -7,10 +7,7 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by llei on 16-3-22.
@@ -19,15 +16,17 @@ public class CreateMainGraphData_new {
     //select candidate series only by common users
 
     public static void main(String[] args) throws IOException {
-        String[] seriesNames = {"宝马3系", "奥迪A4L"};
+        String[] seriesNames = {"宝马3系", "奥迪A4L", "奔驰C级", "凯迪拉克ATS-L", "英菲尼迪Q50L", "雷克萨斯ES", "皇冠"};
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(QueryFromNeo4j.getBaseURL());
-        int candNum = 7;
-        Double lowBound = 0.7;
-        Map<String, Double> seriesLDASimMap = QueryFromNeo4j.querySimSeries(seriesNames, db, lowBound);
-        Map<String, String[]> seriesName2DetailMap = getSeriesName2Detail(seriesNames, seriesLDASimMap);
-        List<String> candList = getCandidate(seriesNames, seriesName2DetailMap, seriesLDASimMap, candNum);
-        Map<String, int[]> users = QueryFromNeo4j.queryUserBySeriesName(candList.toArray(), db);
-        createUsersCSV(candList, users);
+//        int candNum = 7;
+//        Double lowBound = 0.7;
+//        Map<String, Double> seriesLDASimMap = QueryFromNeo4j.querySimSeries(seriesNames, db, lowBound);
+//        Map<String, String[]> seriesName2DetailMap = getSeriesName2Detail(seriesNames, seriesLDASimMap);
+//        List<String> candList = getCandidate(seriesNames, seriesName2DetailMap, seriesLDASimMap, candNum);
+//        Map<String, int[]> users = QueryFromNeo4j.queryUserBySeriesName(candList.toArray(), db);
+//        createUsersCSV(candList, users);
+        Map<String, int[]> users = QueryFromNeo4j.queryUserBySeriesName(seriesNames, db);
+        createUsersCSV(Arrays.asList(seriesNames), users);
         db.shutdown();
     }
 

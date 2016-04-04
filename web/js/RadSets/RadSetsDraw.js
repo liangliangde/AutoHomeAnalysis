@@ -616,7 +616,7 @@ var RadSet = (function (window, document, $, undefined) {
 
         var winHeight = $("#mainContent").height();
         var winWidth = $("#mainContent").width();
-        var center = {y: winHeight / 2, x: winWidth / 2};
+        var center = {y: winWidth / 2, x: winWidth / 2};
         var paddingToBody = 150;
         var percentOfWhiteSpace = 5;
 
@@ -685,8 +685,8 @@ var RadSet = (function (window, document, $, undefined) {
         var vis = d3.select(radialset)
             .append("svg:svg")
             .data([_x.CatList])
-            .attr("width", winWidth - 50)
-            .attr("height", winHeight - 50);
+            .attr("width", winWidth)
+            .attr("height", winWidth);
 
         //CreateGradients(vis, 5, "#006600", "#000066");
 
@@ -715,6 +715,7 @@ var RadSet = (function (window, document, $, undefined) {
             .attr("stroke-width", "1")
             .attr("d", arc);
 
+
         //begin lianglei 3.29 add
         //draw big outer circle
         var arcFocus = d3.svg.arc()
@@ -739,7 +740,7 @@ var RadSet = (function (window, document, $, undefined) {
             })
             .attr("fill", options.SectorColor)
             .attr("stroke", "black")
-            .attr("stroke-width", "1")
+            .attr("stroke-width", "0.8")
             .attr("d", arcFocus);
         //end lianglei 3.29 add
 
@@ -864,7 +865,7 @@ var RadSet = (function (window, document, $, undefined) {
                     _x.Select(d.Name);
                 })
                 .attr("stroke", "black")
-                .attr("stroke-width", "1")
+                .attr("stroke-width", "0.8")
                 .attr("fill", options.HistoColor)
                 .attr("class", function (d, i) {
                     return "Hand Histogram " + d.Name1 + ',' + d.Name2;
@@ -892,7 +893,7 @@ var RadSet = (function (window, document, $, undefined) {
                     Score: c.Score[aspect].toFixed(2),
                     Focus: c.Focus[aspect],
                     InnerRadius: (innerRadius2),
-                    OuterRadius: (outerRadius2 - innerRadius2) * (5 - (5 - c.Score[aspect]) * 1.3) / 5 + innerRadius2,
+                    OuterRadius: (outerRadius2 - innerRadius2) * (5 - (5 - c.Score[aspect]) * 2) / 5 + innerRadius2,
                     StartAngle: (curAngle),
                     EndAngle: (curAngle + cAngleDiff * c.Focus[aspect] / totalFocus)
                 };
@@ -934,12 +935,12 @@ var RadSet = (function (window, document, $, undefined) {
 
                 })
                 .attr("stroke", "black")
-                .attr("stroke-width", "0.5")
-                //.attr("fill", function (d, i) {
-                //    console.log(d.aspect);
-                //    return options.FocusColor[d.aspect];
-                //})
-                .attr("fill", options.HistoColor)
+                .attr("stroke-width", "0.3")
+                .attr("fill", function (d, i) {
+                    console.log(d.aspect);
+                    return options.FocusColor[d.aspect];
+                })
+                //.attr("fill", options.HistoColor)
                 .attr("class", function (d, i) {
                     return "Hand Histogram " + d.Name + "_" + d.aspect;
                 })
@@ -1348,8 +1349,47 @@ var RadSet = (function (window, document, $, undefined) {
         var selectedEntries = (_x.CurrentSelection !== null) ? _x.CurrentSelection.Entries : null;
         _x.ShowTupleHistogram(_x.options.TableItemSetsID, selectedEntries, maxConnectedArcCount);
 
-        _x.log("end draw function");
+        //lianglei 4.4 added begin
+        var labHeight = 16;
+        var labRadius = 10;
+        var topPadding = 20;
+        var aspectData = [];
+        for (var obj in _x.options.FocusColor) {
+            aspectData.push({"aspect": obj, "color": _x.options.FocusColor[obj]});
+        }
 
+        var legend = vis.append("svg:g").attr("class", "legend");
+        var aspectLegend = legend.selectAll(".aspectLegend")
+            .data(aspectData)
+            .enter()
+            .append("g");
+        aspectLegend.append("rect")
+            .attr("x", function (d) {
+                return winWidth - 100;
+            })
+            .attr("y", function (d, i) {
+                return topPadding + (labHeight + 8) * i;
+            })
+            .attr("width", labHeight)
+            .attr("height", labHeight)
+            .style("fill", function (d) {
+                return d.color;
+            });
+        aspectLegend.append("text")
+            .attr("x", function (d) {
+                return winWidth - 80;
+            })
+            .attr("y", function (d, i) {
+                return topPadding + (labHeight + 8) * i + labHeight / 2;
+            })
+            .attr("dy", labRadius / 2)
+            .attr("fill", "black")
+            .text(function (d) {
+                return _x.options.Eng2Chin[d.aspect];
+            });
+        //lianglei 4.4 added end
+
+        _x.log("end draw function");
     };
 
 

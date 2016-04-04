@@ -1,8 +1,12 @@
 package com.data.process;
 
+import org.neo4j.cypher.internal.compiler.v1_9.symbols.IntegerType;
+
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by llei on 16-3-3.
@@ -25,7 +29,7 @@ public class VariousMap {
 
     public static Map<String, Double[]> keyword2Vector() throws IOException {
         Map<String, Double[]> map = new HashMap<>();
-        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/word2vector.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/word2vector_n_a.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -33,7 +37,7 @@ public class VariousMap {
             String word = lineTxt.split(":")[0];
             String vec[] = lineTxt.split(":")[1].split(" ");
             Double vec2[] = new Double[8];
-            for(int i=0;i<8;i++){
+            for (int i = 0; i < 8; i++) {
                 vec2[i] = Double.parseDouble(vec[i]);
             }
             map.put(word, vec2);
@@ -262,5 +266,19 @@ public class VariousMap {
         inputStreamReader.close();
         bufferedReader.close();
         return simBtTypesMap;
+    }
+
+    public static Set<String> getAdj() throws IOException {
+        Set<String> set = new HashSet<>();
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/adjwords.csv");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            set.add(lineTxt);
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return set;
     }
 }

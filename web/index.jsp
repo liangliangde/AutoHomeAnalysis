@@ -135,7 +135,6 @@
         <div id="timeBarHeader" class="header">销量图</div>
         <div id="seriesTimeBar"></div>
         <div id="seriesTimeBarDown"></div>
-        <%--<div id="legend"></div>--%>
     </div>
 </div>
 <div class="ui-layout-east">
@@ -227,7 +226,7 @@
             , fxSettings_open: {easing: ""}
             , childOptions: {
                 south: {
-                    size: 600
+                    size: 550
                 }
             }
         }

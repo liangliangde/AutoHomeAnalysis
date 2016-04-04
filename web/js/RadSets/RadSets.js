@@ -129,14 +129,14 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          */
         FocusColor: {
-            "appearance":"#EFB605",
-            "comfort":"#E3690B",
-            "control":"#CF003E",
-            "costPerform":"#991C71",
-            "space":"rgb(174, 199, 232)",
-            "interior":"#4F54A8",
-            "oil":"#07997E",
-            "power":"#7EB852"},
+            "appearance":"#8dd3c7",
+            "comfort":"#ffffb3",
+            "control":"#bebada",
+            "costPerform":"#fb8072",
+            "space":"#80b1d3",
+            "interior":"#fdb462",
+            "oil":"#b3de69",
+            "power":"#fccde5"},
         /**
          Color of the connection arcs
          @property ConnectionArcColor
@@ -247,7 +247,17 @@ var RadSet = (function (window, document, $, undefined) {
 
         SmoothCard: 2000,
 
-        selectedCategory: null
+        selectedCategory: null,
+
+        Eng2Chin: {
+            "appearance":"外观",
+            "comfort":"舒适度",
+            "control":"操控",
+            "costPerform":"性价比",
+            "space":"空间",
+            "interior":"内饰",
+            "oil":"油耗",
+            "power":"动力"}
     };
 
 

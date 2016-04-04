@@ -19,7 +19,7 @@ public class UserMerge {
 
         Set<String> seriesOfUserSet;
         File[] dists = new File[1];
-        dists[0] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/user_1");
+        dists[0] = new File("/home/llei/pythonworkspace/myspider-spider/myspider/autohome/importantUsers");
         List<File> files_all = new ArrayList<>();
         for (File dist : dists) {
             File[] files = dist.listFiles();

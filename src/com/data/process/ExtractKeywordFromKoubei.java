@@ -28,6 +28,7 @@ public class ExtractKeywordFromKoubei {
         filterKeywords();
         Map<String, Double[]> wordVector = getWordVector(map);
         showWordVector(wordVector);
+
     }
 
     private static void showWordVector(Map<String, Double[]> wordVector) throws IOException {
@@ -35,14 +36,15 @@ public class ExtractKeywordFromKoubei {
         StringBuffer str = new StringBuffer();
         for (Map.Entry<String, Double[]> entry : wordVector.entrySet()) {
             Double maxProp = getMaxProp(entry.getValue());
-            if (maxProp < .6) continue;
-            str.append(entry.getKey() + ":");
-            for (int i = 0; i < entry.getValue().length; i++) {
-                str.append(df.format(entry.getValue()[i]) + " ");
-            }
-            str.append("\n");
+//            if (maxProp < .6) continue;
+//            str.append(entry.getKey() + ":");
+//            for (int i = 0; i < entry.getValue().length; i++) {
+//                str.append(df.format(entry.getValue()[i]) + " ");
+//            }
+//            str.append("\n");
+            str.append(entry.getKey() + "\n");
         }
-        IOProcess.writeFile("auto_data/word2vector.csv", str.toString());
+        IOProcess.writeFile("auto_data/adjwords.csv", str.toString());
     }
 
     private static Double getMaxProp(Double[] value) {
@@ -81,7 +83,7 @@ public class ExtractKeywordFromKoubei {
 
     private static void filterKeywords() {
         for (Map.Entry<String, Integer> entry : keywordCountMap.entrySet()) {
-            if (entry.getValue() > 100) {
+            if (entry.getValue() > 200) {
                 keywordCountMap_filtered.put(entry.getKey(), entry.getValue());
             }
         }
@@ -145,10 +147,10 @@ public class ExtractKeywordFromKoubei {
         return map;
     }
 
-    private static String extractAspect(String value, String aspect) {
+    public static String extractAspect(String value, String aspect) {
         String content = "";
         StringBuffer result = new StringBuffer();
-        int index = value.indexOf(aspect) + 1;
+        int index = value.indexOf(aspect) + aspect.length();
         if (index > aspect.length() - 1) {
             int index_end = value.indexOf('【', index);
             if (index_end > -1) {
@@ -159,12 +161,14 @@ public class ExtractKeywordFromKoubei {
         }
         if (!content.equals("")) {
             List<Term> parse = ToAnalysis.parse(content);
+//            System.out.println(parse);
             for (Term term : parse) {
                 if (term.getName().length() < 2) {
                     continue;
                 }
                 String str = term.toString();
-                if (str.indexOf("/") > -1 && (str.substring(str.indexOf("/")).equals("/n") || str.substring(str.indexOf("/")).equals("/v"))) {
+                String wordType = str.substring(str.indexOf("/"));
+                if (str.indexOf("/") > -1 && (wordType.equals("/a") || wordType.equals("/ad"))) {
                     result.append(term.getName()).append(" ");
                     if (!keywordCountMap.containsKey(term.getName())) {
                         keywordCountMap.put(term.getName(), 1);

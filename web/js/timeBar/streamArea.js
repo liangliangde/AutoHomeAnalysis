@@ -1,20 +1,21 @@
 var area, areas, color, createLegend, data, display, duration, areaheight, hideLegend, line, showLegend, stack, stackedAreas, start, streamgraph, svg, transitionTo, areawidth, x, xAxis, y;
 var monthlimit = 13;
 var padding = {left: 50, right: 280, top: 30, bottom: 0};
+var leftIndiant = 20;
+var rightIndiant = 0;
+var totalStreamWidth = 790;
 
-var totalStreamWidth = 800;
-
-areawidth = totalStreamWidth - padding.left - padding.right;
+areawidth = totalStreamWidth - padding.right - leftIndiant - rightIndiant;
 
 areaheight = 200 - padding.bottom;
 
 duration = 250;
 
-x = d3.time.scale().range([0, areawidth]);
+x = d3.time.scale().range([padding.left + leftIndiant, areawidth]);
 
 y = d3.scale.linear().range([areaheight, 0]);
 
-color = d3.scale.category10();
+color = d3.scale.category20c();
 
 area = d3.svg.area().interpolate("basis").x(function (d) {
     return x(d.date);
@@ -34,13 +35,13 @@ stack = d3.layout.stack().values(function (d) {
     return d.count0 = y0;
 }).order("reverse");
 
-xAxis = d3.svg.axis().scale(x).tickSize(-areaheight).tickFormat(d3.time.format('%a %d'));
+xAxis = d3.svg.axis().scale(x).tickSize(areaheight).tickFormat(d3.time.format('%a %d'));
 
 data = null;
 
 svg = d3.select("#seriesTimeBarDown")
     .append("svg")
-    .attr("width", areawidth)
+    .attr("width", totalStreamWidth)
     .attr("height", areaheight + padding.bottom);
 
 transitionTo = function (name) {
@@ -68,17 +69,44 @@ start = function () {
         return v.date;
     });
     xAxis.tickValues(dates);
-    svg.append("g").attr("class", "x axis").attr("transform", "translate(" + padding.left + "," + areaheight + ")").call(xAxis);
+    svg.append("g").attr("class", "x axis").attr("transform", "translate(" + 0 + "," + areaheight + ")").call(xAxis);
     area.y0(areaheight / 2).y1(areaheight / 2);
     g = svg.selectAll(".request").data(data).enter();
-    requests = g.append("g").attr("class", "request").attr("transform", "translate(" + padding.left + ",0)");
+    requests = g.append("g").attr("class", "request").attr("transform", "translate(" + 0 + ",0)");
     requests.append("path").attr("class", "area").style("fill", function (d) {
         return color(d.key);
     }).attr("d", function (d) {
         return area(d.values);
     });
     requests.append("path").attr("class", "line").style("stroke-opacity", 1e-6);
-    createLegend();
+
+    var labHeight = 16;
+    var labRadius = 10;
+    requests.append("rect")
+        .attr("x", function (d) {
+            return totalStreamWidth - padding.right * 0.9;
+        })
+        .attr("y", function (d, i) {
+            return padding.top * 0.7 + (labHeight + 8) * i;
+        })
+        .attr("width", labHeight)
+        .attr("height", labHeight)
+        .style("fill", function (d) {
+            return color(d.key);
+        });
+    requests.append("text")
+        .attr("x", function (d) {
+            return totalStreamWidth - padding.right * 0.9 + labHeight * 1.2;
+        })
+        .attr("y", function (d, i) {
+            return padding.top * 0.7 + (labHeight + 8) * i + labHeight / 2;
+        })
+        .attr("dy", labRadius / 2)
+        .attr("fill", "black")
+        .text(function (d) {
+            return d.key;
+        });
+    //createLegend();
     return streamgraph();
 };
 
@@ -188,6 +216,7 @@ createLegend = function () {
     return keys.append("text").text(function (d) {
         return d.key;
     }).attr("text-anchor", "left").attr("dx", "2.3em").attr("dy", "1.3em");
+
 };
 
 display = function (data) {
@@ -203,7 +232,7 @@ display = function (data) {
         });
     });
     data.sort(function (a, b) {
-        return b.maxCount - a.maxCount;
+        return b.total - a.total;
     });
     return start();
 };
@@ -213,6 +242,7 @@ function extractData(CatList) {
     for (var i = 0; i < CatList.length; i++) {
         var _data = {};
         _data["key"] = CatList[i].Name;
+        _data["total"] = CatList[i].Count;
         _data["values"] = [];
         var curTimeNum = 1;
         while (curTimeNum <= monthlimit) {

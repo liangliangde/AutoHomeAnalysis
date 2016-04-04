@@ -1,6 +1,6 @@
 function showSeriesTimeBar(category) {
     $("#seriesTimeBar").empty();
-    var width = 800;	//SVG绘制区域的宽度
+    var width = 790;	//SVG绘制区域的宽度
     var height = 300;	//SVG绘制区域的高度
     var monthlimit = 13;
     //外边框
@@ -164,7 +164,7 @@ function showSeriesTimeBar(category) {
     var labHeight = 16;
     var labRadius = 10;
 
-    var labelCircle = groups.append("rect")
+    var labelRect = groups.append("rect")
         .attr("x", function (d) {
             return width - padding.right * 0.9;
         })
@@ -173,9 +173,6 @@ function showSeriesTimeBar(category) {
         })
         .attr("width", labHeight)
         .attr("height", labHeight);
-    //.attr("cx",function(d){ return width - padding.right*0.98; })
-    //.attr("cy",function(d,i){ return padding.top * 2 + labHeight * i; })
-    //.attr("r",labRadius);
 
     var labelText = groups.append("text")
         .attr("x", function (d) {

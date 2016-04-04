@@ -11,7 +11,7 @@ import java.io.*;
  */
 public class KoubeiJasonParser {
     public static void main(String args[]) throws IOException {
-        File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/koubei");
+        File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/Untitled Folder");
         File[] files = dist.listFiles();
         for(File file : files){
             System.out.println(file.getName());

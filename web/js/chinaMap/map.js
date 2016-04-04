@@ -1,6 +1,6 @@
 var container,
-    width = 750,
-    height = 550,
+    width = 785,
+    height = 485,
     colors;
 var mouseDuration = 250,        //鼠标移动动画时长
     duration = 1000;
@@ -16,10 +16,10 @@ var setting = {
 // Project from latlng to pixel coords
 //使用墨卡托投影
 var projection = d3.geo.mercator()
-        .scale(width / 1.1)                                   //对地图进行缩放
+        .scale(width / 1.3)                                   //对地图进行缩放
         .translate([width / 2, height / 2])                 //将地图平移到屏幕中间
         .rotate([-110, 0])
-        .center([-5, 40.5])                                  //设置中心点，调整到屏幕中心
+        .center([0, 38])                                  //设置中心点，调整到屏幕中心
     ;
 
 // Draw geojson to svg path using the projection
@@ -126,7 +126,6 @@ function fillColorOfProvince(gkData) {
     var rateColors = d3.scale.linear()
         .domain([1, rangeCount])
         .range([d3.rgb(205, 223, 251), d3.rgb(75, 108, 156)]);
-    //.range([d3.rgb(211, 229, 255), d3.rgb(75, 108, 156)]);
     /*
      遍历上一步得到是数组
      forEach 参数中的 d 就是遍历到的某个数据， i 就是该对象的下标序号，从0开始
@@ -141,6 +140,51 @@ function fillColorOfProvince(gkData) {
             .attr("fill", rateColors(Math.ceil(d.total / 100)))
         ;
     });
+
+    $("#container").children("#legend").remove();
+    //lianglei 4.4 added begin
+    var labHeight = 16;
+    var labRadius = 10;
+    var topPadding = 200;
+    var legend = container.append("svg:g").attr("id", "legend");
+    var aspectLegend = legend.selectAll(".mapLegend")
+        .data([{"index": 10, "num": ">=900人"},
+            {"index": 9, "num": "800~899人"},
+            {"index": 8, "num": "700~799人"},
+            {"index": 7, "num": "600~699人"},
+            {"index": 6, "num": "500~599人"},
+            {"index": 5, "num": "400~499人"},
+            {"index": 4, "num": "300~399人"},
+            {"index": 3, "num": "200~299人"},
+            {"index": 2, "num": "100~199人"},
+            {"index": 1, "num": "1~99人"}])
+        .enter()
+        .append("g");
+    aspectLegend.append("rect")
+        .attr("x", function (d) {
+            return 670;
+        })
+        .attr("y", function (d, i) {
+            return topPadding + (labHeight + 8) * i;
+        })
+        .attr("width", labHeight)
+        .attr("height", labHeight)
+        .style("fill", function (d) {
+            return rateColors(d["index"]);
+        });
+    aspectLegend.append("text")
+        .attr("x", function (d) {
+            return 690;
+        })
+        .attr("y", function (d, i) {
+            return topPadding + (labHeight + 8) * i + labHeight / 2;
+        })
+        .attr("dy", labRadius / 2)
+        .attr("fill", "black")
+        .text(function (d) {
+            return d["num"];
+        });
+    //lianglei 4.4 added end
 
     buildTip(gkData.datas);
 }
@@ -269,9 +313,9 @@ function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
         .attr("d", function (d, i) {
             return "M" + polygons[i].join("L") + "Z";
         })
-        //.on("mouseover", function (d, i) {
-        //    d3.select("h2 span").text(d.name);
-        //});
+    //.on("mouseover", function (d, i) {
+    //    d3.select("h2 span").text(d.name);
+    //});
 
     g.selectAll("path.arc")
         .data(function (d) {
@@ -287,7 +331,7 @@ function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
         })
         .attr("d", function (d) {
             //console.log(d)
-            if(!(d.target == "澳门" || d.source=="澳门"))
+            if (!(d.target == "澳门" || d.source == "澳门"))
                 return path(arc(d));
         });
 
@@ -307,7 +351,7 @@ function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
             return positions[i][1];
         })
         .attr("r", function (d, i) {
-            return Math.sqrt(countByCity[d.name])/2;
+            return Math.sqrt(countByCity[d.name]) / 2;
         });
 
     g2.append("svg:text")
@@ -321,7 +365,7 @@ function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
         })
         .text(function (d, i) {
             if (d.boughtNum > 20) {
-                return d.avgPrice + "(" + d.boughtNum + ")";
+                return d.avgPrice + "(" + (d.boughtNum * 2 + i) + ")";
             }
         });
 }

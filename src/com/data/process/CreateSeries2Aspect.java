@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Created by llei on 16-3-29.
  */
-public class CreateStyle2Aspect {
+public class CreateSeries2Aspect {
 
     private static Map<String, Integer> aspect2NumMap;
     private static Map<Integer, String> num2AspectMap;
@@ -22,6 +22,7 @@ public class CreateStyle2Aspect {
         createAspectAndNumMap();
         Map<String, String> style2SeriesMap = VariousMap.styleId2SeriesId();
         Map<String, Double[]> keyword2Vecmap = VariousMap.keyword2Vector();
+        Map<Integer, Double> aspectWeight = calAspectWeight(keyword2Vecmap);
         Map<String, Double[]> style2Vec = new HashMap<>();
         Map<String, Integer> style2Num = new HashMap<>();
         File brandFile = new File("auto_data/koubei.csv");
@@ -31,8 +32,15 @@ public class CreateStyle2Aspect {
         while ((lineTxt = bufferedReader.readLine()) != null) {
             String[] line = lineTxt.split(",");
             String seriesId = style2SeriesMap.get(line[1]);
-            String koubei = line[16] + " " + line[19].replace("null", "");
-            Double vec[] = parseKoubei(koubei, keyword2Vecmap);
+//            String koubei = line[16] + " " + line[19].replace("null", "");
+            StringBuffer koubei = new StringBuffer();
+            koubei.append(getAspect(line[16], "【最满意的一点】")).append(" ").append(getAspect(line[16], "【最不满意的一点】"));
+            if(!line[19].equals("null")){
+                koubei.append(getAspect(line[19], "【最满意的一点】")).append(" ").append(getAspect(line[19], "【最不满意的一点】"));
+            }
+            if(koubei.toString().trim().equals(""))
+                continue;
+            Double vec[] = parseKoubei(koubei.toString(), keyword2Vecmap);
 
             if (!style2Num.containsKey(seriesId)) {
                 style2Num.put(seriesId, 1);
@@ -56,10 +64,41 @@ public class CreateStyle2Aspect {
             int koubeiNum = entry.getValue();
             Double[] totalVec = style2Vec.get(styleId);
             for (int i = 0; i < 8; i++) {
-                str.append(styleId).append(",").append(num2AspectMap.get(i)).append(",").append(df.format(totalVec[i] / koubeiNum)).append("\n");
+                str.append(styleId).append(",").append(num2AspectMap.get(i)).append(",").append(df.format(totalVec[i] * aspectWeight.get(i) / koubeiNum)).append("\n");
             }
         }
-        IOProcess.writeFile("auto_data/series_aspect.csv", str.toString());
+        IOProcess.writeFile("auto_data/series_aspect_new.csv", str.toString());
+    }
+
+    private static Map<Integer, Double> calAspectWeight(Map<String, Double[]> keyword2Vecmap) {
+        Double[] totalVec = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+        Double total = 0.0;
+        Map<Integer, Double> aspectWeightMap = new HashMap<>();
+        for(Map.Entry<String, Double[]> entry : keyword2Vecmap.entrySet()){
+            Double vec[] = entry.getValue();
+            for(int i=0;i<8;i++){
+                totalVec[i] += vec[i];
+                total += vec[i];
+            }
+        }
+        for(int i=0;i<8;i++){
+            aspectWeightMap.put(i, total/totalVec[i]);
+        }
+        return aspectWeightMap;
+    }
+
+    private static String getAspect(String value, String aspect) {
+        String content = "";
+        int index = value.indexOf(aspect) + aspect.length();
+        if (index > aspect.length() - 1) {
+            int index_end = value.indexOf('【', index);
+            if (index_end > -1) {
+                content = value.substring(index, index_end);
+            } else {
+                content = value.substring(index);
+            }
+        }
+        return content.toString();
     }
 
     private static Double[] parseKoubei(String koubei, Map<String, Double[]> keyword2Vecmap) {

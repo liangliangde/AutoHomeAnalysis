@@ -16,7 +16,7 @@ import java.util.Map;
 public class GetUserIdFromKoubei {
     public static void main(String args[]) throws IOException {
         File dist = new File("/home/llei/pythonworkspace/myspider-spider/autohome/koubei");
-        String seriesIds[] = {"66", "588", "2190", "3553", "692", "3207", "3158"};
+        String seriesIds[] = {"882","403"};
         List<String> seriesIdsList = Arrays.asList(seriesIds);
         File[] files = dist.listFiles();
         Map<String, String> userMap = VariousMap.userMap();
