@@ -633,7 +633,7 @@ var RadSet = (function (window, document, $, undefined) {
         var maxDegreeNumbers = _x.ElementsByDegree.length - 1;
         var innerRadius = r * 0.5;
         var outerRadius = r * 0.7;
-        var innerRadius2 = r * 0.8;
+        var innerRadius2 = r * 0.78;
         var outerRadius2 = r * 0.9;
         var radialRingSize = outerRadius - innerRadius;
 

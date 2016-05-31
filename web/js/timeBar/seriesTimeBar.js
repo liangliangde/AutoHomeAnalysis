@@ -11,18 +11,6 @@ function showSeriesTimeBar(category) {
         .attr("width", width)	//设定<svg>的宽度属性
         .attr("height", height);//设定<svg>的高度属性
 
-    //1. 确定初始数据
-    //var dataset = [
-    //    {
-    //        name: "Software",
-    //        sales: [{year: 2005, profit: 1100},
-    //            {year: 2006, profit: 1700},
-    //            {year: 2007, profit: 1680},
-    //            {year: 2008, profit: 4000},
-    //            {year: 2009, profit: 4900}]
-    //    }
-    //];
-
     var dataset = [];
     var styleLimit = Math.min(category.StyleList.length, 6);
     for (var i = 0; i < styleLimit; i++) {
@@ -43,8 +31,11 @@ function showSeriesTimeBar(category) {
             }
             for (var j = 0; j < Sale.length; j++) {
                 if (Sale[j].boughtTime === curTimeNum) {
-
-                    data["sales"].push({"year": year + "," + month, "profit": Sale[j].SaleNum});
+                    data["sales"].push({
+                        "year": year + "," + month,
+                        "profit": Sale[j].SaleNum *2,
+                        "avgPrice": Sale[j].avgPrice
+                    });
                     break;
                 }
                 if (j == Sale.length - 1) {
@@ -103,7 +94,7 @@ function showSeriesTimeBar(category) {
     //颜色比例尺
     var color = d3.scale.linear()
         .domain([0, styleLimit - 1])
-        .range(["#aad", "#556"]);
+        .range(["#bbd", "#336"]);
 
     //添加分组元素
     var groups = svg.selectAll("g")
@@ -133,7 +124,10 @@ function showSeriesTimeBar(category) {
         .attr("height", function (d) {
             return yScale(d.y);
         })
-        .attr("transform", "translate(" + padding.left + "," + padding.top + ")");
+        .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
+        .on("click", function (d, i) {
+            alert(d.avgPrice);
+        });
 
     //添加坐标轴
     var xAxis = d3.svg.axis()

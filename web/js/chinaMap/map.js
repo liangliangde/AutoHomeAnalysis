@@ -122,7 +122,7 @@ function fillColorOfProvince(gkData) {
     for (var i = 0; i < gkData.datas.length; i++) {
         maxTotal = gkData.datas[i].total > maxTotal ? gkData.datas[i].total : maxTotal;
     }
-    var rangeCount = 10;
+    var rangeCount = 5;
     var rateColors = d3.scale.linear()
         .domain([1, rangeCount])
         .range([d3.rgb(205, 223, 251), d3.rgb(75, 108, 156)]);
@@ -148,12 +148,17 @@ function fillColorOfProvince(gkData) {
     var topPadding = 200;
     var legend = container.append("svg:g").attr("id", "legend");
     var aspectLegend = legend.selectAll(".mapLegend")
-        .data([{"index": 10, "num": ">=900人"},
-            {"index": 9, "num": "800~899人"},
-            {"index": 8, "num": "700~799人"},
-            {"index": 7, "num": "600~699人"},
-            {"index": 6, "num": "500~599人"},
-            {"index": 5, "num": "400~499人"},
+        //.data([{"index": 10, "num": ">=900人"},
+        //    {"index": 9, "num": "800~899人"},
+        //    {"index": 8, "num": "700~799人"},
+        //    {"index": 7, "num": "600~699人"},
+        //    {"index": 6, "num": "500~599人"},
+        //    {"index": 5, "num": "400~499人"},
+        //    {"index": 4, "num": "300~399人"},
+        //    {"index": 3, "num": "200~299人"},
+        //    {"index": 2, "num": "100~199人"},
+        //    {"index": 1, "num": "1~99人"}])
+        .data([{"index": 5, "num": ">=400人"},
             {"index": 4, "num": "300~399人"},
             {"index": 3, "num": "200~299人"},
             {"index": 2, "num": "100~199人"},
@@ -365,7 +370,7 @@ function drawCircle(cityData, boughtLineList, AVGPriceofProvince) {
         })
         .text(function (d, i) {
             if (d.boughtNum > 20) {
-                return d.avgPrice + "(" + (d.boughtNum * 2 + i) + ")";
+                return d.avgPrice;
             }
         });
 }

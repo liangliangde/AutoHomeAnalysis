@@ -241,11 +241,11 @@ var RadSet = (function (window, document, $, undefined) {
          @for Options
          @default "4000"
          */
-        SectorHeightTuner: 8500,
+        SectorHeightTuner: 5000,
 
-        InnerSectorHeightTuner: 6500,
+        InnerSectorHeightTuner: 3000,
 
-        SmoothCard: 2000,
+        SmoothCard: 1200,
 
         selectedCategory: null,
 

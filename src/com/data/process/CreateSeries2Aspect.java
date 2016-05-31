@@ -19,6 +19,16 @@ public class CreateSeries2Aspect {
     private static Map<Integer, String> num2AspectMap;
 
     public static void main(String args[]) throws IOException {
+        Map<String, String> eng2ChiAspectMap = new HashMap<>();
+        eng2ChiAspectMap.put("外观", "appearence");
+        eng2ChiAspectMap.put("舒适度", "comfort");
+        eng2ChiAspectMap.put("操控", "control");
+        eng2ChiAspectMap.put("性价比", "costPerform");
+        eng2ChiAspectMap.put("内饰", "interior");
+        eng2ChiAspectMap.put("油耗", "oil");
+        eng2ChiAspectMap.put("动力", "power");
+        eng2ChiAspectMap.put("空间", "space");
+
         createAspectAndNumMap();
         Map<String, String> style2SeriesMap = VariousMap.styleId2SeriesId();
         Map<String, Double[]> keyword2Vecmap = VariousMap.keyword2Vector();
@@ -64,10 +74,10 @@ public class CreateSeries2Aspect {
             int koubeiNum = entry.getValue();
             Double[] totalVec = style2Vec.get(styleId);
             for (int i = 0; i < 8; i++) {
-                str.append(styleId).append(",").append(num2AspectMap.get(i)).append(",").append(df.format(totalVec[i] * aspectWeight.get(i) / koubeiNum)).append("\n");
+                str.append(styleId).append(",").append(eng2ChiAspectMap.get(num2AspectMap.get(i))).append(",").append(df.format(totalVec[i] * aspectWeight.get(i) / koubeiNum)).append("\n");
             }
         }
-        IOProcess.writeFile("auto_data/series_aspect_new.csv", str.toString());
+        IOProcess.writeFile("auto_data/series_aspect.csv", str.toString());
     }
 
     private static Map<Integer, Double> calAspectWeight(Map<String, Double[]> keyword2Vecmap) {
@@ -127,7 +137,7 @@ public class CreateSeries2Aspect {
     private static void createAspectAndNumMap() {
         aspect2NumMap = new HashMap<>();
         aspect2NumMap.put("外观", 0);
-        aspect2NumMap.put("舒适性", 1);
+        aspect2NumMap.put("舒适度", 1);
         aspect2NumMap.put("操控", 2);
         aspect2NumMap.put("性价比", 3);
         aspect2NumMap.put("内饰", 4);
@@ -137,7 +147,7 @@ public class CreateSeries2Aspect {
 
         num2AspectMap = new HashMap<>();
         num2AspectMap.put(0, "外观");
-        num2AspectMap.put(1, "舒适性");
+        num2AspectMap.put(1, "舒适度");
         num2AspectMap.put(2, "操控");
         num2AspectMap.put(3, "性价比");
         num2AspectMap.put(4, "内饰");

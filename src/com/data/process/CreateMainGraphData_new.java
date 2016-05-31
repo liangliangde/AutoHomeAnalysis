@@ -16,7 +16,7 @@ public class CreateMainGraphData_new {
     //select candidate series only by common users
 
     public static void main(String[] args) throws IOException {
-        String[] seriesNames = {"宝马3系", "奥迪A4L", "奔驰C级", "凯迪拉克ATS-L", "英菲尼迪Q50L", "雷克萨斯ES", "皇冠"};
+        String[] seriesNames = {"凯美瑞", "雅阁", "天籁", "阿特兹", "索纳塔九", "传祺GA6", "帕萨特"};
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(QueryFromNeo4j.getBaseURL());
 //        int candNum = 7;
 //        Double lowBound = 0.7;

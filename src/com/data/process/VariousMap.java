@@ -14,7 +14,7 @@ import java.util.Set;
 public class VariousMap {
     public static Map<String, String> seriesId2Detail() throws IOException {
         Map<String, String> seriesId2DetailMap = new HashMap<>();
-        File file = new File("auto_data/series.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/series.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -50,7 +50,7 @@ public class VariousMap {
     public static Map<String, String> seriesName2Detail() throws IOException {
         //return price, type, oilcost
         Map<String, String> seriesId2DetailMap = new HashMap<>();
-        File file = new File("auto_data/series.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/series.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -65,7 +65,7 @@ public class VariousMap {
 
     public static Map<String, String> seriesId2Num() throws IOException {
         Map<String, String> seriesId2NumMap = new HashMap<>();
-        File file = new File("auto_data/series.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/series.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -81,7 +81,7 @@ public class VariousMap {
 
     public static Map<String, String> num2SeriesId() throws IOException {
         Map<String, String> seriesId2NumMap = new HashMap<>();
-        File file = new File("auto_data/series.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/series.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -97,7 +97,7 @@ public class VariousMap {
 
     public static Map<String, String> styleId2SeriesId() throws IOException {
         Map<String, String> styleId2SeriesIdMap = new HashMap<>();
-        File file = new File("auto_data/series_style.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/series_style.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -112,7 +112,7 @@ public class VariousMap {
 
     public static Map<String, String> seriesId2brandId() throws IOException {
         Map<String, String> seriesId2brandIdMap = new HashMap<>();
-        File file = new File("auto_data/brand_series.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/brand_series.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -127,7 +127,7 @@ public class VariousMap {
 
     public static Map<String, String> brandId2brandName() throws IOException {
         Map<String, String> brandId2brandNameMap = new HashMap<>();
-        File file = new File("auto_data/brand.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/brand.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -142,7 +142,7 @@ public class VariousMap {
 
     public static Map<String, String> attrName2AttrId() throws IOException {
         Map<String, String> attrName2AttrIdMap = new HashMap<>();
-        File file = new File("auto_data/attrId_attrName.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/attrId_attrName.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -157,7 +157,7 @@ public class VariousMap {
 
     public static Map<String, String> attrId2AttrName() throws IOException {
         Map<String, String> attrId2AttrNameMap = new HashMap<>();
-        File file = new File("auto_data/attrId_attrName.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/attrId_attrName.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -172,7 +172,7 @@ public class VariousMap {
 
     public static Map<String, String> attr2AttrId() throws IOException {
         Map<String, String> attr2AttrIdMap = new HashMap<>();
-        File file = new File("auto_data/seriesAttr.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/seriesAttr.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -187,7 +187,7 @@ public class VariousMap {
 
     public static Map<String, String> seriesId2OilAttr() throws IOException {
         Map<String, String> seriesId2AttrMap = new HashMap<>();
-        File file = new File("auto_data/seriesId_attr.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/seriesId_attr.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -204,7 +204,7 @@ public class VariousMap {
 
     public static Map<String, String> chinese2Score() throws IOException {
         Map<String, String> chinese2ScoreMap = new HashMap<>();
-        File file = new File("auto_data/Chinese2Score");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/Chinese2Score");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GB2312");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -219,7 +219,7 @@ public class VariousMap {
 
     public static Map<String, String> userMap() throws IOException {
         Map<String, String> userMap = new HashMap<>();
-        File file = new File("auto_data/user.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/user.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GB2312");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;
@@ -230,6 +230,21 @@ public class VariousMap {
         inputStreamReader.close();
         bufferedReader.close();
         return userMap;
+    }
+
+    public static Set<String> koubeiSet() throws IOException {
+        Set<String> koubeiSet = new HashSet<>();
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/koubei.csv");
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GB2312");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String lineTxt = null;
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            int split = lineTxt.indexOf(",");
+            koubeiSet.add(lineTxt.substring(0, split));
+        }
+        inputStreamReader.close();
+        bufferedReader.close();
+        return koubeiSet;
     }
 
     public static Map<String, String> city2ProvinceMap() throws IOException {
@@ -252,7 +267,7 @@ public class VariousMap {
 
     public static Map<String, Double> getSimBtTypes() throws IOException {
         Map<String, Double> simBtTypesMap = new HashMap<>();
-        File file = new File("auto_data/similarityBtSeriesType.csv");
+        File file = new File("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/auto_data/similarityBtSeriesType.csv");
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "UTF-8");
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String lineTxt = null;

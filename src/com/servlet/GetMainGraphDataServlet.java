@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -28,22 +29,17 @@ public class GetMainGraphDataServlet extends HttpServlet {
         req.setCharacterEncoding("utf-8");
         resp.setContentType("text/html;charset=UTF-8");
 
-//        String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
-        String[] seriesIds = {"364"};
         GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase(baseURL);
+//        String seriesIds[] = req.getParameter("seriesIds").toString().replace(" ", "").split(",");
+        String[] seriesIds = {"78"};
         List<String> attrList = QueryFromNeo4j.querySeriesAttrBySeriesIds(seriesIds, db);
         List<String> similarSeries = QueryFromNeo4j.querySeriesByAttr(attrList, db);
         int[][] comUsersMatrix = queryComUsersOfSimilarSeries(similarSeries, db);
         int candNum = 7;
         List<String> candSeries = selectCandSeries(comUsersMatrix, similarSeries, seriesIds, candNum);
-//        int[][] comUsersMatrixOfCand = getComUsersMatrixOfCand(candSeries, comUsersMatrix, similarSeries);
         Map<String, int[]> users = QueryFromNeo4j.queryUserBySeriesId(candSeries.toArray(), db);
         Map<String, String> seriesId2DetailMap = VariousMap.seriesId2Detail();
         createUsersCSV(candSeries, users, seriesId2DetailMap);
-//        PrintWriter toClient = resp.getWriter();
-//        StringBuffer kmeansResult = new StringBuffer();
-//        kmeansResult.append(seriesInfo).append("###").append(clusterInfo).append("###").append(collectDetailInfo);
-//        toClient.print(kmeansResult.toString());
         db.shutdown();
     }
 
@@ -70,7 +66,7 @@ public class GetMainGraphDataServlet extends HttpServlet {
             }
             str.append("\n");
         }
-        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/web/data/users_new.csv", str.toString());
+        IOProcess.writeFile("/home/llei/IdeaProjects/autohome/AutoHomeAnalysis_new/web/data/users.csv", str.toString());
         System.out.println("Create Users.csv finished!");
     }
 
